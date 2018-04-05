@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="626.0" prefWidth="1152.0" stylesheets="@../styles/home.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.DefaulterTrackingFormController">
+   <children>
+      <ScrollPane layoutX="80.0" layoutY="168.0" prefHeight="626.0" prefWidth="1152.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <AnchorPane prefHeight="750.0" prefWidth="1152.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="1000.0" prefWidth="1150.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <FontAwesomeIconView glyphName="LIST_ALT" size="30.0" />
+                              <Label text="Defaulter Tracking Form" textFill="#276696">
+                                 <font>
+                                    <Font name="System Bold" size="27.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="59.0" prefWidth="1282.0" spacing="20.0">
+                           <children>
+                              <JFXComboBox fx:id="facility" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Facility" styleClass="htsform" />
+                           </children>
+                           <padding>
+                              <Insets left="150.0" right="150.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                           <children>
+                              <VBox alignment="CENTER" layoutX="355.0" layoutY="10.0" prefHeight="200.0" prefWidth="500.0" spacing="25.0">
+                                 <children>
+                                    <JFXTextField fx:id="firstName" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="1. First Name Of Index" styleClass="htsform" />
+                                    <JFXTextField fx:id="lastName" labelFloat="true" promptText="2. Last Name Of Index" styleClass="htsform" />
+                                    <JFXTextField fx:id="physicalAddress" labelFloat="true" layoutX="10.0" layoutY="163.0" promptText="3. Physical Address" styleClass="htsform" />
+                                    <JFXTextField fx:id="contactDetails" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="4. Contact Details" styleClass="htsform" />
+                                    <JFXTextField fx:id="artNumber" labelFloat="true" layoutX="10.0" layoutY="145.0" prefHeight="25.0" prefWidth="592.0" promptText="5. OI/ART Number" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateArtInitiation" defaultColor="#276696" prefHeight="31.0" prefWidth="503.0" promptText="6. Date Of ART Initiation" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateReview" defaultColor="#276696" layoutX="10.0" layoutY="235.0" prefHeight="31.0" prefWidth="503.0" promptText="7. Review Date/ Appointment Date Missed" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateAppDeemedDefaul" defaultColor="#276696" layoutX="10.0" layoutY="280.0" prefHeight="31.0" prefWidth="503.0" promptText="8. Date Appointment Deemed Defaulter" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateOfCall1" defaultColor="#276696" layoutX="10.0" layoutY="325.0" prefHeight="31.0" prefWidth="503.0" promptText="9.a. Date Of Call1" styleClass="htsform" />
+                                    <JFXComboBox fx:id="call1Outcome" labelFloat="true" layoutX="10.0" layoutY="346.0" prefHeight="31.0" prefWidth="500.0" promptText="9.b. Call1 Outcome" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="date1AppDateIfFound" defaultColor="#276696" layoutX="10.0" layoutY="394.0" prefHeight="31.0" prefWidth="503.0" promptText="10. Appointment Date If Found Has To Be Linked To Care" styleClass="htsform" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="500.0" spacing="25.0">
+                                 <children>
+                                    <JFXDatePicker fx:id="dateOfCall2" defaultColor="#276696" layoutX="10.0" layoutY="10.0" prefHeight="31.0" prefWidth="503.0" promptText="11.a. Date Of Call2" styleClass="htsform" />
+                                    <JFXComboBox fx:id="call2Outcome" labelFloat="true" layoutX="10.0" layoutY="71.0" prefHeight="31.0" prefWidth="500.0" promptText="11.b. Call2 Outcome" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="date2AppDateIfFound" defaultColor="#276696" layoutX="10.0" layoutY="120.0" prefHeight="31.0" prefWidth="503.0" promptText="12. Appointment Date If Found Has To Be Linked To Care" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateOfCall3" defaultColor="#276696" layoutX="10.0" layoutY="190.0" prefHeight="31.0" prefWidth="503.0" promptText="13.a. Date Of Call3" styleClass="htsform" />
+                                    <JFXComboBox fx:id="call3Outcome" labelFloat="true" layoutX="10.0" layoutY="254.0" prefHeight="31.0" prefWidth="500.0" promptText="13.b. Call3 Outcome" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="date3AppDateIfFound" defaultColor="#276696" layoutX="10.0" layoutY="214.0" prefHeight="31.0" prefWidth="503.0" promptText="14. Appointment Date If Found Has To Be Linked To Care" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateVisitDone" defaultColor="#276696" layoutX="10.0" layoutY="280.0" prefHeight="31.0" prefWidth="503.0" promptText="15.a. Date Visit Done" styleClass="htsform" />
+                                    <JFXComboBox fx:id="visitOutcome" labelFloat="true" layoutX="10.0" layoutY="235.0" prefHeight="31.0" prefWidth="500.0" promptText="15.b. Visit Outcome" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateVisit" defaultColor="#276696" layoutX="10.0" layoutY="325.0" prefHeight="31.0" prefWidth="503.0" promptText="16. Appointment Date If Linked To Care" styleClass="htsform" />
+                                    <JFXComboBox fx:id="finalOutcome" labelFloat="true" layoutX="10.0" layoutY="370.0" prefHeight="31.0" prefWidth="500.0" promptText="17. Final Outcome" styleClass="htsform" />
+                                    <JFXDatePicker fx:id="dateClientVisited" defaultColor="#276696" layoutX="10.0" layoutY="10.0" prefHeight="31.0" prefWidth="503.0" promptText="18. If Linked To Care, Date Client Visited/Reported To Clinic" styleClass="htsform" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="20.0">
+                           <children>
+                              <JFXButton buttonType="RAISED" defaultButton="true" onAction="#saveDefaulterTrackingForm" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Save">
+                                 <graphic>
+                                    <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#clearD" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Clear">
+                                 <graphic>
+                                    <FontAwesomeIconView glyphName="CLOSE" size="15.0" />
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

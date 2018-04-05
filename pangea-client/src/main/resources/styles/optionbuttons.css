@@ -1,0 +1,28 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+
+* {
+    -fx-primary : #F6F6F6;
+    -fx-secondary : #276696;
+    -fx-warning : #FFD204;
+    -fx-success : #01A650;    
+}
+.mainFxmlClass {
+-fx-background-color: transparent;
+}
+.glyph-icon{
+    -fx-fill: -fx-secondary;
+}
+.btn-delete{
+    -fx-background-color: transparent;
+    -fx-text-fill: red;
+    -fx-border-color: red
+}
+.btn-edit{
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-secondary;
+    -fx-border-color: -fx-secondary;
+}
+

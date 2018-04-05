@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="626.0" prefWidth="1152.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.EditIndexCaseController">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="626.0" prefWidth="1152.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER">
+               <children>
+                  <FontAwesomeIconView glyphName="TH_LIST" size="30.0" />
+                  <Label text="Edit Index Case Testing" textFill="#276696">
+                     <font>
+                        <Font name="System Bold" size="27.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="59.0" prefWidth="1282.0" spacing="20.0">
+               <children>
+                  <JFXComboBox fx:id="facility" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Facility" styleClass="htsform" />
+               </children>
+               <padding>
+                  <Insets left="150.0" right="150.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <VBox alignment="CENTER" layoutX="355.0" layoutY="10.0" prefHeight="200.0" prefWidth="500.0" spacing="40.0">
+                     <children>
+                        <JFXTextField fx:id="numOfIndex" labelFloat="true" layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="592.0" promptText="1. Sequential Number Of Index" styleClass="htsform" />
+                        <JFXTextField fx:id="firstName" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="2.a. First Name Of Index" styleClass="htsform" />
+                        <JFXTextField fx:id="lastName" labelFloat="true" promptText="2.b. Last Name Of Index" styleClass="htsform" />
+                        <JFXDatePicker fx:id="dateDiagnosed" defaultColor="#276696" prefHeight="31.0" prefWidth="503.0" promptText="3. Date Index Tested/Diagnosed" styleClass="htsform" />
+                        <JFXTextField fx:id="artNumber" labelFloat="true" layoutX="10.0" layoutY="163.0" promptText="4.a. Index OI/ART Number" styleClass="htsform" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="500.0" spacing="63.0">
+                     <children>
+                        <JFXTextField fx:id="indexContactNum" labelFloat="true" promptText=" Index Contact Number" styleClass="htsform" />
+                        <JFXComboBox fx:id="initiatedOnArt" labelFloat="true" layoutX="10.0" layoutY="71.0" onAction="#onSelectedInitiatedOnArt" prefHeight="31.0" prefWidth="500.0" promptText="4.b. Initiated on ART?" styleClass="htsform" />
+                        <JFXTextField fx:id="reasonForNotInitiated" disable="true" labelFloat="true" layoutX="10.0" layoutY="22.0" promptText="4.c. Reason For Not Being Initiated" styleClass="htsform" />
+                        <JFXComboBox fx:id="doesTheClientConsent" labelFloat="true" layoutX="10.0" layoutY="315.0" prefHeight="31.0" prefWidth="500.0" promptText="5.a. Does index client consent for listed contacts to be contacted for index case testing?" styleClass="htsform" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="20.0">
+               <children>
+                  <JFXButton buttonType="RAISED" defaultButton="true" onAction="#updateIct" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Save">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="cancelBtn" buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#closeScreen" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Cancel">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" />
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

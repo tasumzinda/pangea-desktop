@@ -1,0 +1,42 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+* {
+    -fx-primary : #F6F6F6;
+    -fx-secondary : #276696;
+    -fx-warning : #FFD204;
+    -fx-success : #01A650;    
+}
+.glyph-icon{
+    -fx-fill: -fx-secondary;
+}
+.danger-icon{
+    -fx-fill: #e41313
+}
+.success-icon{
+    
+    -fx-fill: #67d315
+}
+
+.esta-btn{
+    -fx-border-color: -fx-secondary;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+}
+.esta-btn:hover{
+    -fx-border-color: -fx-secondary;
+    -fx-background-color: #ccccff;   
+}
+.htsform{
+    -fx-font-size: 13px;
+}
+.scBtns{
+   -fx-border-color: -fx-secondary;
+   -fx-border-radius: 2px;
+   -fx-font-size: 12px; 
+}
+.scBtns:hover{
+    -fx-border-color: -fx-secondary;
+    -fx-background-color: #ccccff;   
+}

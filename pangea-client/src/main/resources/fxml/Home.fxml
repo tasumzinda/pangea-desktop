@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainLayout" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1360.0" stylesheets="@../styles/home.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.HomeController">
+   <top>
+      <VBox alignment="CENTER" prefHeight="64.0" prefWidth="1360.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <children>
+            <HBox alignment="CENTER_RIGHT" prefHeight="58.0" prefWidth="1360.0" spacing="30.0">
+               <children>
+                  <Label fx:id="notification" styleClass="esta-btn" text="Data Updated Successfully" textFill="#3f9024" visible="false">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="EXCLAMATION_CIRCLE" size="20" styleClass="success-icon" />
+                     </graphic>
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="offLine" text="Offline" textFill="#e41313" visible="false">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="EXCLAMATION_CIRCLE" styleClass="danger-icon" />
+                     </graphic>
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="onLine" layoutX="939.0" layoutY="26.0" text="Online" textFill="#67d315" visible="false">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="WIFI" styleClass="success-icon" />
+                     </graphic>
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <JFXButton onAction="#syncDatabase" text="Sync" visible="false">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="REFRESH" />
+                     </graphic>
+                  </JFXButton>
+                  <MenuButton fx:id="menuBtn" mnemonicParsing="false" style="-fx-background-color: #ccccff;" text="Roy Kanavheti">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#logout" text="Logout">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SIGN_OUT" />
+                           </graphic>
+                        </MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#exitApp" text="Exit">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="POWER_OFF" />
+                           </graphic>
+                        </MenuItem>
+                    </items>
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <graphic>
+                        <FontAwesomeIconView glyphName="USER_CIRCLE" size="20.0" />
+                     </graphic>
+                  </MenuButton>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="30.0" top="5.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets right="20.0" />
+               </VBox.margin>
+            </HBox>
+            <JFXProgressBar fx:id="fxmlProgressBar" prefHeight="0.0" prefWidth="1351.0" visible="false" />
+         </children>
+      </VBox>
+   </top>
+   <left>
+      <VBox prefHeight="671.0" prefWidth="208.0" BorderPane.alignment="CENTER">
+         <children>
+            <Accordion style="-fx-font-size: 15px; -fx-border-color: #ccccff;">
+              <panes>
+                <TitledPane animated="false" contentDisplay="RIGHT" text="Esta Forms : Create">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox layoutX="13.0" layoutY="14.0" prefHeight="50.0" prefWidth="181.0" spacing="5.0">
+                                 <children>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <FontAwesomeIconView fx:id="iconHts" glyphName="CARET_RIGHT" size="30" visible="false" />
+                                          <JFXButton buttonType="RAISED" contentDisplay="TOP" onAction="#viewHts" prefHeight="25.0" prefWidth="171.0" ripplerFill="#276696" style="-fx-font-size: 12px;" styleClass="esta-btn" text="HTS Register">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                             </graphic>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0">
+                                       <children>
+                                          <FontAwesomeIconView fx:id="iconDtf" glyphName="CARET_RIGHT" size="30" visible="false" />
+                                          <JFXButton buttonType="RAISED" contentDisplay="TOP" onAction="#viewDefaulterTrForm" prefHeight="25.0" prefWidth="171.0" ripplerFill="#276696" style="-fx-font-size: 12px;" styleClass="esta-btn" text="Defaulter Tracking Form">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="TH" />
+                                             </graphic>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" layoutX="10.0" layoutY="58.0">
+                                       <children>
+                                          <FontAwesomeIconView fx:id="iconIct" glyphName="CARET_RIGHT" size="30" visible="false" />
+                                          <JFXButton buttonType="RAISED" contentDisplay="TOP" onAction="#viewIndexCasingForm" prefHeight="25.0" prefWidth="171.0" ripplerFill="#276696" style="-fx-font-size: 12px;" styleClass="esta-btn" text="Index Casing Form">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="LIST" />
+                                             </graphic>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" text="Esta Forms : List">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox alignment="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="168.0" prefWidth="188.0" spacing="5.0">
+                                 <children>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <JFXButton buttonType="RAISED" contentDisplay="TOP" onAction="#htsRegisterTable" prefHeight="39.0" prefWidth="121.0" ripplerFill="#256897" style="-fx-font-size: 11px;" styleClass="scBtns" text="HTS Register" underline="true">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                             </graphic>
+                                          </JFXButton>
+                                          <FontAwesomeIconView fx:id="iconLhts" glyphName="CARET_LEFT" size="25" visible="false" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <JFXButton contentDisplay="TOP" onAction="#defaulterTable" prefHeight="39.0" prefWidth="121.0" ripplerFill="#266ea1" style="-fx-font-size: 11px;" styleClass="scBtns" text="Defaulter List" underline="true">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                             </graphic>
+                                          </JFXButton>
+                                          <FontAwesomeIconView fx:id="iconLdtf" glyphName="CARET_LEFT" size="25" visible="false" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <JFXButton contentDisplay="TOP" onAction="#indexCasingListTable" prefHeight="39.0" prefWidth="121.0" ripplerFill="#266ea1" style="-fx-font-size: 11px;" styleClass="scBtns" text="Index Casing List" underline="true">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                             </graphic>
+                                          </JFXButton>
+                                          <FontAwesomeIconView fx:id="iconLict" glyphName="CARET_LEFT" size="25" visible="false" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children></AnchorPane>
+                  </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="626.0" prefWidth="1152.0" spacing="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label layoutX="454.0" layoutY="10.0" text="ITECH DESKTOP" textFill="#254b8f" underline="true">
+                     <font>
+                        <Font name="System Bold Italic" size="36.0" />
+                     </font>
+                  </Label>
+                  <ImageView fitHeight="152.0" fitWidth="295.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Images/itech.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+         </children></AnchorPane>
+   </center>
+</BorderPane>
