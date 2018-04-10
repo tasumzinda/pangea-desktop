@@ -51,13 +51,13 @@ public class ContactServiceImpl implements ContactService {
     public Contact save(Contact t) {
         if (t.getId() == null) {
             t.setDateCreated(new Date());
-            t.setCreatedBy(userService.getCurrentUser());
+          //  t.setCreatedBy(userService.getCurrentUser());
             System.err.println("*************************************");
             System.err.println("Inside if ");
             System.err.println("*************************************");
             return repo.save(t);
         }
-        t.setModifiedBy(userService.getCurrentUser());
+      //  t.setModifiedBy(userService.getCurrentUser());
         t.setDateModified(new Date());
         System.err.println("*************************************");
         System.err.println("Outside");
@@ -89,6 +89,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Boolean checkDuplicate(Contact current, Contact old) {
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

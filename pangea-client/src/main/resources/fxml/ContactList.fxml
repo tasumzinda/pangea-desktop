@@ -1,14 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.ContactListController">
-    <stylesheets>
-        <URL value="@/styles/contactlist.css"/>
-    </stylesheets>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="mainFxmlClass" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.ContactListController">
+   <children>
+      <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <VBox prefHeight="800.0" prefWidth="1300.0" stylesheets="@../styles/contactlist.css">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="55.0" prefWidth="1300.0">
+                     <children>
+                        <Label prefHeight="47.0" prefWidth="146.0" text="Add Contact" textFill="#516ec6" underline="true">
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="744.0" prefWidth="1200.0">
+                    <content>
+                        <VBox alignment="CENTER" prefHeight="679.0" prefWidth="1200.0">
+                           <children>
+                              <AnchorPane prefHeight="630.0" prefWidth="1200.0">
+                                 <children>
+                                    <GridPane alignment="CENTER" hgap="30.0" prefHeight="630.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <JFXTextField fx:id="nameOfContact" labelFloat="true" prefHeight="31.0" prefWidth="700.0" promptText=" Name &amp; Surname of Contact :" styleClass="textfields" />
+                                          <JFXTextField fx:id="age" labelFloat="true" prefWidth="700.0" promptText="Age :" styleClass="textfields" GridPane.rowIndex="1" />
+                                          <JFXComboBox fx:id="gender" labelFloat="true" prefHeight="31.0" prefWidth="700.0" promptText="Gender :" styleClass="textfields" GridPane.rowIndex="2">
+                                             <GridPane.margin>
+                                                <Insets left="1.0" right="1.0" />
+                                             </GridPane.margin>
+                                          </JFXComboBox>
+                                          <JFXTextField fx:id="contactAddress" labelFloat="true" prefWidth="700.0" promptText="Contact Address :" styleClass="textfields" GridPane.rowIndex="3" />
+                                          <JFXComboBox fx:id="hivStatusEntry" labelFloat="true" onAction="#onHivStat" prefHeight="31.0" prefWidth="700.0" promptText="HIV Status Entry :" styleClass="textfields" GridPane.rowIndex="7" />
+                                          <JFXTextField fx:id="referralSlipNumber" labelFloat="true" prefWidth="700.0" promptText="Referral Slip Number" styleClass="textfields" GridPane.rowIndex="6" />
+                                          <JFXComboBox fx:id="relationShipToIndex" labelFloat="true" layoutX="40.0" layoutY="258.0" onAction="#onRelSel" prefHeight="31.0" prefWidth="700.0" promptText="Relationship To Index :" styleClass="textfields" GridPane.rowIndex="4" />
+                                          <JFXDatePicker fx:id="ifTestedDateContactTested" disable="true" editable="false" prefHeight="31.0" prefWidth="700.0" promptText="Date Contact Was Tested : " styleClass="textfields" GridPane.rowIndex="8" />
+                                          <JFXComboBox fx:id="preferredPlaceForContactsToBeTested" labelFloat="true" layoutX="40.0" layoutY="337.0" prefHeight="31.0" prefWidth="700.0" promptText="Preferred or most convenient place for contacts to be tested :" styleClass="textfields" GridPane.rowIndex="9" />
+                                          <JFXDatePicker fx:id="appointmentDateForContact" editable="false" layoutX="40.0" layoutY="385.0" prefHeight="31.0" prefWidth="700.0" promptText="Appointment Date For Contact(s) To Be Tested :" styleClass="textfields" GridPane.rowIndex="10" />
+                                          <JFXDatePicker fx:id="secondAppointmentDateForContact" editable="false" layoutX="40.0" layoutY="480.0" prefHeight="31.0" prefWidth="700.0" promptText="If Missed 1st Appointment 2nd Appointment Date For Contact(s) To Be Tested :" styleClass="textfields" GridPane.columnIndex="1" />
+                                          <JFXDatePicker fx:id="thirdAppointmentDateForContact" editable="false" layoutX="40.0" layoutY="527.0" prefHeight="31.0" prefWidth="700.0" promptText="If Missed 2nd Appointment 3rd Appointment Date For Contact(s) To Be Tested :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <JFXTextField fx:id="sequentialNumberOfContacts" labelFloat="true" layoutX="40.0" layoutY="289.0" prefWidth="700.0" promptText="Sequential number of contacts :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <JFXDatePicker fx:id="contactTestedDate" editable="false" layoutX="40.0" layoutY="574.0" prefHeight="31.0" prefWidth="700.0" promptText="Date Contact Tested(Newly Tested Contacts) :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <JFXComboBox fx:id="locationOfTest" labelFloat="true" layoutX="40.0" layoutY="337.0" prefHeight="31.0" prefWidth="700.0" promptText="Location Of Test :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <JFXComboBox fx:id="hivResult" labelFloat="true" layoutX="610.0" layoutY="49.0" prefHeight="31.0" prefWidth="700.0" promptText="HIV Result :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <JFXComboBox fx:id="enrolledIntoCare" labelFloat="true" layoutX="610.0" layoutY="97.0" onAction="#onEnrolled" prefHeight="31.0" prefWidth="700.0" promptText="Enrolled Into Care? :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <JFXComboBox fx:id="onART" labelFloat="true" layoutX="610.0" layoutY="145.0" prefHeight="31.0" prefWidth="700.0" promptText="On ART? :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                          <JFXTextField fx:id="artNumber" disable="true" labelFloat="true" layoutX="40.0" layoutY="49.0" prefWidth="700.0" promptText="ART Number :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                          <JFXComboBox fx:id="referralSlipReturned" labelFloat="true" layoutX="610.0" layoutY="289.0" prefHeight="31.0" prefWidth="700.0" promptText="Referral Slip Returned? :" styleClass="textfields" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                          <JFXTextField fx:id="relationshipOther" disable="true" labelFloat="true" layoutX="40.0" layoutY="110.0" prefWidth="700.0" promptText="Other  (Specify) :" styleClass="textfields" GridPane.rowIndex="5" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                       </padding>
+                                    </GridPane>
+                                 </children>
+                              </AnchorPane>
+                              <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1200.0" spacing="30.0">
+                                 <children>
+                                    <HBox alignment="CENTER" spacing="10.0">
+                                       <children>
+                                          <JFXButton buttonType="RAISED" onAction="#saveContactList" styleClass="login-btn" text="Save">
+                                             <ripplerFill>
+                                                <LinearGradient endX="1.0" endY="1.0">
+                                                   <stops>
+                                                      <Stop color="#303e8d" />
+                                                      <Stop color="WHITE" offset="1.0" />
+                                                   </stops>
+                                                </LinearGradient>
+                                             </ripplerFill>
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" styleClass="success-icon" />
+                                             </graphic>
+                                          </JFXButton>
+                                          <JFXSpinner fx:id="saveP" radius="12.0" visible="false" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <JFXButton buttonType="RAISED" onAction="#clearPressed" styleClass="login-btn" text="Clear">
+                                             <ripplerFill>
+                                                <LinearGradient endX="1.0" endY="1.0">
+                                                   <stops>
+                                                      <Stop color="#303e8d" />
+                                                      <Stop color="WHITE" offset="1.0" />
+                                                   </stops>
+                                                </LinearGradient>
+                                             </ripplerFill>
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="CLOSE" styleClass="danger-icon" />
+                                             </graphic>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                    </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
 </AnchorPane>

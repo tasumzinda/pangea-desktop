@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.repo.DefaulterTrackingFormRepo;
 import com.itech.pangea.business.service.DefaulterTrackingFormService;
 import com.itech.pangea.business.service.UserService;
@@ -73,11 +74,11 @@ public class DefaulterTrackingFormServiceImpl implements DefaulterTrackingFormSe
     @Transactional
     public DefaulterTrackingForm save(DefaulterTrackingForm t) {
         if (t.getId() == null) {
-            t.setDateCreated(new Date());
-            t.setCreatedBy(userService.getCurrentUser());
+          t.setDateCreated(new Date());
+          //  t.setCreatedBy(userService.getCurrentUser());
             return defaulterTrackingFormRepo.save(t);
         }
-        t.setModifiedBy(userService.getCurrentUser());
+       // t.setModifiedBy(userService.getCurrentUser());
         t.setDateModified(new Date());
         return defaulterTrackingFormRepo.save(t);
     }
@@ -145,5 +146,8 @@ public class DefaulterTrackingFormServiceImpl implements DefaulterTrackingFormSe
         return defaulterTrackingFormRepo.countByFinalOutcome(dto.getCallOutcome());
     }
     
-    
+    @Override
+    public List<DefaulterTrackingForm> findByUser(User createdBy){
+        return defaulterTrackingFormRepo.findByCreatedBy(createdBy);
+    }
 }

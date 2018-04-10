@@ -29,6 +29,7 @@ import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.validations.Validate;
+import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,6 +44,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -60,11 +63,7 @@ import org.springframework.stereotype.Component;
 public class HTSRegisterController implements Initializable {
 
     
-    /*
-    @FXML
-    private JFXComboBox province;
-   /* @FXML
-    private JFXComboBox district;*/
+    
     @FXML
     private JFXComboBox facility;
     
@@ -80,7 +79,8 @@ public class HTSRegisterController implements Initializable {
     private JFXTextField hivTestingSlipNum;
     @FXML
     private JFXTextField htsNumber;
-    
+    @FXML
+    private JFXSpinner saveP;
     @FXML
     private JFXTimePicker time;
     @FXML
@@ -146,7 +146,7 @@ public class HTSRegisterController implements Initializable {
         try {
             
             SQLiteQueries liteQueries = new SQLiteQueries();
-            List<String> list = liteQueries.getFacility();
+            List<String> list = liteQueries.getFacility(user.getId());
             fac = FXCollections.observableArrayList(list);
             facility.setItems(fac);
             }
@@ -235,9 +235,9 @@ public class HTSRegisterController implements Initializable {
         artNumber.clear();
     }
     @FXML
-    private void saveHts(ActionEvent e){
+    private void saveHts(ActionEvent e) throws SQLException{
          HTSRegisterForm hts = new HTSRegisterForm();
-         String cs;
+       
          int hm = 11; //11 means null
          String ht;
          int rhiv = 11;
@@ -250,12 +250,10 @@ public class HTSRegisterController implements Initializable {
             
             if(testingEntryStream.getSelectionModel().isEmpty()){
                 hts.setClientServices(null);
-                cs = "null";
+                hts.setEntryStream(null);          
             }
-            else{
-            ClientServices fcs = (ClientServices)testingEntryStream.getSelectionModel().getSelectedItem();
-             hts.setClientServices(fcs);
-             cs = hts.getClientServices().getCode().toString();
+            else{        
+             hts.setEntryStream(testingEntryStream.getSelectionModel().getSelectedItem().toString());
             }
             if(htsModel.getSelectionModel().isEmpty()){
                hts.sethTSModel(null);
@@ -354,82 +352,103 @@ public class HTSRegisterController implements Initializable {
            }
            
           
-           
-           hts.setOiArtNumber(artNumber.getText()); 
-           hts.setFirstName(firstName.getText());
-           hts.setLastName(lastName.getText());
-           hts.setAge(Integer.parseInt(age.getText()));
-           hts.setGender(fGender);
-           
-           if(conStatus.equals("Online")){
-          /*  District fDistrict = (District)district.getSelectionModel().getSelectedItem();
-            Facility fFacility = (Facility)facility.getSelectionModel().getSelectedItem();
-            
-           hts.setProvince((Province )province.getSelectionModel().getSelectedItem());
-           hts.setDistrict(fDistrict);
-           hts.setFacility(fFacility);
-           */
-           
-              hTSRegisterFormService.save(hts);  
-             
-              Alert alert = new Alert(Alert.AlertType.INFORMATION);
-              alert.setTitle("Notification");
-              alert.setHeaderText("Success");
-              alert.setContentText("HTS Register Form Saved Successfully");
-              alert.showAndWait();
-              clearFields();
-            }
-            else{
-                try {
-                    PlaceID placeID = new PlaceID();
-                  //  int provID = placeID.getProvinceId((String)province.getSelectionModel().getSelectedItem());
-                //    int disID = placeID.getDistrictId((String)district.getSelectionModel().getSelectedItem());
+                  PlaceID placeID = new PlaceID();
+                 
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-                  
-                    String query = "Insert Into htsregister_form(active, deleted, uuid, version, age, card_number,"
-                            + "date_of_initiation, entry_stream, final_result, first_name, gender, in_pre_art, initiated_on_art, last_name, m_date, m_time,"
-                            + "oi_art_number, reason_forhivtest, registered_in_pre_art, test, district, facility, province, date_client_registered_inart,"
-                            + "htsmodel, hiv_testing_referral_slip_number, hts_number, pregnant_or_lactating_woman, test_if_pregnant_or_lactating_woman)"
-                            + " Values('', '', '',"
-                            + " '0',"
-                            + " '"+Integer.parseInt(age.getText())+"',"
-                            + " '"+hts.getHtsNumber()+"',"
-                            + " '"+hts.getDateOfInitiation()+"',"
-                            + " '"+cs+"',"
-                            + " '"+fr+"',"
-                            + " '"+ firstName.getText()+"',"
-                            + " '"+hts.getGender().getCode()+"',"
-                            + " '"+pa+"',"
-                            + " '"+ia+"',"
-                            + " '"+lastName.getText()+"',"
-                            + " '"+hts.getmDate()+"',"
-                            + " '"+hts.getmTime()+"',"
-                            + " '"+hts.getOiArtNumber()+"',"
-                            + " '"+rhiv+"',"
-                            + " '"+hts.getRegisteredInPreArt()+"',"
-                            + " '"+ht+"',"
-                            + " '"+disID+"',"
-                            + " '"+facID+"',"
-                            + " '"+provID+"',"
-                            + " '',"
-                            + " '"+hm+"',"
-                            + " '"+hts.getHivTestingReferralSlipNumber()+"',"
-                            + " '"+hts.getHtsNumber()+"',"
-                            + " '"+lw+"',"
-                            + " '')";
-                    if(handle.execAction(query)){
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("HTS Register Form Saved Successfully");
-                        alert.showAndWait();
-                        clearFields();
+                    hts.setOiArtNumber(artNumber.getText()); 
+                    hts.setFirstName(firstName.getText());
+                    hts.setLastName(lastName.getText());
+                    hts.setAge(Integer.parseInt(age.getText()));
+                    hts.setGender(fGender);
+                    hts.setCreatedBy(user);
+                    hts.setModifiedBy(user);
+           
+           if(conStatus.equals("Online")){
+           
+                
+                saveP.setVisible(true);
+             Task<Void> tsave = new Task<Void>(){
+                    @Override
+                    protected Void call() throws Exception {
+                        hts.setFacility(facilityService.get(Long.valueOf(facID)));
+                        hts.setDistrict(districtService.get(disID));
+                        hts.setProvince(provinceService.get(provID));
+                        hTSRegisterFormService.save(hts); 
+                        return null;
                     }
-                } catch (SQLException ex) {
-                    Logger.getLogger(HTSRegisterController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                };
+                Thread thread = new Thread(tsave);
+                thread.setDaemon(true);
+                thread.start();  
+                  tsave.setOnSucceeded((WorkerStateEvent ev) -> {
+                      ev.consume();
+                  Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Success");
+                  alert.setContentText("HTS Register Form Saved Successfully");
+                  alert.showAndWait();
+                  saveP.setVisible(false);
+                  clearFields();
+              });
+              tsave.setOnFailed((WorkerStateEvent ev) -> {
+                  ev.consume();
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Error Encountered");
+                  alert.setContentText("Connection Error: Try Again");
+                  alert.showAndWait();
+                  saveP.setVisible(false);
+
+             });
+               
+             if(tsave.isDone()){
+                saveP.setVisible(false); 
+             }
+            }
+            else{
+               String query = "Insert Into htsregister_form(active, deleted, uuid, version, age, card_number,"
+                       + "date_of_initiation, entry_stream, final_result, first_name, gender, in_pre_art, initiated_on_art, last_name, m_date, m_time,"
+                       + "oi_art_number, reason_forhivtest, registered_in_pre_art, test, created_by, modified_by, district, facility, province, date_client_registered_inart,"
+                       + "htsmodel, hiv_testing_referral_slip_number, hts_number, pregnant_or_lactating_woman, test_if_pregnant_or_lactating_woman)"
+                       + " Values('', '', '',"
+                       + " '0',"
+                       + " '"+Integer.parseInt(age.getText())+"',"
+                       + " '"+hts.getHtsNumber()+"',"
+                       + " '"+hts.getDateOfInitiation()+"',"
+                       + " '"+hts.getEntryStream()+"',"
+                       + " '"+fr+"',"
+                       + " '"+ firstName.getText()+"',"
+                       + " '"+hts.getGender().getCode()+"',"
+                       + " '"+pa+"',"
+                       + " '"+ia+"',"
+                       + " '"+lastName.getText()+"',"
+                       + " '"+hts.getmDate()+"',"
+                       + " '"+hts.getmTime()+"',"
+                       + " '"+hts.getOiArtNumber()+"',"
+                       + " '"+rhiv+"',"
+                       + " '"+hts.getRegisteredInPreArt()+"',"
+                       + " '"+ht+"',"
+                       + " '"+user.getId()+"',"
+                       + " '"+user.getId()+"',"
+                       + " '"+disID+"',"
+                       + " '"+facID+"',"
+                       + " '"+provID+"',"
+                       + " '',"
+                       + " '"+hm+"',"
+                       + " '"+hts.getHivTestingReferralSlipNumber()+"',"
+                       + " '"+hts.getHtsNumber()+"',"
+                       + " '"+lw+"',"
+                       + " '')";
+               if(handle.execAction(query)){
+                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                   alert.setTitle("Notification");
+                   alert.setHeaderText("Success");
+                   alert.setContentText("HTS Register Form Saved Successfully");
+                   alert.showAndWait();
+                   clearFields();
+               }
                 
             }
            
@@ -448,15 +467,6 @@ public class HTSRegisterController implements Initializable {
         
        String errorMsg = "";
    
-       
-       if(!validate.validateNumber(age.getText())){
-           age.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
-           errorMsg += "Invalid Age!\n";
-       }
-       if(Integer.parseInt(age.getText())>=100 | age.getText().isEmpty()){
-           age.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
-           errorMsg += "Invalid Age[0-above]!\n";
-       }
        if(facility.getSelectionModel().isEmpty()){
            facility.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Select Facility\n";         
@@ -465,10 +475,26 @@ public class HTSRegisterController implements Initializable {
           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "First Name is required\n";
        }
+       if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
+       }
        if(lastName.getText() == null || lastName.getText().isEmpty()){
            lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Last Name is required\n";
        }
+       if(!validate.validateNumber(age.getText())){
+           age.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid Age!\n";
+       }
+//     if(Integer.parseInt(age.getText().isEmpty() ? 0 : age.getText())>=100 ){
+ //          age.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+ //          errorMsg += "Invalid Age[0-above]!\n";
+  //    }
        if(gender.getSelectionModel().isEmpty()){
            gender.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Gender is required\n";

@@ -23,6 +23,7 @@ import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.utils.DateFunctions;
+import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -144,7 +145,7 @@ public class EditDefaulterTrackingFormController implements Initializable {
             this.id = id;
             try {
             SQLiteQueries liteQueries = new SQLiteQueries();
-            List<String> list = liteQueries.getFacility();
+            List<String> list = liteQueries.getFacility(user.getId());
             fac = FXCollections.observableArrayList(list);
             facility.setItems(fac);
         } catch (SQLException ex) {
@@ -174,18 +175,18 @@ public class EditDefaulterTrackingFormController implements Initializable {
         visitOutcome.getSelectionModel().select(dtfById.getVisitOutcome());
         finalOutcome.getSelectionModel().select(dtfById.getFinalOutcome());
         artNumber.setText(dtfById.getoIARTNumber());
-        dateArtInitiation.setValue(DateFunctions.localDate(dtfById.getDateArtInitiation()));
-        dateAppDeemedDefaul.setValue(DateFunctions.localDate(dtfById.getAppointmentDeemedDefaulter()));
-        dateReview.setValue(DateFunctions.localDate(dtfById.getReviewDate()));
-        dateOfCall1.setValue(DateFunctions.localDate(dtfById.getDateOfCall1()));
-        dateOfCall2.setValue(DateFunctions.localDate(dtfById.getDateOfCall2()));
-        dateOfCall3.setValue(DateFunctions.localDate(dtfById.getDateOfCall3()));
-        date1AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare1()));
-        date2AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare2()));
-        date3AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare3()));
-        dateVisitDone.setValue(DateFunctions.localDate(dtfById.getDateOfVisit()));
-        dateVisit.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare()));
-        dateClientVisited.setValue(DateFunctions.localDate(dtfById.getDateClientVisitedFacility()));
+        dateArtInitiation.setValue(dtfById.getDateArtInitiation()== null ? null : LocalDate.parse(dtfById.getDateArtInitiation().toString()));
+        dateAppDeemedDefaul.setValue(dtfById.getAppointmentDeemedDefaulter() == null ? null : LocalDate.parse(dtfById.getAppointmentDeemedDefaulter().toString()));
+        dateReview.setValue(dtfById.getReviewDate() == null ? null : LocalDate.parse(dtfById.getReviewDate().toString()));
+        dateOfCall1.setValue(dtfById.getDateOfCall1() == null ? null : LocalDate.parse(dtfById.getDateOfCall1().toString()));
+        dateOfCall2.setValue(dtfById.getDateOfCall2() == null ? null : LocalDate.parse(dtfById.getDateOfCall2().toString()));
+        dateOfCall3.setValue(dtfById.getDateOfCall3() == null ? null : LocalDate.parse(dtfById.getDateOfCall3().toString()));
+        date1AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare1() == null ? null : LocalDate.parse(dtfById.getAppointmentDateIfLinkedToCare1().toString()));
+        date2AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare2() == null ? null : LocalDate.parse(dtfById.getAppointmentDateIfLinkedToCare2().toString()));
+        date3AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare3() == null ? null : LocalDate.parse(dtfById.getAppointmentDateIfLinkedToCare3().toString()));
+        dateVisitDone.setValue(dtfById.getDateOfVisit() == null ? null : LocalDate.parse(dtfById.getDateOfVisit().toString()));
+        dateVisit.setValue(dtfById.getAppointmentDateIfLinkedToCare() == null ? null : LocalDate.parse(dtfById.getAppointmentDateIfLinkedToCare().toString()));
+        dateClientVisited.setValue(dtfById.getDateClientVisitedFacility() == null ? null : LocalDate.parse(dtfById.getDateClientVisitedFacility().toString()));
         
     }
       public void editOffline(Long id) throws SQLException, ParseException{
@@ -203,30 +204,31 @@ public class EditDefaulterTrackingFormController implements Initializable {
         visitOutcome.getSelectionModel().select(dtfById.getVisitOutcome());
         finalOutcome.getSelectionModel().select(dtfById.getFinalOutcome());
         artNumber.setText(dtfById.getoIARTNumber());
-        dateArtInitiation.setValue(DateFunctions.localDate(dtfById.getDateArtInitiation()));
-        dateAppDeemedDefaul.setValue(DateFunctions.localDate(dtfById.getAppointmentDeemedDefaulter()));
-        dateReview.setValue(DateFunctions.localDate(dtfById.getReviewDate()));
-        dateOfCall1.setValue(DateFunctions.localDate(dtfById.getDateOfCall1()));
-        dateOfCall2.setValue(DateFunctions.localDate(dtfById.getDateOfCall2()));
-        dateOfCall3.setValue(DateFunctions.localDate(dtfById.getDateOfCall3()));
-        date1AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare1()));
-        date2AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare2()));
-        date3AppDateIfFound.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare3()));
-        dateVisitDone.setValue(DateFunctions.localDate(dtfById.getDateOfVisit()));
-        dateVisit.setValue(DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare()));
-        dateClientVisited.setValue(DateFunctions.localDate(dtfById.getDateClientVisitedFacility()));
+        dateArtInitiation.setValue(dtfById.getDateArtInitiation() == null ? null : DateFunctions.localDate(dtfById.getDateArtInitiation()));
+        dateAppDeemedDefaul.setValue(dtfById.getAppointmentDeemedDefaulter() == null ? null : DateFunctions.localDate(dtfById.getAppointmentDeemedDefaulter()));
+        dateReview.setValue(dtfById.getReviewDate() == null ? null : DateFunctions.localDate(dtfById.getReviewDate()));
+        dateOfCall1.setValue(dtfById.getDateOfCall1() == null ? null : DateFunctions.localDate(dtfById.getDateOfCall1()));
+        dateOfCall2.setValue(dtfById.getDateOfCall2() == null ? null : DateFunctions.localDate(dtfById.getDateOfCall2()));
+        dateOfCall3.setValue(dtfById.getDateOfCall3() == null ? null : DateFunctions.localDate(dtfById.getDateOfCall3()));
+        date1AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare1() == null ? null : DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare1()));
+        date2AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare2() == null ? null : DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare2()));
+        date3AppDateIfFound.setValue(dtfById.getAppointmentDateIfLinkedToCare3() == null ? null : DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare3()));
+        dateVisitDone.setValue(dtfById.getDateOfVisit() == null ? null : DateFunctions.localDate(dtfById.getDateOfVisit()));
+        dateVisit.setValue(dtfById.getAppointmentDateIfLinkedToCare() == null ? null : DateFunctions.localDate(dtfById.getAppointmentDateIfLinkedToCare()));
+        dateClientVisited.setValue(dtfById.getDateClientVisitedFacility() == null ? null : DateFunctions.localDate(dtfById.getDateClientVisitedFacility()));
         
         
      }
     
     
     @FXML
-    private void updateDtf(ActionEvent event){
+    private void updateDtf(ActionEvent event) throws SQLException{
         updateDft(id, conStatus);
     }
      public boolean isInputValid(){
        String errorMsg = "";
-       
+       Validate validate  = new Validate();
+               
        if(facility.getSelectionModel().isEmpty()){
            facility.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Select Facility\n";         
@@ -234,6 +236,14 @@ public class EditDefaulterTrackingFormController implements Initializable {
        if(firstName.getText() == null || firstName.getText().isEmpty()){
           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "First Name is required\n";
+       }
+       if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
        }
        if(lastName.getText() == null || lastName.getText().isEmpty()){
            lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
@@ -266,7 +276,7 @@ public class EditDefaulterTrackingFormController implements Initializable {
         finalOutcome.setItems(callOutComeValues);
     }
     DefaulterTrackingForm dtf;
-    public void updateDft(Long id, String conStatus){
+    public void updateDft(Long id, String conStatus) throws SQLException{
         
         if(conStatus.equals("Online")){
             dtf = defaulterTrackingFormService.get(id);
@@ -310,7 +320,7 @@ public class EditDefaulterTrackingFormController implements Initializable {
           else{
               LocalDate pickerD = dateAppDeemedDefaul.getValue();
               Date dee = Date.from(pickerD.atStartOfDay(ZoneId.systemDefault()).toInstant());
-              dtf.setDateArtInitiation(dee);
+              dtf.setAppointmentDeemedDefaulter(dee);
           }
           if(dateOfCall1.getValue() == null){
               dtf.setDateOfCall1(null);
@@ -421,9 +431,14 @@ public class EditDefaulterTrackingFormController implements Initializable {
                  fo = dtf.getFinalOutcome().getCode();
             }
           
-         
-          
+                  PlaceID placeID = new PlaceID();              
+                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
+                  long provID = placeID.getProvinceFromDistrict(disID);
+                  int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());        
           if(conStatus.equals("Online")){
+                dtf.setFacility(facilityService.get(Long.valueOf(facID)));
+                dtf.setDistrict(districtService.get(disID));
+                dtf.setProvince(provinceService.get(provID));
             defaulterTrackingFormService.save(dtf);
            Alert alert = new Alert(Alert.AlertType.INFORMATION);
            alert.setTitle("Notification");
@@ -432,52 +447,41 @@ public class EditDefaulterTrackingFormController implements Initializable {
            alert.showAndWait();
           }
           else{
-              try {
-                  PlaceID placeID = new PlaceID();
-                  //int provID = placeID.getProvinceId((String)province.getSelectionModel().getSelectedItem());
-                  //int disID = placeID.getDistrictId((String)district.getSelectionModel().getSelectedItem());
-                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
-                  long provID = placeID.getProvinceFromDistrict(disID);
-                  int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-                  String query = "Update defaulter_tracking_form set "
-                          + "appointment_date_if_linked_back_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"
-                          + "appointment_date_if_linked_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"      
-                          + "appointment_date_if_linked_to_care1= '"+dtf.getAppointmentDateIfLinkedToCare1()+"',"
-                          + "appointment_deemed_defaulter = '"+dtf.getAppointmentDeemedDefaulter()+"',"
-                          + "call1outcome = '"+call1+"',"
-                          + "call2outcome = '"+call2+"',"
-                          + "call3outcome = '"+call3+"',"
-                          + "contact_details = '"+dtf.getContactDetails()+"', "
-                          + "date_art_initiation = '"+dtf.getDateArtInitiation()+"',"
-                          + "date_client_visited_facility = '"+dtf.getDateClientVisitedFacility()+"',"
-                          + "date_of_call1 = '"+dtf.getDateOfCall1()+"',"
-                          + "date_of_call2 = '"+dtf.getDateOfCall2()+"',"
-                          + "date_of_call3 = '"+dtf.getDateOfCall3()+"',"
-                          + "date_of_visit = '"+dtf.getDateOfVisit()+"',"
-                          + "date_visit_done = '"+dtf.getDateOfVisit()+"',"
-                          + "first_name_of_index = '"+dtf.getFirstNameOfIndex()+"',"
-                          + "last_name_of_index = '"+dtf.getLastNameOfIndex()+"',"
-                          + "oiartnumber = '"+dtf.getoIARTNumber()+"',"
-                          + "physical_address = '"+dtf.getPhysicalAddress()+"',"
-                          + "review_date = '"+dtf.getReviewDate()+"',"
-                          + " visit_done_outcome = '"+vist+"',"
-                          + "visit_outcome = '"+vist+"',"
-                          + " district = '"+disID+"',"
-                          + "facility = '"+facID +"',"
-                          + " province = '"+provID+"',"
-                          + "appointment_date_if_linked_to_care2 = '"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
-                          + "appointment_date_if_linked_to_care3 = '"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
-                          + "final_outcome = '"+fo+"' WHERE id = '"+id+"'";
-                  
-                         if(handle.execAction(query)){
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("Defaulter Tracking Form Updated Successfully");
-                        alert.showAndWait();
-                    }
-              } catch (SQLException ex) {
-                  Logger.getLogger(EditDefaulterTrackingFormController.class.getName()).log(Level.SEVERE, null, ex);
+              String query = "Update defaulter_tracking_form set "
+                      + "appointment_date_if_linked_back_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"
+                      + "appointment_date_if_linked_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"
+                      + "appointment_date_if_linked_to_care1= '"+dtf.getAppointmentDateIfLinkedToCare1()+"',"
+                      + "appointment_deemed_defaulter = '"+dtf.getAppointmentDeemedDefaulter()+"',"
+                      + "call1outcome = '"+call1+"',"
+                      + "call2outcome = '"+call2+"',"
+                      + "call3outcome = '"+call3+"',"
+                      + "contact_details = '"+dtf.getContactDetails()+"', "
+                      + "date_art_initiation = '"+dtf.getDateArtInitiation()+"',"
+                      + "date_client_visited_facility = '"+dtf.getDateClientVisitedFacility()+"',"
+                      + "date_of_call1 = '"+dtf.getDateOfCall1()+"',"
+                      + "date_of_call2 = '"+dtf.getDateOfCall2()+"',"
+                      + "date_of_call3 = '"+dtf.getDateOfCall3()+"',"
+                      + "date_of_visit = '"+dtf.getDateOfVisit()+"',"
+                      + "date_visit_done = '"+dtf.getDateOfVisit()+"',"
+                      + "first_name_of_index = '"+dtf.getFirstNameOfIndex()+"',"
+                      + "last_name_of_index = '"+dtf.getLastNameOfIndex()+"',"
+                      + "oiartnumber = '"+dtf.getoIARTNumber()+"',"
+                      + "physical_address = '"+dtf.getPhysicalAddress()+"',"
+                      + "review_date = '"+dtf.getReviewDate()+"',"
+                      + " visit_done_outcome = '"+vist+"',"
+                      + "visit_outcome = '"+vist+"',"
+                      + " district = '"+disID+"',"
+                      + "facility = '"+facID +"',"
+                      + " province = '"+provID+"',"
+                      + "appointment_date_if_linked_to_care2 = '"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
+                      + "appointment_date_if_linked_to_care3 = '"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
+                      + "final_outcome = '"+fo+"' WHERE id = '"+id+"'";
+              if(handle.execAction(query)){
+                  Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Success");
+                  alert.setContentText("Defaulter Tracking Form Updated Successfully");
+                  alert.showAndWait();
               }
           }
         }

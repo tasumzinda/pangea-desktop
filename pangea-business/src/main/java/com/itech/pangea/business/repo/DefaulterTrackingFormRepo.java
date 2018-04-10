@@ -21,6 +21,7 @@ import com.itech.pangea.business.domain.DefaulterTrackingForm;
 import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.Province;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.CallOutcome;
 
 /**
@@ -46,4 +47,6 @@ public interface DefaulterTrackingFormRepo extends AbstractRepo<DefaulterTrackin
     public Integer countByDistrictAndFinalOutcome(District district, CallOutcome callOutcome);
     public Integer countByFacilityAndFinalOutcome(Facility facility, CallOutcome callOutcome);
     public Integer countByFinalOutcome(CallOutcome callOutcome);
+    
+    public List<DefaulterTrackingForm> findByCreatedBy(User createdBy);
 }

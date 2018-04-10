@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXProgressBar?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -11,8 +12,13 @@
 
 <AnchorPane id="AnchorPane" prefHeight="626.0" prefWidth="1152.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.DefaulterListController">
    <children>
-      <VBox prefHeight="626.0" prefWidth="1152.0">
+      <VBox prefHeight="626.0" prefWidth="1152.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
+            <AnchorPane prefHeight="0.0" prefWidth="1152.0">
+               <children>
+                  <JFXProgressBar fx:id="loadingBar" prefHeight="4.0" prefWidth="1152.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
             <HBox alignment="CENTER" prefHeight="34.0" prefWidth="1152.0">
                <children>
                   <Label text="Defaulter Tracking Form List">

@@ -97,13 +97,13 @@ public class SaveSqlite {
        }
         }
     }*/
-    public void saveFacility(Facility f) throws SQLException{
+    public void saveFacility(Facility f, long userid) throws SQLException{
             if(!checkFacilityExists(f.getId())){
             Connection con = handler.connect();
             String query = "Insert into Facility(fid, active, date_created, date_modified, deleted, uuid, version, description,"
                     + "name, facility_code, facility_location, facility_type, district,"
-                    + "contact_email, contact_mobile_number, contact_name, facility_ownership, datim_name, dhis_name, latitude, longitude) "
-                    + "Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    + "contact_email, contact_mobile_number, contact_name, facility_ownership, datim_name, dhis_name, latitude, longitude, user_id) "
+                    + "Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             
              try {
             PreparedStatement ps = con.prepareStatement(query);
@@ -130,6 +130,7 @@ public class SaveSqlite {
             ps.setString(19, f.getDhisName() == null ? "" : f.getDhisName());
             ps.setDouble(20, f.getLatitude() == null ? 0.0 : f.getLatitude());
             ps.setDouble(21, f.getLongitude()==null ? 0.0 : f.getLongitude());
+            ps.setLong(22, userid);
             
             ps.executeUpdate();
         } catch (SQLException ex) {

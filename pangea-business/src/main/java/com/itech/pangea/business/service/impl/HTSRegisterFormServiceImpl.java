@@ -26,6 +26,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import com.itech.pangea.business.domain.HTSRegisterForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.repo.HTSRegisterFormRepo;
 import com.itech.pangea.business.service.HTSRegisterFormService;
 import com.itech.pangea.business.service.UserService;
@@ -56,10 +57,10 @@ public class HTSRegisterFormServiceImpl implements HTSRegisterFormService{
     public HTSRegisterForm save(HTSRegisterForm t) {
         if (t.getId() == null) {
             t.setDateCreated(new Date());
-            t.setCreatedBy(userService.getCurrentUser());
+         //   t.setCreatedBy(userService.getCurrentUser());
             return hTSRegisterFormRepo.save(t);
         }
-        t.setModifiedBy(userService.getCurrentUser());
+      //  t.setModifiedBy(userService.getCurrentUser());
         t.setDateModified(new Date());
         return hTSRegisterFormRepo.save(t);
     }
@@ -139,5 +140,10 @@ public class HTSRegisterFormServiceImpl implements HTSRegisterFormService{
         else{
             return hTSRegisterFormRepo.countByFinalResult(dto.getHivResult());
         }
+    }
+
+    @Override
+    public List<HTSRegisterForm> findByUser(User createdBy) {
+        return hTSRegisterFormRepo.findByCreatedBy(createdBy);
     }
 }

@@ -5,6 +5,7 @@ package com.itech.pangea.client;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
 import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
@@ -13,6 +14,7 @@ import com.itech.pangea.business.domain.IndexCaseTestingForm;
 import com.itech.pangea.business.domain.Mentor;
 import com.itech.pangea.business.domain.util.MentorRole;
 import com.itech.pangea.business.domain.User;
+import com.itech.pangea.business.service.ContactService;
 import com.itech.pangea.business.service.DefaulterTrackingFormService;
 import com.itech.pangea.business.service.DistrictService;
 import com.itech.pangea.business.service.FacilityService;
@@ -20,12 +22,15 @@ import com.itech.pangea.business.service.HTSRegisterFormService;
 import com.itech.pangea.business.service.IndexCaseTestingFormService;
 import com.itech.pangea.business.service.MentorService;
 import com.itech.pangea.business.service.ProvinceService;
+import com.itech.pangea.business.service.UserService;
 import com.jfoenix.controls.JFXProgressBar;
 import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -34,14 +39,18 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -99,21 +108,27 @@ public class HomeController implements Initializable {
     private FacilityService facilityService;
     @Resource
     private ProvinceService provinceService;
+    @Resource
+    private UserService userService;
+    @Resource
+    private ContactService contactService;
 
     String conStatus;
-
-    public void setUserNCtx(User user, AnnotationConfigApplicationContext acac, String conStatus) throws SQLException, ParseException {
+    private static String conStat;
+    private static Boolean lOff;
+    private static Boolean lOn;
+    Mentor mentor;
+    public void setUserNCtx(User user, Mentor mentor, AnnotationConfigApplicationContext acac, String conStatus) throws SQLException, ParseException {
         this.user = user;
+        this.mentor = mentor;
         this.acac = acac;
         this.conStatus = conStatus;
         
 
         menuBtn.setText(user.getDisplayName());
         if (conStatus.equals("Online")) {
-            onLine.setVisible(true);
-            sendHtsForm(conStatus);
-            sendDtfForm(conStatus);
-            sendIctForm(conStatus);
+            onLine.setVisible(true);           
+            processSendDataTransction(conStatus);           
         } else {
             offLine.setVisible(true);
         }
@@ -178,7 +193,7 @@ public class HomeController implements Initializable {
             FXMLLoader loader = acac.getBean(FXMLLoaderProvider.class).getLoader("/fxml/HtSTable.fxml");
             AnchorPane root = loader.load();
             HtSTableController htsTableController = (HtSTableController) loader.getController();
-            htsTableController.setUserNCtx(user, acac, conStatus);
+            htsTableController.setUserNCtx(user, mentor, acac, conStatus);
             mainLayout.setCenter(root);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -219,7 +234,7 @@ public class HomeController implements Initializable {
 
     @FXML
     private void logout(ActionEvent event) {
-        // ((Node)(event.getSource())).getScene().getWindow().hide();
+       conStatus();
         Stage stage = new Stage();
         Stage thisStage = (Stage) menuBtn.getScene().getWindow();
         try {
@@ -227,9 +242,11 @@ public class HomeController implements Initializable {
             Parent root = loader.load();
 
             LoginController loginController = (LoginController) loader.getController();
-            loginController.setAcac(acac);
+            loginController.setAcac(acac, lOn, lOff, conStat);
+           // loginController.setAcac(acac);
             Scene scene = new Scene(root);
             stage.setTitle("ITECH");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/Images/download.jpg")));
             stage.setScene(scene);
             stage.show();
             thisStage.close();
@@ -253,46 +270,7 @@ public class HomeController implements Initializable {
 
     }
 
-    /*  public void loadFxml(String url, HTSRegisterController cl){ 
-        fxmlProgressBar.setVisible(true);
-        
-        try {
-            FXMLLoader loader = acac.getBean(FXMLLoaderProvider.class).getLoader(url);
-            AnchorPane root = loader.load();
-            mainLayout.setCenter(root);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        fxmlProgressBar.setVisible(false);
-    }
-     */
- /*
-    public void loadFxml(String url){
-        fxmlProgressBar.setVisible(true);
-        
-        Task<AnnotationConfigApplicationContext> task = new Task<AnnotationConfigApplicationContext>(){
-            
-            @Override
-            protected AnnotationConfigApplicationContext call() throws Exception {
-                return new AnnotationConfigApplicationContext(SpringConfig.class);
-                }
-        };
-        task.setOnSucceeded((WorkerStateEvent e) -> {
-            fxmlProgressBar.setVisible(false);
-            try {
-                AnnotationConfigApplicationContext ctx = task.getValue();
-                FXMLLoader loader = ctx.getBean(FXMLLoaderProvider.class).getLoader(url);
-                AnchorPane root = loader.load();
-                mainLayout.setCenter(root);
-            } catch (IOException ex) {
-                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-         Thread thread = new Thread(task);
-         thread.setDaemon(true);       
-         thread.start();
-    }
-     */
+   
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         handler = SqliteDatabaseHandler.getInstance();
@@ -364,15 +342,82 @@ public class HomeController implements Initializable {
                 ict.setDistrict(districtService.get(ict.getDistrict().getId()));
                 ict.setFacility(facilityService.get(ict.getFacility().getId()));  
                 ict.setProvince(provinceService.get(ict.getProvince().getId()));
-                indexCaseTestingFormService.save(ict);
-            }
-            String query = "Delete From index_case_testing_form";
-            if (handler.execAction(query)) {
-                notification.setVisible(true);
-            }
+                ict.setCreatedBy(userService.get(ict.getCreatedBy().getId()));
+                ict.setModifiedBy(userService.get(ict.getModifiedBy().getId()));
+                IndexCaseTestingForm idxForContact = indexCaseTestingFormService.save(ict);
+                List<Long> listC = sendData.allContactsOfThisIndex(id);               
+                if(!listC.isEmpty()){
+                    for(Long idForContact : listC){
+                        
+                        Contact contact;
+                        contact = sendData.contactFormQuery(idForContact, id);
+                        contact.setCreatedBy(userService.get(ict.getCreatedBy().getId()));
+                        contact.setModifiedBy(userService.get(ict.getModifiedBy().getId()));
+                        contact.setIndexCaseTestingForm(idxForContact);
+                        contactService.save(contact);                      
+                       String qu = "Delete from contact where id='"+idForContact+"'";
+                        handler.execAction(qu);
+                    }
+                }
+              String query = "Delete From index_case_testing_form where id='"+id+"'"; 
+              
+              handler.execAction(query);
+            }      
+                notification.setVisible(true);         
         }
     }
-    
-    
+    public void conStatus() {
+       try {
+           Class.forName("com.mysql.jdbc.Driver").newInstance();
+            String jdbcUrl = "jdbc:mysql://localhost:3306/itechdb";
+            String usern = "root";
+            String pass ="";
+           //String usern = "itechadmin";
+           //String pass = "itech2017";
+           Connection con = DriverManager.getConnection(jdbcUrl, usern, pass);
+           if (con != null) {
+               
+               lOn = true;
+               lOff = false;
+               conStat = "Online";
+               
+           } else if (con == null) {
+               lOn = false;
+               lOff = true;
+               conStat = "Offline";
+               
+           }
+       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException ex) {
+               lOn = false;
+               lOff = true;
+               conStat = "Offline";
+           Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+       } 
+    } 
+    public void processSendDataTransction(String st){
+        Task<Void> taskProcess = new Task<Void>(){
+            @Override
+            protected Void call() throws Exception {
+                sendHtsForm(st);
+                sendDtfForm(st);
+                sendIctForm(st);
+                return null;
+            }
+        
+         };
+        taskProcess.setOnSucceeded((WorkerStateEvent e) -> {
+            
+        });
+        taskProcess.setOnFailed((WorkerStateEvent e) -> {
+                  Alert alert = new Alert(Alert.AlertType.ERROR);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Error Encountered");
+                  alert.setContentText("Failed to Update:\nCheck Internet Connection");
+                  alert.showAndWait();
+        });
+        Thread thread = new Thread(taskProcess);
+        thread.setDaemon(true);
+        thread.start();
+    }
 
 }

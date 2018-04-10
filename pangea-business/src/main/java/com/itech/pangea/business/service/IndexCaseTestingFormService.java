@@ -17,11 +17,13 @@
 package com.itech.pangea.business.service;
 
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
+import com.itech.pangea.business.domain.User;
+import java.util.List;
 
 /**
  *
  * @author Tasu Muzinda
  */
 public interface IndexCaseTestingFormService extends GenericService<IndexCaseTestingForm>{
-   
+   public List<IndexCaseTestingForm> findByUser(User createdBy);
 }

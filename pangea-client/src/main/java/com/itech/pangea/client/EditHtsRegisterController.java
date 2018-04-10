@@ -30,6 +30,8 @@ import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.utils.DateFunctions;
+import com.itech.pangea.utils.StringUtilis;
+import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -125,13 +128,13 @@ public class EditHtsRegisterController implements Initializable {
     @Resource
     private HTSRegisterFormService hTSRegisterFormService;
     HTSRegisterForm htsById = new HTSRegisterForm();
-    ObservableList<Gender> sex = FXCollections.observableArrayList(Gender.getItems());
-    ObservableList<ReasonForHIVTest> res = FXCollections.observableArrayList(ReasonForHIVTest.values());
-    ObservableList<HIVResult> hivRes = FXCollections.observableArrayList(HIVResult.values());
-    ObservableList<HTSModel> htsM = FXCollections.observableArrayList(HTSModel.values());
-    ObservableList<Test> tests = FXCollections.observableArrayList(Test.values());
-    ObservableList<YesNo> yesno = FXCollections.observableArrayList(YesNo.values());
-    ObservableList<ClientServices> clientSer = FXCollections.observableArrayList(ClientServices.values());
+    ObservableList sex = FXCollections.observableArrayList(Gender.getItems());
+    ObservableList res = FXCollections.observableArrayList(ReasonForHIVTest.values());
+    ObservableList hivRes = FXCollections.observableArrayList(HIVResult.values());
+    ObservableList htsM = FXCollections.observableArrayList(HTSModel.values());
+    ObservableList tests = FXCollections.observableArrayList(Test.values());
+    ObservableList yesno = FXCollections.observableArrayList(YesNo.values());
+    ObservableList clientSer = FXCollections.observableArrayList(ClientServices.values());
     ObservableList prov;
     ObservableList dis;
     ObservableList fac;
@@ -143,15 +146,26 @@ public class EditHtsRegisterController implements Initializable {
     String conStatus;
     ResultSet rs;
 
-    public void setUserNCtx(User user, AnnotationConfigApplicationContext acac, Long id, String conStatus) {
-        
+    public void setUserNCtx(User user, AnnotationConfigApplicationContext acac, Long id, String conStatus){
+       
             this.user = user;
             this.acac = acac;
             this.id = id;
             this.conStatus = conStatus;
+            
+        gender.setItems(sex);
+        reasonForHivTesting.setItems(res);
+        finalResult.setItems(hivRes);
+        htsModel.setItems(htsM);
+        testReTest.setItems(tests);
+        lactingWoman.setItems(yesno);
+        testingEntryStream.setItems(clientSer);
+        inPreArt.setItems(yesno);
+        initiatedArt.setItems(yesno);
+        
             try {
             SQLiteQueries liteQueries = new SQLiteQueries();
-            List<String> list = liteQueries.getFacility();
+            List<String> list = liteQueries.getFacility(user.getId());
             fac = FXCollections.observableArrayList(list);
             facility.setItems(fac);
         } catch (SQLException ex) {
@@ -172,50 +186,73 @@ public class EditHtsRegisterController implements Initializable {
     public void  editOnline(Long id){
         htsById = hTSRegisterFormService.get(id);
        
-        facility.getSelectionModel().select(htsById.getFacility());
+         String entryStream;
+        if(htsById.getEntryStream()== null || htsById.getEntryStream().equals("null")){
+            entryStream = "OTHER"; 
+        }
+        else{
+            entryStream = htsById.getEntryStream();
+        }
+        int i = ClientServices.valueOf(entryStream).getCode();
+        int entry = i-1;
+        facility.getSelectionModel().select(htsById.getFacility() == null ? "" : htsById.getFacility().toString());
         firstName.setText(htsById.getFirstName());
         lastName.setText(htsById.getLastName());
         gender.getSelectionModel().select(htsById.getGender());
         age.setText(htsById.getAge().toString());
+        testingEntryStream.getSelectionModel().select(entry);
         hivTestingSlipNum.setText(htsById.getHivTestingReferralSlipNumber());
         htsNumber.setText(htsById.getHtsNumber());
-        time.setValue(htsById.getmTime()== null ? null : LocalTime.parse(htsById.getmTime()));
+        time.setValue(htsById.getmTime()== null ? null : LocalTime.parse(StringUtilis.timeString(htsById.getmTime())));
+        date.setValue(htsById.getmDate() == null ? null : LocalDate.parse(htsById.getmDate().toString()));
+        dateInitiatedArt.setValue(htsById.getDateOfInitiation() == null ? null : LocalDate.parse(htsById.getDateOfInitiation().toString()));
+        dateRegisteredInPreArt.setValue(htsById.getRegisteredInPreArt() == null ? null : LocalDate.parse(htsById.getRegisteredInPreArt().toString()));
         
-        //date.setValue(DateFunctions.localDate(htsById.getmDate()));
-        //time.setValue(LocalTime.parse(htsById.getmTime()));
-        date.setValue(LocalDate.parse(htsById.getmDate().toString()));
-       
         htsModel.getSelectionModel().select(htsById.gethTSModel());
         reasonForHivTesting.getSelectionModel().select(htsById.getReasonForHIVTest());
         lactingWoman.getSelectionModel().select(htsById.getPregnantOrLactatingWoman());
-        testReTest.getSelectionModel().select(htsById.getTest());
-        testingEntryStream.getSelectionModel().select(htsById.getEntryStream());
+        testReTest.getSelectionModel().select(htsById.getTest());     
         other.setText(htsById.getOther1());
         finalResult.getSelectionModel().select(htsById.getFinalResult());
         inPreArt.getSelectionModel().select(htsById.getInPreArt());
         initiatedArt.getSelectionModel().select(htsById.getInitiatedOnArt());
         artNumber.setText(htsById.getOiArtNumber());
-       /* if(htsById.getFinalResult()!=null & htsById.getFinalResult().toString().equalsIgnoreCase("Positive")){
+        if (testingEntryStream.getSelectionModel().isSelected(2)) {
+            other.setVisible(true);
+            other.setDisable(false);
+        } 
+        if (finalResult.getSelectionModel().isSelected(0)) {
             inPreArt.setVisible(true);
             dateRegisteredInPreArt.setVisible(true);
             initiatedArt.setVisible(true);
-            dateInitiatedArt.setVisible(true);
+            dateInitiatedArt.setVisible(true);     
             artNumber.setVisible(true);
+        } 
+        if (inPreArt.getSelectionModel().isSelected(0)) {
+            dateRegisteredInPreArt.setDisable(false);
         }
-        else{
-            
+        if (initiatedArt.getSelectionModel().isSelected(0)) {
+            dateInitiatedArt.setDisable(false);
         }
-        if(htsById.getEntryStream() != null & htsById.getEntryStream().equals("OTHER")){
-            other.setVisible(true);
-        }
-        else{}
         
-        */
+        
     }
     
     public void editOffline(Long id) throws SQLException, ParseException{
         SendData sd = new SendData();
         htsById = sd.htsFormQuery(id);
+        
+        
+        String entryStream;
+        if(htsById.getEntryStream().equals("null")){
+            entryStream = "OTHER"; 
+        }
+        else{
+            entryStream = htsById.getEntryStream();
+        }
+        int i = ClientServices.valueOf(entryStream).getCode();
+        int entry = i-1; 
+        testingEntryStream.getSelectionModel().select(entry);
         
         facility.getSelectionModel().select(htsById.getFacility().toString());
         firstName.setText(htsById.getFirstName());
@@ -224,34 +261,42 @@ public class EditHtsRegisterController implements Initializable {
         age.setText(htsById.getAge().toString());
         hivTestingSlipNum.setText(htsById.getHivTestingReferralSlipNumber());
         htsNumber.setText(htsById.getHtsNumber());
-        time.setValue(htsById.getmTime()== null ? null : LocalTime.parse(htsById.getmTime()));
-        
-        date.setValue(DateFunctions.localDate(htsById.getmDate()));
+        time.setValue(htsById.getmTime()== null ? null : LocalTime.parse(htsById.getmTime()));        
+        date.setValue(htsById.getmDate() == null ? null : DateFunctions.localDate(htsById.getmDate()));
+        dateInitiatedArt.setValue(htsById.getDateOfInitiation() == null ? null : DateFunctions.localDate(htsById.getDateOfInitiation()));
+        dateRegisteredInPreArt.setValue(htsById.getRegisteredInPreArt() == null ? null : DateFunctions.localDate(htsById.getRegisteredInPreArt()));
        
         htsModel.getSelectionModel().select(htsById.gethTSModel());
         reasonForHivTesting.getSelectionModel().select(htsById.getReasonForHIVTest());
         lactingWoman.getSelectionModel().select(htsById.getPregnantOrLactatingWoman());
         testReTest.getSelectionModel().select(htsById.getTest());
-        testingEntryStream.getSelectionModel().select(htsById.getEntryStream());
+       
         other.setText(htsById.getOther1());
         finalResult.getSelectionModel().select(htsById.getFinalResult());
         inPreArt.getSelectionModel().select(htsById.getInPreArt());
         initiatedArt.getSelectionModel().select(htsById.getInitiatedOnArt());
         artNumber.setText(htsById.getOiArtNumber());
-        if(htsById.getFinalResult()!=null & htsById.getFinalResult().toString().equalsIgnoreCase("Positive")){
+        
+        
+        
+       
+        if (testingEntryStream.getSelectionModel().isSelected(2)) {
+            other.setVisible(true);
+            other.setDisable(false);
+        } 
+        if (finalResult.getSelectionModel().isSelected(0)) {
             inPreArt.setVisible(true);
             dateRegisteredInPreArt.setVisible(true);
             initiatedArt.setVisible(true);
-            dateInitiatedArt.setVisible(true);
+            dateInitiatedArt.setVisible(true);     
             artNumber.setVisible(true);
+        } 
+        if (inPreArt.getSelectionModel().isSelected(0)) {
+            dateRegisteredInPreArt.setDisable(false);
         }
-        else{
-            
+        if (initiatedArt.getSelectionModel().isSelected(0)) {
+            dateInitiatedArt.setDisable(false);
         }
-        if(htsById.getEntryStream() != null & htsById.getEntryStream().equals("OTHER")){
-            other.setVisible(true);
-        }
-        else{}
     }
     @FXML
      private void closeScreen(ActionEvent e){
@@ -269,11 +314,16 @@ public class EditHtsRegisterController implements Initializable {
             dateInitiatedArt.setVisible(true);
             artNumber.setVisible(true);
         } else {
+            inPreArt.getSelectionModel().select(1);
+            initiatedArt.getSelectionModel().select(1);
             inPreArt.setVisible(false);
             dateRegisteredInPreArt.setVisible(false);
             initiatedArt.setVisible(false);
             dateInitiatedArt.setVisible(false);
             artNumber.setVisible(false);
+            dateRegisteredInPreArt.setValue(null);
+            dateInitiatedArt.setValue(null);
+            
         }
     }
 
@@ -283,6 +333,7 @@ public class EditHtsRegisterController implements Initializable {
             dateRegisteredInPreArt.setDisable(false);
         } else {
             dateRegisteredInPreArt.setDisable(true);
+            dateRegisteredInPreArt.setValue(null);
         }
     }
 
@@ -292,6 +343,7 @@ public class EditHtsRegisterController implements Initializable {
             dateInitiatedArt.setDisable(false);
         } else {
             dateInitiatedArt.setDisable(true);
+           dateInitiatedArt.setValue(null);
         }
     }
 
@@ -302,35 +354,28 @@ public class EditHtsRegisterController implements Initializable {
             other.setDisable(false);
         } else {
             other.setDisable(true);
+            other.clear();
         }
     }
 
     @FXML
-    private void updateHts(ActionEvent e) {
+    private void updateHts(ActionEvent e) throws SQLException {
         updateHtsForm(id, conStatus);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
          sqlite = SqliteDatabaseHandler.getInstance();
+      // Platform.runLater(() -> {
         
-        gender.setItems(sex);
-        reasonForHivTesting.setItems(res);
-        finalResult.setItems(hivRes);
-        htsModel.setItems(htsM);
-        testReTest.setItems(tests);
-        lactingWoman.setItems(yesno);
-        testingEntryStream.setItems(clientSer);
-        inPreArt.setItems(yesno);
-        initiatedArt.setItems(yesno);
-        inPreArt.getSelectionModel().select(1);
-        initiatedArt.getSelectionModel().select(1);
-
+        //inPreArt.getSelectionModel().select(1);
+        //initiatedArt.getSelectionModel().select(1);
+      // });
     }
 
     public boolean isInputValid() {
         String errorMsg = "";
-       
+        Validate validate = new Validate();
         if (facility.getSelectionModel().isEmpty()) {
             facility.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
             errorMsg += "Select Facility\n";
@@ -339,6 +384,14 @@ public class EditHtsRegisterController implements Initializable {
             firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
             errorMsg += "First Name is required\n";
         }
+        if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
+       }
         if (lastName.getText() == null || lastName.getText().isEmpty()) {
             lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
             errorMsg += "Last Name is required\n";
@@ -355,7 +408,7 @@ public class EditHtsRegisterController implements Initializable {
         }
     }
      HTSRegisterForm hts;
-    public void updateHtsForm(Long id, String conStatus){
+    public void updateHtsForm(Long id, String conStatus) throws SQLException{
        
         if(conStatus.equals("Online")){
             hts = hTSRegisterFormService.get(id);
@@ -364,7 +417,6 @@ public class EditHtsRegisterController implements Initializable {
             hts  = new HTSRegisterForm();
         }
         hts.setId(id);
-         String cs;
          int hm = 11; //11 means null
          String ht;
          int rhiv = 11;
@@ -378,16 +430,16 @@ public class EditHtsRegisterController implements Initializable {
             
             if(testingEntryStream.getSelectionModel().isEmpty()){
                 hts.setClientServices(null);
-                cs = "null";
+                hts.setEntryStream(null);
             }
             else{
-            ClientServices fcs = (ClientServices)testingEntryStream.getSelectionModel().getSelectedItem();
+             ClientServices fcs = (ClientServices)testingEntryStream.getSelectionModel().getSelectedItem();
              hts.setClientServices(fcs);
-             cs = hts.getClientServices().getCode().toString();
+             hts.setEntryStream(testingEntryStream.getSelectionModel().getSelectedItem().toString());
+            
             }
             if(htsModel.getSelectionModel().isEmpty()){
-               hts.sethTSModel(null);
-               
+               hts.sethTSModel(null);               
             }
             else{
                 HTSModel fHtsModel = (HTSModel)htsModel.getSelectionModel().getSelectedItem(); 
@@ -438,10 +490,18 @@ public class EditHtsRegisterController implements Initializable {
             }
             if(dateInitiatedArt.getValue()==null){
                 hts.setDateOfInitiation(null);
+                
             }else{
                LocalDate dateIn =dateInitiatedArt.getValue();
                Date mDateIn = Date.from(dateIn.atStartOfDay(ZoneId.systemDefault()).toInstant()); 
                hts.setDateOfInitiation(mDateIn);
+            }
+            if(dateRegisteredInPreArt.getValue()==null){
+                hts.setRegisteredInPreArt(null);
+            }
+            else{
+                Date ria = DateFunctions.convertDate(dateRegisteredInPreArt.getValue());
+                hts.setRegisteredInPreArt(ria);
             }
                
            hts.setHivTestingReferralSlipNumber(hivTestingSlipNum.getText());
@@ -460,6 +520,7 @@ public class EditHtsRegisterController implements Initializable {
                hts.setFinalResult(null);
            }
            else{
+               
                hts.setFinalResult((HIVResult)finalResult.getSelectionModel().getSelectedItem());
                fr = hts.getFinalResult().getCode().toString();
            }
@@ -489,8 +550,14 @@ public class EditHtsRegisterController implements Initializable {
            hts.setAge(Integer.parseInt(age.getText()));
            hts.setGender(fGender);
            
-            
+                    PlaceID placeID = new PlaceID();
+                    long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
+                    long provID = placeID.getProvinceFromDistrict(disID);
+                    int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
            if(conStatus.equals("Online")){
+                hts.setFacility(facilityService.get(Long.valueOf(facID)));
+                hts.setDistrict(districtService.get(disID));
+                hts.setProvince(provinceService.get(provID));
                hTSRegisterFormService.save(hts);
               Alert alert = new Alert(Alert.AlertType.INFORMATION);
               alert.setTitle("Notification");
@@ -499,46 +566,37 @@ public class EditHtsRegisterController implements Initializable {
               alert.showAndWait();
             }
             else{
-                try {
-                    PlaceID placeID = new PlaceID();
-                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
-                  long provID = placeID.getProvinceFromDistrict(disID);
-                    int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-                    String query = "Update htsregister_form set "
-                            + "age = '"+Integer.parseInt(age.getText())+"',"
-                            + " card_number = '"+hts.getHtsNumber()+"',"
-                            + "date_of_initiation = '"+hts.getDateOfInitiation()+"',"
-                            + " entry_stream = '"+cs+"',"
-                            + " final_result = '"+fr+"',"
-                            + " first_name = '"+firstName.getText()+"',"
-                            + " gender = '"+fGender.getCode()+"',"
-                            + " in_pre_art = '"+pa+"',"
-                            + " initiated_on_art = '"+ia+"',"
-                            + " last_name = '"+lastName.getText()+"',"
-                            + " m_date = '"+hts.getmDate()+"',"
-                            + " m_time = '"+hts.getmTime()+"',"
-                            + "oi_art_number = '"+hts.getOiArtNumber()+"',"
-                            + " reason_forhivtest = '"+rhiv+"',"
-                            + " registered_in_pre_art = '"+hts.getRegisteredInPreArt()+"',"
-                            + " test = '"+ht+"',"
-                            + " district = '"+disID+"',"
-                            + " facility = '"+facID+"',"
-                            + " province = '"+provID+"',"
-                            + "htsmodel = '"+hm+"',"
-                            + " hiv_testing_referral_slip_number = '"+hts.getHivTestingReferralSlipNumber()+"',"
-                            + " hts_number = '"+hts.getHtsNumber()+"',"
-                            + " pregnant_or_lactating_woman = '"+lw+"' WHERE id = '"+id+"'";
-                    
-                    if(sqlite.execAction(query)){
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("HTS Register Form Updated Successfully");
-                        alert.showAndWait();
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(HTSRegisterController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+               String query = "Update htsregister_form set "
+                       + "age = '"+Integer.parseInt(age.getText())+"',"
+                       + " card_number = '"+hts.getHtsNumber()+"',"
+                       + "date_of_initiation = '"+hts.getDateOfInitiation()+"',"
+                       + " entry_stream = '"+hts.getEntryStream()+"',"
+                       + " final_result = '"+fr+"',"
+                       + " first_name = '"+firstName.getText()+"',"
+                       + " gender = '"+fGender.getCode()+"',"
+                       + " in_pre_art = '"+pa+"',"
+                       + " initiated_on_art = '"+ia+"',"
+                       + " last_name = '"+lastName.getText()+"',"
+                       + " m_date = '"+hts.getmDate()+"',"
+                       + " m_time = '"+hts.getmTime()+"',"
+                       + "oi_art_number = '"+hts.getOiArtNumber()+"',"
+                       + " reason_forhivtest = '"+rhiv+"',"
+                       + " registered_in_pre_art = '"+hts.getRegisteredInPreArt()+"',"
+                       + " test = '"+ht+"',"
+                       + " district = '"+disID+"',"
+                       + " facility = '"+facID+"',"
+                       + " province = '"+provID+"',"
+                       + "htsmodel = '"+hm+"',"
+                       + " hiv_testing_referral_slip_number = '"+hts.getHivTestingReferralSlipNumber()+"',"
+                       + " hts_number = '"+hts.getHtsNumber()+"',"
+                       + " pregnant_or_lactating_woman = '"+lw+"' WHERE id = '"+id+"'";
+               if(sqlite.execAction(query)){
+                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                   alert.setTitle("Notification");
+                   alert.setHeaderText("Success");
+                   alert.setContentText("HTS Register Form Updated Successfully");
+                   alert.showAndWait();
+               }
                 
             }
         }

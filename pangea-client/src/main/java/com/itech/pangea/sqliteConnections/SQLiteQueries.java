@@ -47,9 +47,9 @@ public class SQLiteQueries {
                 }
                 return listD;
     }
-    public List<String> getFacility() throws SQLException{
+    public List<String> getFacility(long userid) throws SQLException{
         List<String> listF = new ArrayList<>();
-        String query = "Select name From Facility";
+        String query = "Select name From Facility where user_id='"+userid+"'";
                 ResultSet rs = handle.execQuery(query);               
                 while(rs.next()){
                     String fac = rs.getString(1);                     
@@ -57,7 +57,16 @@ public class SQLiteQueries {
                 }
                 return listF;
     }
-    
+    public Long getMaxid() throws SQLException{
+        Long maxid = 1L;
+        String query = "Select max(id) From index_case_testing_form";
+        ResultSet rs = handle.execQuery(query);
+        while(rs.next()){
+           maxid = rs.getLong(1);
+           return maxid + 1L;
+        }
+        return maxid;
+    }
    /* public Long getDistrictIdOfFacility(int fid){
         String query = "Select did From District where did";
     }*/

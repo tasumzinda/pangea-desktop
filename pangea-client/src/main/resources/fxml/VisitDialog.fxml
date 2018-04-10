@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="343.0" prefWidth="647.0" stylesheets="@../styles/home.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.CallVisitController">
+   <children>
+      <VBox alignment="CENTER" layoutX="56.0" layoutY="52.0" prefHeight="343.0" prefWidth="647.0" spacing="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Site Support Tracking Dashboard::Create Visit" textFill="#1159d7" underline="true">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            <JFXDatePicker fx:id="dateVisited" editable="false" prefHeight="25.0" prefWidth="600.0" promptText="Date Visited :" styleClass="callvisit" />
+            <JFXComboBox fx:id="visitOutcome" prefWidth="600.0" promptText="Visit Outcome :" styleClass="callvisit" />
+            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="20.0">
+               <children>
+                  <JFXButton buttonType="RAISED" defaultButton="true" onAction="#saveVisitButton" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Save">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="cancelVisitBtn" buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#cancelVisitButton" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Cancel">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" />
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

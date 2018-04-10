@@ -18,6 +18,7 @@ package com.itech.pangea.business.service;
 
 import java.util.List;
 import com.itech.pangea.business.domain.HTSRegisterForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.util.dto.SearchNationalDTO;
 
 /**
@@ -27,4 +28,5 @@ import com.itech.pangea.business.util.dto.SearchNationalDTO;
 public interface HTSRegisterFormService extends GenericService<HTSRegisterForm>{
     public List<HTSRegisterForm> get(SearchNationalDTO dto);
     public Integer countByFinalResult(SearchNationalDTO dto);
+    public List<HTSRegisterForm> findByUser(User createdBy);
 }

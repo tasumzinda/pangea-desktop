@@ -154,7 +154,7 @@
                                        <children>
                                           <JFXButton contentDisplay="TOP" onAction="#defaulterTable" prefHeight="39.0" prefWidth="121.0" ripplerFill="#266ea1" style="-fx-font-size: 11px;" styleClass="scBtns" text="Defaulter List" underline="true">
                                              <graphic>
-                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                                <FontAwesomeIconView glyphName="LIST_OL" />
                                              </graphic>
                                           </JFXButton>
                                           <FontAwesomeIconView fx:id="iconLdtf" glyphName="CARET_LEFT" size="25" visible="false" />
@@ -164,7 +164,7 @@
                                        <children>
                                           <JFXButton contentDisplay="TOP" onAction="#indexCasingListTable" prefHeight="39.0" prefWidth="121.0" ripplerFill="#266ea1" style="-fx-font-size: 11px;" styleClass="scBtns" text="Index Casing List" underline="true">
                                              <graphic>
-                                                <FontAwesomeIconView glyphName="REGISTERED" />
+                                                <FontAwesomeIconView glyphName="LIST_UL" />
                                              </graphic>
                                           </JFXButton>
                                           <FontAwesomeIconView fx:id="iconLict" glyphName="CARET_LEFT" size="25" visible="false" />
@@ -189,6 +189,9 @@
                      <font>
                         <Font name="System Bold Italic" size="36.0" />
                      </font>
+                     <graphic>
+                        <FontAwesomeIconView glyphName="DESKTOP" />
+                     </graphic>
                   </Label>
                   <ImageView fitHeight="152.0" fitWidth="295.0" pickOnBounds="true" preserveRatio="true">
                      <image>

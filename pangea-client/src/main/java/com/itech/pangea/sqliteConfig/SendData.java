@@ -5,13 +5,14 @@
  */
 package com.itech.pangea.sqliteConfig;
 
+import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
 import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.HTSRegisterForm;
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
-import com.itech.pangea.business.domain.Mentor;
 import com.itech.pangea.business.domain.Province;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.Gender;
 import com.itech.pangea.utils.ConvertItems;
 import java.sql.ResultSet;
@@ -64,7 +65,8 @@ public class SendData {
             hts.setReasonForHIVTest(ci.valDb(rs.getInt("reason_forhivtest")));
             hts.setTest(ci.testVal(rs.getString("test")));
 
-            hts.setClientServices(ci.csVal(rs.getString("entry_stream")));
+          //  hts.setClientServices(ClientServices.valueOf(rs.getString("entry_stream").equals("null") ? "OTHER" : rs.getString("entry_stream")));
+            hts.setEntryStream(rs.getString("entry_stream"));
             hts.setOther1("");
             hts.setHtsNumber(String.valueOf(rs.getInt("card_number")));
             hts.setmTime(rs.getString("m_time").equals("null") ? null : rs.getString("m_time"));
@@ -159,8 +161,43 @@ public class SendData {
             ict.setDistrict(dis);
             Facility fac = getByIdFacility(rs.getLong("facility"));
             ict.setFacility(fac);
+            ict.setCreatedBy(createdby(rs.getLong("created_by")));
+            ict.setModifiedBy(modifiedby(rs.getLong("modified_by")));
         }
         return ict;
+    }
+    public Contact contactFormQuery(Long id, Long idx) throws SQLException, ParseException{
+        Contact c = new Contact();
+        ConvertItems ci = new ConvertItems();
+        String query = "Select * From contact where id = '"+id+"' and index_case_testing_form = '"+idx+"'";
+        ResultSet rs = handler.execQuery(query);
+        while(rs.next()){
+           c.setNameOfContact(rs.getString("name_of_contact"));
+           c.setAge(rs.getInt("age"));
+           c.setGender(Gender.get(rs.getInt("gender")));
+           c.setContactAddress(rs.getString("contact_address"));
+           c.setRelationShipToIndex(rs.getString("relation_ship_to_index"));
+           c.setRelationshipOther(null);
+           c.setReferralSlipNumber(rs.getString("referral_slip_number"));
+           c.setHivStatusEntry(ci.reasonForIn(rs.getInt("hiv_status_entry")));
+           c.setIfTestedDateContactTested(convertString(rs.getString("if_tested_date_contact_tested")));
+           c.setPreferredPlaceForContactsToBeTested(ci.htVal(rs.getInt("preferred_place_for_contacts_to_be_tested")));
+           c.setAppointmentDateForContact(convertString(rs.getString("appointment_date_for_contact")));
+           c.setSecondAppointmentDateForContact(convertString(rs.getString("second_appointment_date_for_contact")));
+           c.setThirdAppointmentDateForContact(convertString(rs.getString("third_appointment_date_for_contact")));
+           c.setSequentialNumberOfContacts(rs.getInt("sequential_number_of_contacts"));
+           c.setContactTestedDate(convertString(rs.getString("contact_tested_date")));
+           c.setLocationOfTest(ci.htVal(rs.getInt("location_of_test")));
+           c.setHivResult(ci.finalVal(rs.getInt("hiv_result")));
+           c.setEnrolledIntoCare(ci.yesNo(rs.getInt("enrolled_into_care")));
+           c.setOnART(ci.yesNo(rs.getInt("onart")));
+           c.setReferralSlipReturned(ci.yesNo(rs.getInt("referral_slip_returned")));
+           
+        //   c.setCreatedBy(createdby(rs.getLong("created_by")));
+        //   c.setModifiedBy(modifiedby(rs.getLong("modified_by")));
+          // c.setIndexCaseTestingForm(in);
+        }
+        return c;
     }
 
     public List<Long> htsIds() throws SQLException {
@@ -201,7 +238,21 @@ public class SendData {
         }
         return listIct;
     }
-
+    public List<Long> allContactsOfThisIndex(Long id) throws SQLException{
+        List<Long> listContacts = new ArrayList<>(); 
+        String query = "Select id From contact where index_case_testing_form = '"+id+"'";
+        ResultSet rs = handler.execQuery(query);
+        while (rs.next()) {
+           Long ids = rs.getLong(1);
+           listContacts.add(ids);
+        }
+        return listContacts;
+    }
+   /* public Long countNumberOfContacts(Long id){
+        long total = 0L;
+        String query  = 
+    }
+*/
     public Province getByIdProvince(Long id) throws SQLException {
         Province pp = new Province();
 
@@ -301,4 +352,16 @@ public class SendData {
         return facilitys;
     }
 
+    
+    public User createdby(long id){
+        User user = new User();
+        user.setId(id);
+        return user;
+    }
+    public User modifiedby(long id){
+        User user = new User();
+        user.setId(id);
+        return user;
+    }
+    
 }

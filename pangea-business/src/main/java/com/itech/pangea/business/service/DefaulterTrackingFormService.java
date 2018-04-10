@@ -17,7 +17,9 @@
 package com.itech.pangea.business.service;
 
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.util.dto.SearchNationalDTO;
+import java.util.List;
 
 /**
  *
@@ -28,5 +30,6 @@ public interface DefaulterTrackingFormService extends GenericService<DefaulterTr
     public long count(SearchNationalDTO dto);
     public Integer countByFinalOutcome(SearchNationalDTO dto);
     public Integer countNumberOfDefaulters(SearchNationalDTO dto);
+    public List<DefaulterTrackingForm> findByUser(User createdBy);
     
 }

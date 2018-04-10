@@ -23,6 +23,7 @@ import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.utils.DateFunctions;
+import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -112,7 +113,7 @@ public class EditIndexCaseController implements Initializable {
              this.conStatus = conStatus;
              try {
              SQLiteQueries liteQueries = new SQLiteQueries();
-             List<String> list = liteQueries.getFacility();
+             List<String> list = liteQueries.getFacility(user.getId());
              fac = FXCollections.observableArrayList(list);
              facility.setItems(fac);
          } catch (SQLException ex) {
@@ -133,8 +134,6 @@ public class EditIndexCaseController implements Initializable {
     public void editOffline(Long id) throws ParseException, SQLException{
         SendData sd = new SendData();
         ictf = sd.ictFormQuery(id);
-        //province.getSelectionModel().select(ictf.getProvince().toString());       
-        //district.getSelectionModel().select(ictf.getDistrict().toString());
         facility.getSelectionModel().select(ictf.getFacility().toString());
         numOfIndex.setText(ictf.getSequentialNumberOfIndex());
         firstName.setText(ictf.getFirstNameOfIndex());
@@ -143,14 +142,16 @@ public class EditIndexCaseController implements Initializable {
         indexContactNum.setText(ictf.getIndexContactNumber());
         initiatedOnArt.getSelectionModel().select(ictf.getInitiatedOnART());
         doesTheClientConsent.getSelectionModel().select(ictf.getConsentForListedContacts());
+        reasonForNotInitiated.setText(ictf.getReasonForNotBeingInitiated());
         dateDiagnosed.setValue(ictf.getDateIndexTestedOrDiagnosed() == null ? null : DateFunctions.localDate(ictf.getDateIndexTestedOrDiagnosed()));
-        
+         if(initiatedOnArt.getSelectionModel().isSelected(1)){
+            reasonForNotInitiated.setDisable(false);
+        }
     }
     public void editOnline(Long id){
        
         ictf = indexCaseTestingFormService.get(id);
-        //province.getSelectionModel().select(ictf.getProvince().toString());       
-        //district.getSelectionModel().select(ictf.getDistrict().toString());
+        
         facility.getSelectionModel().select(ictf.getFacility() == null ? "" :ictf.getFacility().toString());
         numOfIndex.setText(ictf.getSequentialNumberOfIndex());
         firstName.setText(ictf.getFirstNameOfIndex());
@@ -160,6 +161,10 @@ public class EditIndexCaseController implements Initializable {
         initiatedOnArt.getSelectionModel().select(ictf.getInitiatedOnART());
         doesTheClientConsent.getSelectionModel().select(ictf.getConsentForListedContacts());
         dateDiagnosed.setValue(ictf.getDateIndexTestedOrDiagnosed() == null ? null : LocalDate.parse(ictf.getDateIndexTestedOrDiagnosed().toString()));
+        reasonForNotInitiated.setText(ictf.getReasonForNotBeingInitiated());
+        if(initiatedOnArt.getSelectionModel().isSelected(1)){
+            reasonForNotInitiated.setDisable(false);
+        }
     }
     @FXML
      private void closeScreen(ActionEvent e){
@@ -168,7 +173,7 @@ public class EditIndexCaseController implements Initializable {
      }
    
     @FXML
-    private void updateIct(ActionEvent event){
+    private void updateIct(ActionEvent event) throws SQLException{
         updateDtfForm(id, conStatus);
     }
     @FXML
@@ -178,12 +183,13 @@ public class EditIndexCaseController implements Initializable {
         }
         else{
             reasonForNotInitiated.setDisable(true);
+            reasonForNotInitiated.clear();
         }
     }  
     
     public boolean isInputValid(){
        String errorMsg = "";
-     
+       Validate validate = new Validate();
        if(facility.getSelectionModel().isEmpty()){
            facility.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Select Facility\n";         
@@ -191,6 +197,14 @@ public class EditIndexCaseController implements Initializable {
        if(firstName.getText() == null || firstName.getText().isEmpty()){
           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "First Name is required\n";
+       }
+       if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
        }
        if(lastName.getText() == null || lastName.getText().isEmpty()){
            lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
@@ -217,7 +231,7 @@ public class EditIndexCaseController implements Initializable {
         
     }   
    IndexCaseTestingForm ict; 
-    public void updateDtfForm(Long id, String conStatus){
+    public void updateDtfForm(Long id, String conStatus) throws SQLException{
          
          if(conStatus.equals("Online")){
              ict = indexCaseTestingFormService.get(id);
@@ -264,9 +278,16 @@ public class EditIndexCaseController implements Initializable {
                cf = ict.getConsentForListedContacts().getCode();
             }
                 
-               
+              PlaceID placeID = new PlaceID();
+                 
+                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
+                  long provID = placeID.getProvinceFromDistrict(disID);
+                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());  
              if(conStatus.equals("Online")){
                  indexCaseTestingFormService.save(ict);
+                 ictf.setFacility(facilityService.get(Long.valueOf(facID)));
+                ictf.setDistrict(districtService.get(disID));
+                ictf.setProvince(provinceService.get(provID));
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Notification");
                 alert.setHeaderText("Success");
@@ -274,39 +295,28 @@ public class EditIndexCaseController implements Initializable {
                 alert.showAndWait();
                }
                else{
-               try {
-                   PlaceID placeID = new PlaceID();
-                 //  int provID = placeID.getProvinceId((String)province.getSelectionModel().getSelectedItem());
-                  // int disID = placeID.getDistrictId((String)district.getSelectionModel().getSelectedItem());
-                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
-                  long provID = placeID.getProvinceFromDistrict(disID);
-                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-                   String query = "Update index_case_testing_form set "
-                           + "consent_for_listed_contacts = '"+cf+"',"
-                           + "first_name_of_index ='"+ict.getFirstNameOfIndex()+"',"
-                           + "index_contact_number = '"+ict.getIndexContactNumber()+"',"
-                           + "indexoiartnumber = '"+ict.getIndexOIARTNumber()+"',"
-                           + "initiated_onart = '"+ioa+"',"
-                           + "last_name_of_index= '"+ict.getLastNameOfIndex()+"',"
-                           + "reason_for_not_being_initiated = '"+ict.getReasonForNotBeingInitiated()+"',"
-                           + "district = '"+disID+"',"
-                           + " facility = '"+facID+"',"
-                           + " province = '"+provID+"', "
-                   
-                           + " date_index_tested_or_diagnosed = '"+ict.getDateIndexTestedOrDiagnosed()+"',"
-                           + "sequential_number_of_index = '"+ict.getSequentialNumberOfIndex()+"'";
-                  
-                if(handle.execAction(query)){
-                    System.err.println(query);
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("Index Case Testing Updated Successfully");
-                        alert.showAndWait();
-                    }
-               } catch (SQLException ex) {
-                   Logger.getLogger(IndexCaseTestingController.class.getName()).log(Level.SEVERE, null, ex);
-               }
+                 String query = "Update index_case_testing_form set "
+                         + "consent_for_listed_contacts = '"+cf+"',"
+                         + "first_name_of_index ='"+ict.getFirstNameOfIndex()+"',"
+                         + "index_contact_number = '"+ict.getIndexContactNumber()+"',"
+                         + "indexoiartnumber = '"+ict.getIndexOIARTNumber()+"',"
+                         + "initiated_onart = '"+ioa+"',"
+                         + "last_name_of_index= '"+ict.getLastNameOfIndex()+"',"
+                         + "reason_for_not_being_initiated = '"+ict.getReasonForNotBeingInitiated()+"',"
+                         + "district = '"+disID+"',"
+                         + " facility = '"+facID+"',"
+                         + " province = '"+provID+"', "
+                         
+                         + " date_index_tested_or_diagnosed = '"+ict.getDateIndexTestedOrDiagnosed()+"',"
+                         + "sequential_number_of_index = '"+ict.getSequentialNumberOfIndex()+"'";
+                 if(handle.execAction(query)){
+                     System.err.println(query);
+                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                     alert.setTitle("Notification");
+                     alert.setHeaderText("Success");
+                     alert.setContentText("Index Case Testing Updated Successfully");
+                     alert.showAndWait();
+                 }
 
                }
         }

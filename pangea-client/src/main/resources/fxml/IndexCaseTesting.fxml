@@ -41,7 +41,7 @@
                         <JFXTextField fx:id="numOfIndex" labelFloat="true" layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="592.0" promptText="1. Sequential Number Of Index" styleClass="htsform" />
                         <JFXTextField fx:id="firstName" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="2.a. First Name Of Index" styleClass="htsform" />
                         <JFXTextField fx:id="lastName" labelFloat="true" promptText="2.b. Last Name Of Index" styleClass="htsform" />
-                        <JFXDatePicker fx:id="dateDiagnosed" defaultColor="#276696" prefHeight="31.0" prefWidth="503.0" promptText="3. Date Index Tested/Diagnosed" styleClass="htsform" />
+                        <JFXDatePicker fx:id="dateDiagnosed" defaultColor="#276696" editable="false" prefHeight="31.0" prefWidth="503.0" promptText="3. Date Index Tested/Diagnosed" styleClass="htsform" />
                         <JFXTextField fx:id="artNumber" labelFloat="true" layoutX="10.0" layoutY="163.0" promptText="4.a. Index OI/ART Number" styleClass="htsform" />
                      </children>
                   </VBox>
@@ -64,7 +64,7 @@
                   </JFXButton>
                   <JFXButton buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#clearIct" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Clear">
                      <graphic>
-                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" />
+                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" styleClass="danger-icon" />
                      </graphic>
                   </JFXButton>
                </children>

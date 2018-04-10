@@ -18,14 +18,14 @@ public class IndexCasingProperties {
     private final LongProperty id;
     private final StringProperty firstName;
     private final StringProperty lastName;
-   
+    private final StringProperty contactList;
     private final StringProperty facility;
 
-    public IndexCasingProperties(Long id, String firstName, String lastName, String facility) {
+    public IndexCasingProperties(Long id, String firstName, String lastName, String contactList, String facility) {
          this.id = new SimpleLongProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
-        
+        this.contactList = new SimpleStringProperty(contactList);
         this.facility = new SimpleStringProperty(facility);
     }
    
@@ -66,6 +66,19 @@ public class IndexCasingProperties {
     public StringProperty lastNameProperty() {
         return lastName;
     }
+
+    public String getContactList() {
+        return contactList.get();
+    }
+
+    public void setContactList(String value) {
+        contactList.set(value);
+    }
+
+    public StringProperty contactListProperty() {
+        return contactList;
+    }
+    
      
     public String getFacility() {
         return facility.get();

@@ -10,6 +10,7 @@ import com.itech.pangea.business.domain.util.ClientServices;
 import com.itech.pangea.business.domain.util.HIVResult;
 import com.itech.pangea.business.domain.util.HTSModel;
 import com.itech.pangea.business.domain.util.ReasonForHIVTest;
+import com.itech.pangea.business.domain.util.ReasonForIneligibilityForTesting;
 import com.itech.pangea.business.domain.util.Test;
 import com.itech.pangea.business.domain.util.YesNo;
 
@@ -73,6 +74,15 @@ public class ConvertItems {
         }   
         
     }
+     public HIVResult finalVal(int val){
+        if(val==11){
+            return null;
+        }
+        else{
+            return HIVResult.get(val);
+        }   
+        
+    }
      /*Defaulter Tracking Form*/
      public CallOutcome callOut(String val){
         if(val.equals("11")){
@@ -83,4 +93,13 @@ public class ConvertItems {
         }   
         
     }
+     /*Contact*/
+     public ReasonForIneligibilityForTesting reasonForIn(int val){
+         if(val==11){
+            return null;
+        }
+        else{
+            return ReasonForIneligibilityForTesting.get(val);
+        } 
+     }
 }

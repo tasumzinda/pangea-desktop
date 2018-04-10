@@ -7,9 +7,11 @@ package com.itech.pangea.client;
  */
 
 import com.itech.pangea.business.domain.HTSRegisterForm;
+import com.itech.pangea.business.domain.Mentor;
 import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.Gender;
 import com.itech.pangea.business.service.HTSRegisterFormService;
+import com.itech.pangea.business.util.dto.SearchNationalDTO;
 import com.jfoenix.controls.JFXTextField;
 import com.itech.pangea.properties.HtsListProperties;
 import com.itech.pangea.sqliteConfig.SendData;
@@ -25,6 +27,7 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -83,11 +86,13 @@ public class HtSTableController implements Initializable {
     List<HTSRegisterForm> listH = new ArrayList<>();
     AnnotationConfigApplicationContext acac;
     User user;
+    Mentor mentor;
     String conStatus;
-    public void setUserNCtx(User user,  AnnotationConfigApplicationContext acac, String conStatus) {
+    public void setUserNCtx(User user, Mentor mentor, AnnotationConfigApplicationContext acac, String conStatus) {
         this.user = user;
         this.acac = acac;
         this.conStatus = conStatus;
+        this.mentor = mentor;
         if(conStatus.equals("Online")){
         getHtsList();
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
@@ -171,23 +176,25 @@ public class HtSTableController implements Initializable {
     } 
     public void getHtsList(){         
                  dataH.clear();
-                 
                  loadingBar.setVisible(true);
                  Task<List> task = new Task<List>(){
                      @Override
                      protected List call() throws Exception {
-                         return hTSRegisterFormService.getAll(); 
-                     }
-                     
+                         return hTSRegisterFormService.findByUser(user);
+                     }                    
                  };
             
         task.setOnSucceeded((WorkerStateEvent e) -> {
             listH = task.getValue();
-        for(HTSRegisterForm hts : listH){              
-                dataH.add(new HtsListProperties(hts.getId(), hts.getFirstName(), hts.getLastName(), hts.getAge(), hts.getGender().toString(), hts.getFacility() == null ? "" : hts.getFacility().toString()));  
-        }      
+        for(HTSRegisterForm hts : listH){   
+                if(hts.getActive()){
+                dataH.add(new HtsListProperties(hts.getId(), hts.getFirstName(), hts.getLastName(), hts.getAge(), hts.getGender().toString(), hts.getFacility() == null ? "" : hts.getFacility().toString())); 
+                }
+        }  
+        Platform.runLater(() -> {
         htsTable.setItems(dataH);
         loadingBar.setVisible(false);
+        });
         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);

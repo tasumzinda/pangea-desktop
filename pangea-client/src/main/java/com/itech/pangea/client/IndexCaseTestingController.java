@@ -22,6 +22,7 @@ import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.validations.Validate;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,8 +38,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javax.annotation.Resource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -103,7 +111,7 @@ public class IndexCaseTestingController implements Initializable {
          try {
             
             SQLiteQueries liteQueries = new SQLiteQueries();
-            List<String> list = liteQueries.getFacility();
+            List<String> list = liteQueries.getFacility(user.getId());
             fac = FXCollections.observableArrayList(list);
             facility.setItems(fac);
             }
@@ -151,8 +159,8 @@ public class IndexCaseTestingController implements Initializable {
         
     }
     @FXML
-    private void saveIndexCaseTesting(ActionEvent e){
-        
+    private void saveIndexCaseTesting(ActionEvent e) throws SQLException{
+      //  String agree = (String) doesTheClientConsent.getSelectionModel().getSelectedItem();
         
         if(isInputValid()){
            
@@ -161,26 +169,15 @@ public class IndexCaseTestingController implements Initializable {
                 ictf.setFirstNameOfIndex(firstName.getText());
                 ictf.setLastNameOfIndex(lastName.getText());
                 ictf.setSequentialNumberOfIndex(numOfIndex.getText());
-                ictf.setDateIndexTestedOrDiagnosed(convertDate(dateDiagnosed.getValue()));
-                
-               // if(artNumber.getText().isEmpty()){
-                   ictf.setIndexOIARTNumber(null); 
-              //  }
-              //  else{
-                     ictf.setIndexOIARTNumber(artNumber.getText());
-                   //  ictf.setIndexOIARTNumber(null);
-              //  }
-              // if(indexContactNum.getText().isEmpty()){
-              //   ictf.setIndexContactNumber(null);  
-              // }
-              // else{
-                   ictf.setIndexContactNumber(indexContactNum.getText());
-                   //ictf.setIndexContactNumber(null);
-             //  }
-               
-              
-                ictf.setReasonForNotBeingInitiated(reasonForNotInitiated.getText());
-                
+                ictf.setDateIndexTestedOrDiagnosed(dateDiagnosed.getValue()== null ? null : convertDate(dateDiagnosed.getValue()));                        
+                ictf.setIndexOIARTNumber(artNumber.getText());           
+                ictf.setIndexContactNumber(indexContactNum.getText());              
+                ictf.setReasonForNotBeingInitiated(reasonForNotInitiated.getText()); 
+                System.err.println("#################################");
+                System.err.println(user.getDisplayName() + "#" + user.getId());
+                System.err.println("#################################");
+                ictf.setCreatedBy(user);
+                ictf.setModifiedBy(user);
                 int ioa = 11;
                 int cf = 11;
             if(initiatedOnArt.getSelectionModel().isEmpty()){
@@ -190,46 +187,49 @@ public class IndexCaseTestingController implements Initializable {
                ictf.setInitiatedOnART((YesNo) initiatedOnArt.getSelectionModel().getSelectedItem()); 
                ioa = ictf.getInitiatedOnART().getCode();
             }
-                 if(doesTheClientConsent.getSelectionModel().isEmpty()){
+           if(doesTheClientConsent.getSelectionModel().isEmpty()){
                ictf.setConsentForListedContacts(null);            
-                   }
+            }
             else{
                ictf.setConsentForListedContacts((YesNo) doesTheClientConsent.getSelectionModel().getSelectedItem());
                cf = ictf.getConsentForListedContacts().getCode();
             }
                 
-                
+                PlaceID placeID = new PlaceID();
+                  
+                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
+                  long provID = placeID.getProvinceFromDistrict(disID);
+                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
                 
                if(conStatus.equals("Online")){
-               // Province fprovince = (Province)province.getSelectionModel().getSelectedItem();
-               // District fDistrict = (District)district.getSelectionModel().getSelectedItem();
-                Facility fFacility = (Facility)facility.getSelectionModel().getSelectedItem();
-                //ictf.setProvince(fprovince);
-                //ictf.setDistrict(fDistrict);
-                ictf.setFacility(fFacility);
-                indexCaseTestingFormService.save(ictf);
+                ictf.setFacility(facilityService.get(Long.valueOf(facID)));
+                ictf.setDistrict(districtService.get(disID));
+                ictf.setProvince(provinceService.get(provID));
+               
+                IndexCaseTestingForm savedList = indexCaseTestingFormService.save(ictf);
           
-             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Notification");
                 alert.setHeaderText("Success");
                 alert.setContentText("Index Case Testing Saved Successfully");
                 alert.showAndWait();
-                clearFields();
+                if(ictf.getConsentForListedContacts().equals(YesNo.YES)){
+                          clearFields(); 
+                          callContactList(e, savedList); 
+                       }
+                       else{
+                          clearFields(); 
+                       }
                }
                else{
-               try {
-                   PlaceID placeID = new PlaceID();
-                  // int provID = placeID.getProvinceId((String)province.getSelectionModel().getSelectedItem());
-                  // int disID = placeID.getDistrictId((String)district.getSelectionModel().getSelectedItem());
-                  long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
-                  long provID = placeID.getProvinceFromDistrict(disID);
-                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
+                   SQLiteQueries qLiteQueries  = new SQLiteQueries();
+                   ictf.setId(qLiteQueries.getMaxid());
                    String query = "Insert Into index_case_testing_form(active, deleted, uuid, version, age, appointment_date_for_contact,"
                            + "call_outcome, consent_for_listed_contacts, contact_address, contact_tested_date,date_called,"
                            + " date_visited, enrolled_into_care, first_name_of_index, gender, hiv_result,"
                            + "index_contact_number, indexoiartnumber, initiated_onart, last_name_of_index, location_of_test, name_of_contact,"
                            + "preferred_place_for_contacts_to_be_tested, reason_for_not_being_initiated, relation_ship_to_index, visit_outcome,"
-                           + "district, facility, province, art_number, date_index_tested_or_diagnosed, hiv_status_entry,"
+                           + "created_by, modified_by, district, facility, province, art_number, date_index_tested_or_diagnosed, hiv_status_entry,"
                            + " if_tested_date_contact_tested, onart, referral_slip_number, referral_slip_returned,"
                            + "second_appointment_date_for_contact,sequential_number_of_contacts, sequential_number_of_index, third_appointment_date_for_contact)"
                            + " Values('',"
@@ -258,7 +258,9 @@ public class IndexCaseTestingController implements Initializable {
                            + " '"+ictf.getReasonForNotBeingInitiated()+"',"
                            + "'',"
                            + " '',"
-                           + "'"+disID+"',"
+                           + " '"+user.getId()+"',"
+                           + " '"+user.getId()+"',"
+                           + " '"+disID+"',"
                            + " '"+facID+"',"
                            + " '"+provID+"',"
                            + " '',"
@@ -272,21 +274,48 @@ public class IndexCaseTestingController implements Initializable {
                            + " '',"
                            + " '"+ictf.getSequentialNumberOfIndex()+"',"
                            + " '')";
-                if(handle.execAction(query)){
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("Index Case Testing Saved Successfully");
-                        alert.showAndWait();
-                        clearFields();
-                    }
-               } catch (SQLException ex) {
-                   Logger.getLogger(IndexCaseTestingController.class.getName()).log(Level.SEVERE, null, ex);
-               }
+                   if(handle.execAction(query)){
+                       
+                       Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                       alert.setTitle("Notification");
+                       alert.setHeaderText("Success");
+                       alert.setContentText("Index Case Testing Saved Successfully");
+                       alert.showAndWait();
+                       if(ictf.getConsentForListedContacts().equals(YesNo.YES)){
+                          clearFields(); 
+                          callContactList(e, ictf); 
+                       }
+                       else{
+                          clearFields(); 
+                       }
+                       
+                   }
 
                }
         }
     }
+     public void callContactList(ActionEvent ev, IndexCaseTestingForm indexC){
+        Stage stage = new Stage();
+        try {
+            FXMLLoader loader = acac.getBean(FXMLLoaderProvider.class).getLoader("/fxml/ContactList.fxml");
+            Parent root = loader.load();
+            
+            ContactListController cl = ( ContactListController)loader.getController();
+            cl.setUserNCtx(user, acac, conStatus, indexC);
+            Scene scene = new Scene(root); 
+            stage.setTitle("Contact list");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/Images/download.jpg")));
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+       //     ((Node)(ev.getSource())).getScene().getWindow().hide();
+           
+        } catch (IOException ex) {
+            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public boolean isInputValid(){
        Validate validate = new Validate();
        String errorMsg = "";
@@ -298,7 +327,16 @@ public class IndexCaseTestingController implements Initializable {
        if(firstName.getText() == null || firstName.getText().isEmpty()){
           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "First Name is required\n";
-       }/*
+       }
+       if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
+       }
+       /*
        if(!validate.validateNumber(artNumber.getText())){
            artNumber.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Invalid Index OI/Art Number!\n";

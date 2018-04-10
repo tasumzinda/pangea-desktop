@@ -6,6 +6,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTimePicker?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1200.0" stylesheets="@../styles/home.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.EditHtsRegisterController">
+<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.EditHtsRegisterController">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1200.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -76,7 +77,7 @@
                   </JFXButton>
                   <JFXButton fx:id="cancelBtn" buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#closeScreen" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Cancel">
                      <graphic>
-                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" />
+                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" styleClass="danger-icon" />
                      </graphic>
                   </JFXButton>
                </children>
@@ -84,4 +85,8 @@
          </children>
       </VBox>
    </children>
+   <stylesheets>
+      <URL value="@../styles/home.css" />
+      <URL value="@../styles/Styles.css" />
+   </stylesheets>
 </AnchorPane>

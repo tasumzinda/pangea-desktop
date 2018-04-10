@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="1000.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.ListContactsController">
+   <children>
+      <VBox alignment="CENTER" layoutX="42.0" layoutY="20.0" prefHeight="400.0" prefWidth="1000.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="52.0" prefWidth="1000.0">
+               <children>
+                  <HBox alignment="CENTER" layoutX="14.0" layoutY="-16.0" prefHeight="84.0" prefWidth="1000.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label text="Name Of Index :" underline="true">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="nameOfIndex" layoutX="433.0" layoutY="21.0" underline="true">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+            <TableView fx:id="tblContactList" onMouseClicked="#selectedContact" prefHeight="252.0" prefWidth="980.0">
+              <columns>
+                  <TableColumn fx:id="cid" prefWidth="75.0" text="List" />
+                <TableColumn fx:id="nameOfContact" prefWidth="75.0" text="Name Of Contact" />
+                  <TableColumn fx:id="facility" prefWidth="75.0" text="Facility" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TableView>
+            <JFXButton fx:id="btnClose" buttonType="RAISED" onAction="#closeButton" ripplerFill="#3b0aa4" styleClass="login-btn" text="Close">
+               <font>
+                  <Font size="17.0" />
+               </font>
+               <graphic>
+                  <FontAwesomeIconView glyphName="TIMES_CIRCLE_ALT" styleClass="danger-icon" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

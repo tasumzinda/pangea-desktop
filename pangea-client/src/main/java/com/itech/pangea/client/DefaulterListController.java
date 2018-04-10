@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.itech.pangea.properties.DefaulterProperties;
 import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
+import com.jfoenix.controls.JFXProgressBar;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -22,10 +23,13 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -58,7 +62,8 @@ public class DefaulterListController implements Initializable {
     private TableColumn<DefaulterProperties, String> colFirstName;
     @FXML
     private TableColumn<DefaulterProperties, String> colLastName;
-   
+    @FXML
+    private JFXProgressBar loadingBar;
     @FXML
     private TableColumn<DefaulterProperties, String> colFacility;
     @FXML
@@ -146,29 +151,35 @@ public class DefaulterListController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
          handler = SqliteDatabaseHandler.getInstance();
-        /*dataD.clear();
-        listD = defaulterTrackingFormService.getAll(); 
-        for(DefaulterTrackingForm dt : listD){
-                
-                dataD.add(new DefaulterProperties(dt.getId(), dt.getFirstNameOfIndex(), dt.getLastNameOfIndex(), dt.getFacility().toString()));  
-        }
-         //defaulterListTable.refresh();
-         defaulterListTable.setItems(dataD); 
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
-        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
-        
-        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());*/
+       
     } 
   
     public void getListOnlineD(){
         dataD.clear();
-        listD = defaulterTrackingFormService.getAll(); 
-        for(DefaulterTrackingForm dt : listD){            
-                dataD.add(new DefaulterProperties(dt.getId(), dt.getFirstNameOfIndex(), dt.getLastNameOfIndex(), dt.getFacility()==null ? "" : dt.getFacility().toString()));  
+              loadingBar.setVisible(true);
+                 Task<List> task = new Task<List>(){
+                     @Override
+                     protected List call() throws Exception {
+                          return defaulterTrackingFormService.findByUser(user); 
+                     }                    
+                 };
+         task.setOnSucceeded((WorkerStateEvent e) -> {
+        listD = task.getValue();
+        for(DefaulterTrackingForm dt : listD){     
+            if(dt.getActive()){
+                dataD.add(new DefaulterProperties(dt.getId(), dt.getFirstNameOfIndex(), dt.getLastNameOfIndex(), dt.getFacility()==null ? "" : dt.getFacility().toString()));
+            }
         }
+        Platform.runLater(() -> { 
+             defaulterListTable.setItems(dataD);
+             loadingBar.setVisible(false);
+         });
+        });
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start(); 
          
-         defaulterListTable.setItems(dataD); 
+         
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
         colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());     

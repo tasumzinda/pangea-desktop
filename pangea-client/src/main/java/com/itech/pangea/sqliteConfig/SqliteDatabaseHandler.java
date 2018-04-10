@@ -27,7 +27,7 @@ public class SqliteDatabaseHandler {
          try{
             Class.forName("org.sqlite.JDBC").newInstance();
          
-       //  conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
+      //  conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
          conn = DriverManager.getConnection("jdbc:sqlite:trackerdb.db");
           if(conn!=null){
               System.err.println("********************************");
@@ -81,7 +81,7 @@ public class SqliteDatabaseHandler {
              // System.out.println(result);
         }
         catch(Exception ex){
-            ex.printStackTrace(); 
+           ex.printStackTrace(); 
            Alert alert = new Alert(Alert.AlertType.ERROR);
            alert.setTitle("Notification");
            alert.setHeaderText("Error Executing Select Statement");

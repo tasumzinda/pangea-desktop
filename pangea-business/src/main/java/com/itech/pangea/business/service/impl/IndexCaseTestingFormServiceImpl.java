@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.repo.IndexCaseTestingFormRepo;
 import com.itech.pangea.business.service.IndexCaseTestingFormService;
 import com.itech.pangea.business.service.UserService;
@@ -51,10 +52,10 @@ public class IndexCaseTestingFormServiceImpl implements IndexCaseTestingFormServ
     public IndexCaseTestingForm save(IndexCaseTestingForm t) {
         if (t.getId() == null) {
             t.setDateCreated(new Date());
-            t.setCreatedBy(userService.getCurrentUser());
+           // t.setCreatedBy(userService.getCurrentUser());
             return repo.save(t);
         }
-        t.setModifiedBy(userService.getCurrentUser());
+      //  t.setModifiedBy(userService.getCurrentUser());
         t.setDateModified(new Date());
         return repo.save(t);
     }
@@ -85,4 +86,10 @@ public class IndexCaseTestingFormServiceImpl implements IndexCaseTestingFormServ
     public Boolean checkDuplicate(IndexCaseTestingForm current, IndexCaseTestingForm old){
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public List<IndexCaseTestingForm> findByUser(User createdBy) {
+        return repo.findByCreatedBy(createdBy);
+    }
+
 }

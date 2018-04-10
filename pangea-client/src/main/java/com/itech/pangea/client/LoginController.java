@@ -16,33 +16,25 @@ import com.itech.pangea.business.service.FacilityService;
 import com.itech.pangea.business.service.MentorService;
 import com.itech.pangea.business.service.ProvinceService;
 import com.itech.pangea.business.service.UserService;
-import com.itech.pangea.sqliteConfig.SendData;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXProgressBar;
-import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SaveSqlite;
-import com.itech.pangea.validations.Validate;
 import java.io.IOException;
 
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -52,8 +44,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javax.annotation.Resource;
@@ -114,9 +106,21 @@ public class LoginController implements Initializable {
     private ProvinceService provinceService;
     
     Connection conn;
-
-    public void setAcac(AnnotationConfigApplicationContext acac) {
-        this.acac = acac;
+    private String conSta;
+    private Boolean lOff;
+    private Boolean lOn;
+    public void setAcac(AnnotationConfigApplicationContext acac, Boolean onL, Boolean ofL, String st) {
+   // public void setAcac(AnnotationConfigApplicationContext acac){
+                this.acac = acac;
+                this.conSta = st;
+                this.lOff = ofL;
+                this.lOn = onL;
+                lblOnline.setVisible(onL);
+                lblOffline.setVisible(ofL);
+                stat.setText(st);
+                System.err.println("+++++++++++++++++++++++++==");
+                System.err.println(st + "  "+ onL + "  " + ofL);
+                System.err.println("+++++++++++++++++++++++++==");
     }
 
     @FXML
@@ -125,11 +129,11 @@ public class LoginController implements Initializable {
     }
 
     public void conStatus() {
-        String jdbcUrl = "jdbc:mysql://192.168.1.203:3306/itechdb";
-       // String user = "root";
-       // String pass ="";
-       String user = "itechadmin";
-       String pass = "itech2017";
+        String jdbcUrl = "jdbc:mysql://localhost:3306/itechdb";
+        String user = "root";
+        String pass ="";
+      // String user = "itechadmin";
+      // String pass = "itech2017";
       
         Task<Connection> task = new Task<Connection>() {
             @Override
@@ -184,8 +188,6 @@ public class LoginController implements Initializable {
         progressBar.setVisible(true);
         loginBtn.setDisable(true);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(pwd.getText());
-
         Task<User> task = new Task<User>() {
             @Override
             protected User call() throws Exception {
@@ -217,7 +219,7 @@ public class LoginController implements Initializable {
                    
                     Mentor mentor = mentorService.getByEmail(user.getUserName());
                     if(mentor == null){
-                       loadFxml("/fxml/Home.fxml", user); 
+                       loadFxml("/fxml/Home.fxml", user, mentor); 
                     }
                     else{
                     List<Facility> facilitys = getFacilities(mentor.getId());
@@ -230,7 +232,7 @@ public class LoginController implements Initializable {
                         for(District di : d){
                         saveSqlite.saveDistrict(di);
                         }
-                      loadFxml("/fxml/Home.fxml", user);
+                      loadFxml("/fxml/Home.fxml", user, mentor);
                     }else{                       
                         for(Province pr : p){
                         saveSqlite.saveProvince(pr);
@@ -239,9 +241,9 @@ public class LoginController implements Initializable {
                         saveSqlite.saveDistrict(di);
                         }
                          for (Facility f : facilitys) {          
-                            saveSqlite.saveFacility(f);          
+                            saveSqlite.saveFacility(f, user.getId());          
                           }
-                      loadFxml("/fxml/Home.fxml", user);
+                      loadFxml("/fxml/Home.fxml", user, mentor);
                     }
                     
                    
@@ -267,51 +269,57 @@ public class LoginController implements Initializable {
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
+            progressBar.setVisible(false);
+            loginBtn.setDisable(false);
     }
 
     public void offlineLogin(ActionEvent event) {
         progressBar.setVisible(true);
         loginBtn.setDisable(true);
-
+         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String query = "Select * From user where user_name='" + username.getText() + "'";
         Task<ResultSet> task = new Task<ResultSet>() {
             @Override
             protected ResultSet call() throws Exception {
-                return handle.execQuery(query);
+               ResultSet rrs =  handle.execQuery(query);
+                while(rrs.next()) {
+                String savedPassword = rrs.getString("password");
+                String enteredPassword = pwd.getText();
+                 if (encoder.matches(enteredPassword, savedPassword)) {
+                    return handle.execQuery(query); 
+                 }   
+                }
+               return null;
             }
         };
-        btnCancel.setOnAction(e -> task.cancel());
-        task.setOnCancelled((WorkerStateEvent e) -> {
-            progressBar.setVisible(false);
-            loginBtn.setDisable(false);
-            logInfo.setText("Login Failed, Restart the App");
-
-        });
+        
         task.setOnSucceeded((WorkerStateEvent e) -> {
             User user = new User();
+            Mentor mentor = new Mentor();
             boolean flag = false;
             try {
                 ResultSet rs = task.getValue();
                 if (rs == null) {
                     progressBar.setVisible(false);
                     loginBtn.setDisable(false);
-                    logInfo.setText("Connection Error");
+                    logInfo.setText("Incorrect Username/Password");
                     return;
                 } else {
                     while (rs.next()) {
-
+                        long userid = rs.getLong("uid");
                         String firstname = rs.getString("first_name");
                         String lastname = rs.getString("last_name");
                         //int userLevel = rs.getInt("user_level");
+                        user.setId(userid);
                         user.setFirstName(firstname);
                         user.setLastName(lastname);
 
-                        loadFxml("/fxml/Home.fxml", user);
+                        loadFxml("/fxml/Home.fxml", user, mentor);
                         progressBar.setVisible(false);
                         loginBtn.setDisable(false);
                         flag = true;
-                        ((Node) (event.getSource())).getScene().getWindow().hide();
-
+                       ((Node) (event.getSource())).getScene().getWindow().hide();
+                      
                     }
                 }
 
@@ -331,7 +339,7 @@ public class LoginController implements Initializable {
 
     }
 
-    public void loadFxml(String url, User user) throws SQLException, ParseException {
+    public void loadFxml(String url, User user, Mentor mentor) throws SQLException, ParseException {
         Stage primaryStage = new Stage(StageStyle.DECORATED);
 
         try {
@@ -340,9 +348,10 @@ public class LoginController implements Initializable {
 
             Scene scene = new Scene(root);
             primaryStage.setTitle("ITECH");
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Images/download.jpg")));
             primaryStage.setScene(scene);
             HomeController homeC = (HomeController) loader.getController();
-            homeC.setUserNCtx(user, acac, stat.getText());
+            homeC.setUserNCtx(user, mentor, acac, stat.getText());
             primaryStage.show();
 
         } catch (IOException ex) {
@@ -352,7 +361,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        conStatus();
+       // conStatus();
         handle = SqliteDatabaseHandler.getInstance();
       
     }

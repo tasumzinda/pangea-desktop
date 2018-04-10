@@ -22,6 +22,7 @@ import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.HTSRegisterForm;
 import com.itech.pangea.business.domain.Province;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.HIVResult;
 import com.itech.pangea.business.domain.util.ReasonForIneligibilityForTesting;
 import com.itech.pangea.business.domain.util.YesNo;
@@ -33,14 +34,14 @@ import com.itech.pangea.business.domain.util.YesNo;
 public interface HTSRegisterFormRepo extends CrudRepository<HTSRegisterForm, Long>{
     @Override
     public List<HTSRegisterForm> findAll();
-    
+    public List<HTSRegisterForm> findByDistrict(District district);
     public Integer countByFinalResultAndInitiatedOnArt(ReasonForIneligibilityForTesting finalResult, YesNo initiatedOnArt);
     
     public Integer countByFinalResult(HIVResult finalResult);
     public Integer countByFacilityAndFinalResult(Facility facility, HIVResult finalResult);
     public Integer countByDistrictAndFinalResult(District district, HIVResult finalResult);
     public Integer countByProvinceAndFinalResult(Province province, HIVResult finalResult);
-    
+    public List<HTSRegisterForm> findByCreatedBy(User createdBy);
     
     
 }

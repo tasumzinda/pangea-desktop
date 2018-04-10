@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox alignment="CENTER" prefHeight="46.0" prefWidth="535.0" styleClass="mainFxmlClass" stylesheets="@../styles/optionbuttons.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.ContactListBtnsController">
+   <children>
+      <JFXButton buttonType="RAISED" onAction="#editButton" prefHeight="52.0" prefWidth="186.0" styleClass="btn-edit" text="Edit">
+         <font>
+            <Font size="13.0" />
+         </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="PENCIL_SQUARE_ALT" size="18" />
+         </graphic>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="97.0" layoutY="10.0" onAction="#deleteButton" prefHeight="52.0" prefWidth="186.0" styleClass="btn-delete" text="Delete">
+         <font>
+            <Font size="13.0" />
+         </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="TRASH_ALT" size="18.0" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="addBtn" buttonType="RAISED" disable="true" layoutX="10.0" layoutY="10.0" onAction="#addButton" prefHeight="52.0" prefWidth="186.0" styleClass="btn-edit" text="Add">
+         <font>
+            <Font size="13.0" />
+         </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="PENCIL_SQUARE_ALT" size="18" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="listBtn" buttonType="RAISED" disable="true" layoutX="224.0" layoutY="10.0" onAction="#listButton" prefHeight="52.0" prefWidth="186.0" styleClass="btn-edit" text="List">
+         <font>
+            <Font size="13.0" />
+         </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="PENCIL_SQUARE_ALT" size="18" />
+         </graphic>
+      </JFXButton>
+   </children>
+</HBox>

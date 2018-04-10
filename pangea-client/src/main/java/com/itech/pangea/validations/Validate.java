@@ -19,7 +19,8 @@ public class Validate {
    public boolean validateNumber(String artNum){
               
         if(artNum.length()==0 || artNum.isEmpty()){
-            artNum = "0";
+           // artNum = "0";
+           return true;
         }
         Pattern pattern = Pattern.compile("[0-9]+");
         Matcher matcher = pattern.matcher(artNum);
@@ -46,13 +47,21 @@ public class Validate {
         }
         return true;
     }
+    public boolean validateFullname(String fullName){
+           // String regx = "[a-zA-Z]+";
+     //     String regx = "^[a-zA-Z ]+$";
+            String regx = "^([A-Z][a-z]*((\\s)))+[A-Z][a-z]*$";
+            Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(fullName);
+            return matcher.find();
+    }
+    public boolean validateTextOnly(String text){
+            String regx = "[a-zA-Z]+";
+            Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(text);
+            return matcher.find();
+    }
     
-    /*public boolean validateIpUsingInet(String ipStr){
-        try {
-         InetAddresses.forString(ipStr);
-    } catch (IllegalArgumentException e) {
-    return false;
-    }
-    }
-    */
+  
+ 
 }

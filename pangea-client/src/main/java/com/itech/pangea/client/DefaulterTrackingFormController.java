@@ -22,6 +22,7 @@ import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.validations.Validate;
+import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +38,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -57,7 +60,8 @@ public class DefaulterTrackingFormController implements Initializable {
     
     @FXML
     private JFXComboBox facility;
-    
+     @FXML
+    private JFXSpinner savePro;
     
     @FXML
     private JFXTextField firstName;
@@ -137,7 +141,7 @@ public class DefaulterTrackingFormController implements Initializable {
             this.conStatus = conStatus;
             try{
             SQLiteQueries liteQueries = new SQLiteQueries();
-            List<String> list = liteQueries.getFacility();
+            List<String> list = liteQueries.getFacility(user.getId());
             fac = FXCollections.observableArrayList(list);
             facility.setItems(fac);
         } catch (SQLException ex) {
@@ -187,7 +191,7 @@ public class DefaulterTrackingFormController implements Initializable {
         return dateCon;
     }
     @FXML
-    private void saveDefaulterTrackingForm(ActionEvent e){
+    private void saveDefaulterTrackingForm(ActionEvent e) throws SQLException{
          
          DefaulterTrackingForm dtf = new DefaulterTrackingForm();
          if(isInputValid()){
@@ -200,6 +204,8 @@ public class DefaulterTrackingFormController implements Initializable {
           dtf.setContactDetails(contactDetails.getText());
          dtf.setoIARTNumber(artNumber.getText());
          //dtf.setoIARTNumber(null);
+         dtf.setCreatedBy(user);
+         dtf.setModifiedBy(user);
           if(dateArtInitiation.getValue() == null){
                dtf.setDateArtInitiation(null);
           }
@@ -229,7 +235,7 @@ public class DefaulterTrackingFormController implements Initializable {
           else{
               LocalDate pickerD = dateAppDeemedDefaul.getValue();
               Date dee = Date.from(pickerD.atStartOfDay(ZoneId.systemDefault()).toInstant());
-              dtf.setDateArtInitiation(dee);
+              dtf.setAppointmentDeemedDefaulter(dee);
           }
           if(dateOfCall1.getValue() == null){
               dtf.setDateOfCall1(null);
@@ -340,79 +346,93 @@ public class DefaulterTrackingFormController implements Initializable {
                  fo = dtf.getFinalOutcome().getCode();
             }
           
-         
-          
-          
-         
-          
-          
-          if(conStatus.equals("Online")){
-         // Province fprovince = (Province)province.getSelectionModel().getSelectedItem();
-         // District fDistrict = (District)district.getSelectionModel().getSelectedItem();
-          Facility fFacility = (Facility)facility.getSelectionModel().getSelectedItem();
-          //dtf.setProvince(fprovince);
-          //dtf.setDistrict(fDistrict);
-          dtf.setFacility(fFacility);
-          defaulterTrackingFormService.save(dtf);
-           Alert alert = new Alert(Alert.AlertType.INFORMATION);
-           alert.setTitle("Notification");
-           alert.setHeaderText("Success");
-           alert.setContentText("HTS Register Form Saved Successfully");
-           alert.showAndWait();
-           clearFields();
-          }
-          else{
-              try {
-                  PlaceID placeID = new PlaceID();
-                 // int provID = placeID.getProvinceId((String)province.getSelectionModel().getSelectedItem());
-                  //int disID = placeID.getDistrictId((String)district.getSelectionModel().getSelectedItem());
+         PlaceID placeID = new PlaceID();
+                
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-                  
-                  String query = " Insert Into defaulter_tracking_form(active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
-                          + "appointment_date_if_linked_to_care1, appointment_deemed_defaulter, call1outcome, call2outcome, call3outcome, contact_details, "
-                          + "date_art_initiation, date_client_visited_facility, date_of_call1, date_of_call2, date_of_call3, date_of_visit, date_visit_done, first_name_of_index,"
-                          + "last_name_of_index, oiartnumber, physical_address, reason_for_tracking, review_date, visit_done_outcome, visit_outcome, district, facility, province,"
-                          + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome)"
-                          + " Values('', '','','0',"
-                          + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
-                          + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
-                          + "'"+dtf.getAppointmentDateIfLinkedToCare1()+"',"
-                          + "'"+dtf.getAppointmentDeemedDefaulter()+"',"
-                          + "'"+call1+"',"
-                          + "'"+call2+"',"
-                          + "'"+call3+"',"
-                          + "'"+dtf.getContactDetails()+"','"+dtf.getDateArtInitiation()+"',"
-                          + "'"+dtf.getDateClientVisitedFacility()+"',"
-                          + "'"+dtf.getDateOfCall1()+"',"
-                          + "'"+dtf.getDateOfCall2()+"',"
-                          + "'"+dtf.getDateOfCall3()+"',"
-                          + "'"+dtf.getDateOfVisit()+"',"
-                          + "'"+dtf.getDateOfVisit()+"',"
-                          + "'"+dtf.getFirstNameOfIndex()+"',"
-                          + "'"+dtf.getLastNameOfIndex()+"',"
-                          + "'"+dtf.getoIARTNumber()+"',"
-                          + "'"+dtf.getPhysicalAddress()+"',"
-                          + "'','"+dtf.getReviewDate()+"',"
-                          + "'"+vist+"',"
-                          + "'"+vist+"',"
-                          + "'"+disID+"',"
-                          + "'"+facID +"',"
-                          + "'"+provID+"',"
-                          + "'"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
-                          + "'"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
-                          + "'"+fo+"')";
-                         if(handle.execAction(query)){
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Notification");
-                        alert.setHeaderText("Success");
-                        alert.setContentText("Defaulter Tracking Form Saved Successfully");
-                        alert.showAndWait();
-                        clearFields();
+          if(conStatus.equals("Online")){
+              
+              savePro.setVisible(true);
+                Task<Void> tsave = new Task<Void>(){
+                    @Override
+                    protected Void call() throws Exception {
+                        dtf.setFacility(facilityService.get(Long.valueOf(facID)));
+                        dtf.setDistrict(districtService.get(disID));
+                        dtf.setProvince(provinceService.get(provID));
+                        defaulterTrackingFormService.save(dtf);
+                 return null;
                     }
-              } catch (SQLException ex) {
-                  Logger.getLogger(DefaulterTrackingFormController.class.getName()).log(Level.SEVERE, null, ex);
+                };
+                Thread thread = new Thread(tsave);
+                thread.setDaemon(true);
+                thread.start();   
+                  tsave.setOnSucceeded((WorkerStateEvent ev) -> {
+                
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Success");
+                    alert.setContentText("Defaulter Tracking Form Saved Successfully");
+                    alert.showAndWait();
+                    clearFields();
+                    savePro.setVisible(false);
+            });
+              tsave.setOnFailed((WorkerStateEvent ev) -> {
+                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Error Encountered");
+                  alert.setContentText("Connection Error: Try Again");
+                  alert.showAndWait();
+                  savePro.setVisible(false);
+
+             });
+              if(tsave.isDone()){
+               savePro.setVisible(false);
+              }
+          }
+          else{
+              String query = " Insert Into defaulter_tracking_form(active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
+                      + "appointment_date_if_linked_to_care1, appointment_deemed_defaulter, call1outcome, call2outcome, call3outcome, contact_details, "
+                      + "date_art_initiation, date_client_visited_facility, date_of_call1, date_of_call2, date_of_call3, date_of_visit, date_visit_done, first_name_of_index,"
+                      + "last_name_of_index, oiartnumber, physical_address, reason_for_tracking, review_date, visit_done_outcome, visit_outcome, created_by, modified_by, district, facility, province,"
+                      + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome)"
+                      + " Values('', '','','0',"
+                      + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
+                      + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
+                      + "'"+dtf.getAppointmentDateIfLinkedToCare1()+"',"
+                      + "'"+dtf.getAppointmentDeemedDefaulter()+"',"
+                      + "'"+call1+"',"
+                      + "'"+call2+"',"
+                      + "'"+call3+"',"
+                      + "'"+dtf.getContactDetails()+"','"+dtf.getDateArtInitiation()+"',"
+                      + "'"+dtf.getDateClientVisitedFacility()+"',"
+                      + "'"+dtf.getDateOfCall1()+"',"
+                      + "'"+dtf.getDateOfCall2()+"',"
+                      + "'"+dtf.getDateOfCall3()+"',"
+                      + "'"+dtf.getDateOfVisit()+"',"
+                      + "'"+dtf.getDateOfVisit()+"',"
+                      + "'"+dtf.getFirstNameOfIndex()+"',"
+                      + "'"+dtf.getLastNameOfIndex()+"',"
+                      + "'"+dtf.getoIARTNumber()+"',"
+                      + "'"+dtf.getPhysicalAddress()+"',"
+                      + "'','"+dtf.getReviewDate()+"',"
+                      + "'"+vist+"',"
+                      + "'"+vist+"',"
+                      + "'"+user.getId()+"',"
+                      + "'"+user.getId()+"',"
+                      + "'"+disID+"',"
+                      + "'"+facID +"',"
+                      + "'"+provID+"',"
+                      + "'"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
+                      + "'"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
+                      + "'"+fo+"')";
+              if(handle.execAction(query)){
+                  Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                  alert.setTitle("Notification");
+                  alert.setHeaderText("Success");
+                  alert.setContentText("Defaulter Tracking Form Saved Successfully");
+                  alert.showAndWait();
+                  clearFields();
               }
           }
         }
@@ -421,6 +441,7 @@ public class DefaulterTrackingFormController implements Initializable {
     public boolean isInputValid(){
         
        String errorMsg = "";
+       Validate validate = new Validate();
        /*
        if(!validate.validateNumber(artNumber.getText())){
            artNumber.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
@@ -433,6 +454,14 @@ public class DefaulterTrackingFormController implements Initializable {
        if(firstName.getText() == null || firstName.getText().isEmpty()){
           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "First Name is required\n";
+       }
+       if(!validate.validateTextOnly(firstName.getText())){
+           firstName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid FirstName[Text Only]!\n";
+       }
+       if(!validate.validateTextOnly(lastName.getText())){
+           lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Invalid LastName[Text Only]!\n";
        }
        if(lastName.getText() == null || lastName.getText().isEmpty()){
            lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
