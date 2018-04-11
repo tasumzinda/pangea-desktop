@@ -51,13 +51,14 @@ public class SendData {
 
     }
 
-    public HTSRegisterForm htsFormQuery(Long id) throws SQLException, ParseException {
+    public HTSRegisterForm htsFormQuery(Long id, String callType) throws SQLException, ParseException {
         ConvertItems ci = new ConvertItems();
         HTSRegisterForm hts = new HTSRegisterForm();
-        String query = "Select * From htsregister_form where id='" + id + "'";
+        String query = callType.equals("edit") ? "Select * From htsregister_form where id='"+id+"'" : "Select * From htsregister_form where id='"+id+"' and stat='0'";
+     
         ResultSet rs = handler.execQuery(query);
-        while (rs.next()) {
-
+        while (rs.next()) {           
+            hts.setId(rs.getLong("hid"));
             hts.setHivTestingReferralSlipNumber(rs.getString("hiv_testing_referral_slip_number"));
 
             //hts.setmDate(rs.getDate("m_date"));
@@ -90,17 +91,20 @@ public class SendData {
             hts.setLastName(rs.getString("last_name"));
             hts.setAge(rs.getInt("age"));
             hts.setGender(Gender.get(rs.getInt("gender")));
-            // return hts;
+           hts.setCreatedBy(createdby(rs.getLong("created_by")));
+            hts.setModifiedBy(modifiedby(rs.getLong("modified_by")));
+           
         }
         return hts;
     }
 
-    public DefaulterTrackingForm dtfFormQuery(Long id) throws SQLException, ParseException {
+    public DefaulterTrackingForm dtfFormQuery(Long id, String callType) throws SQLException, ParseException {
         DefaulterTrackingForm dtf = new DefaulterTrackingForm();
         ConvertItems ci = new ConvertItems();
-        String query = "Select * From defaulter_tracking_form where id='" + id + "'";
+        String query = callType.equals("edit") ? "Select * From defaulter_tracking_form where id='"+id+"'" : "Select * From defaulter_tracking_form where id='"+id+"' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
+            dtf.setId(rs.getLong("did"));
             dtf.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             dtf.setLastNameOfIndex(rs.getString("last_name_of_index"));
             dtf.setPhysicalAddress(rs.getString("physical_address"));
@@ -134,6 +138,8 @@ public class SendData {
             dtf.setDistrict(dis);
             Facility fac = getByIdFacility(rs.getLong("facility"));
             dtf.setFacility(fac);
+            dtf.setCreatedBy(createdby(rs.getLong("created_by")));
+            dtf.setModifiedBy(modifiedby(rs.getLong("modified_by")));
         }
         return dtf;
     }
@@ -144,6 +150,7 @@ public class SendData {
         String query = "Select * From index_case_testing_form where id='" + id + "'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
+            
             ict.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             ict.setLastNameOfIndex(rs.getString("last_name_of_index"));
             ict.setSequentialNumberOfIndex(rs.getString("sequential_number_of_index"));
@@ -202,7 +209,7 @@ public class SendData {
 
     public List<Long> htsIds() throws SQLException {
         List<Long> list = new ArrayList<>();
-        String query = "Select id From htsregister_form";
+        String query = "Select id From htsregister_form where stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
             Long ids = rs.getLong(1);

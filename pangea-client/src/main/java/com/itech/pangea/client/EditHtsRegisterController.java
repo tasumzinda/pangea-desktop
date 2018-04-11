@@ -240,13 +240,15 @@ public class EditHtsRegisterController implements Initializable {
     
     public void editOffline(Long id) throws SQLException, ParseException{
         SendData sd = new SendData();
-        htsById = sd.htsFormQuery(id);
+        htsById = sd.htsFormQuery(id, "edit");
         
         
         String entryStream;
-        if(htsById.getEntryStream().equals("null")){
+        
+        if(htsById.getEntryStream() == null || htsById.getEntryStream().equals("null") || htsById.getEntryStream().isEmpty()){
             entryStream = "OTHER"; 
         }
+        
         else{
             entryStream = htsById.getEntryStream();
         }
@@ -254,7 +256,7 @@ public class EditHtsRegisterController implements Initializable {
         int entry = i-1; 
         testingEntryStream.getSelectionModel().select(entry);
         
-        facility.getSelectionModel().select(htsById.getFacility().toString());
+       facility.getSelectionModel().select(htsById.getFacility().toString());
         firstName.setText(htsById.getFirstName());
         lastName.setText(htsById.getLastName());
         gender.getSelectionModel().select(htsById.getGender());
@@ -589,7 +591,7 @@ public class EditHtsRegisterController implements Initializable {
                        + "htsmodel = '"+hm+"',"
                        + " hiv_testing_referral_slip_number = '"+hts.getHivTestingReferralSlipNumber()+"',"
                        + " hts_number = '"+hts.getHtsNumber()+"',"
-                       + " pregnant_or_lactating_woman = '"+lw+"' WHERE id = '"+id+"'";
+                       + " pregnant_or_lactating_woman = '"+lw+"', stat='0' WHERE id = '"+id+"'";
                if(sqlite.execAction(query)){
                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                    alert.setTitle("Notification");

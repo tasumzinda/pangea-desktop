@@ -23,6 +23,7 @@ import com.itech.pangea.business.service.IndexCaseTestingFormService;
 import com.itech.pangea.business.service.MentorService;
 import com.itech.pangea.business.service.ProvinceService;
 import com.itech.pangea.business.service.UserService;
+import com.itech.pangea.sqliteConfig.ReceiveData;
 import com.jfoenix.controls.JFXProgressBar;
 import com.itech.pangea.sqliteConfig.SendData;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
@@ -128,7 +129,11 @@ public class HomeController implements Initializable {
         menuBtn.setText(user.getDisplayName());
         if (conStatus.equals("Online")) {
             onLine.setVisible(true);           
-            processSendDataTransction(conStatus);           
+            try {           
+                processSendDataTransction(conStatus);
+            } catch (Exception ex) {
+                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             offLine.setVisible(true);
         }
@@ -262,12 +267,39 @@ public class HomeController implements Initializable {
         System.exit(0);
     }
 
+    public void syncHts() throws SQLException{
+       String query = "Delete From htsregister_form";
+       if(handler.execAction(query)){
+       List<HTSRegisterForm> ht = hTSRegisterFormService.findByUser(user);
+       ReceiveData rd = new ReceiveData();
+       for(HTSRegisterForm h : ht){
+           h.setCreatedBy(user);
+           h.setModifiedBy(user);
+           rd.saveHtsRemote(h); 
+       }
+       } 
+    }
+    public void syncDefaulter() throws SQLException{
+        String query = "Delete From defaulter_tracking_form";
+       if(handler.execAction(query)){
+           List<DefaulterTrackingForm> de = defaulterTrackingFormService.findByUser(user);
+           ReceiveData receiveData = new ReceiveData();
+           for (DefaulterTrackingForm def : de) {
+               def.setCreatedBy(user);
+               def.setModifiedBy(user);
+               receiveData.saveDefaulterRemote(def);
+           }
+      
+       }
+    }
     @FXML
-    private void syncDatabase(ActionEvent event) throws SQLException, ParseException {
-        sendHtsForm(conStatus);
-        sendDtfForm(conStatus);
-        sendIctForm(conStatus);
-
+    private void syncDatabase(ActionEvent event) throws SQLException{
+       syncHts();
+       syncDefaulter();
+        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.err.println("Success");
+        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+       
     }
 
    
@@ -284,17 +316,49 @@ public class HomeController implements Initializable {
             if (ids.isEmpty()) {
                 return;
             }
-
+               
             for (Long id : ids) {
-                HTSRegisterForm hts;
-                hts = sendData.htsFormQuery(id);
-                System.err.println("******************************");
-                System.err.println("District::" + hts.getDistrict().getId());
-                System.err.println("******************************");
-                hts.setFacility(facilityService.get(hts.getFacility().getId()));
-                hts.setDistrict(districtService.get(hts.getDistrict().getId()));
-                hts.setProvince(provinceService.get(hts.getProvince().getId()));
-                hTSRegisterFormService.save(hts);
+                    HTSRegisterForm hts;
+                    hts = sendData.htsFormQuery(id, "send");
+                    if( hts.getId()==0 || hts.getId()==null){
+                  //   hts = sendData.htsFormQuery(id, "send");  
+                     hts.setFacility(facilityService.get(hts.getFacility().getId()));
+                     hts.setDistrict(districtService.get(hts.getDistrict().getId()));
+                     hts.setProvince(provinceService.get(hts.getProvince().getId()));
+                     hts.setCreatedBy(userService.get(hts.getCreatedBy().getId()));
+                     hts.setModifiedBy(userService.get(hts.getModifiedBy().getId()));
+                     hTSRegisterFormService.save(hts);
+               }
+                 else{
+                   //update
+                  HTSRegisterForm htsU = hTSRegisterFormService.get(hts.getId());
+                  htsU.setEntryStream(hts.getEntryStream());
+                  htsU.sethTSModel(hts.gethTSModel());
+                  htsU.setTest(hts.getTest());
+                  htsU.setReasonForHIVTest(hts.getReasonForHIVTest());
+                  htsU.setPregnantOrLactatingWoman(hts.getPregnantOrLactatingWoman());
+                  htsU.setmDate(hts.getmDate());
+                  htsU.setRegisteredInPreArt(hts.getRegisteredInPreArt());  
+                  htsU.setDateOfInitiation(hts.getDateOfInitiation());
+                  htsU.setRegisteredInPreArt(hts.getRegisteredInPreArt());
+                  htsU.setHivTestingReferralSlipNumber(hts.getHivTestingReferralSlipNumber());
+                  htsU.setmTime(hts.getmTime());
+                  htsU.setFinalResult(hts.getFinalResult());
+                  htsU.setInPreArt(hts.getInPreArt());
+                  htsU.setInitiatedOnArt(hts.getInitiatedOnArt());
+                  htsU.setOiArtNumber(hts.getOiArtNumber()); 
+                  htsU.setFirstName(hts.getFirstName());
+                  htsU.setLastName(hts.getLastName());
+                  htsU.setAge(hts.getAge());
+                  htsU.setGender(hts.getGender());
+                  htsU.setFacility(facilityService.get(hts.getFacility().getId()));
+                  htsU.setDistrict(districtService.get(hts.getDistrict().getId()));
+                  htsU.setProvince(provinceService.get(hts.getProvince().getId()));
+                   hTSRegisterFormService.save(htsU);
+              }
+                
+                
+                
 
             }
             String query = "Delete From htsregister_form";
@@ -315,11 +379,46 @@ public class HomeController implements Initializable {
             }
             for (Long id : idz) {
                 DefaulterTrackingForm dtf;
-                dtf = sendData.dtfFormQuery(id);
-                dtf.setDistrict(districtService.get(dtf.getDistrict().getId()));
-                dtf.setFacility(facilityService.get(dtf.getFacility().getId()));  
-                dtf.setProvince(provinceService.get(dtf.getProvince().getId()));
-                defaulterTrackingFormService.save(dtf);
+                dtf = sendData.dtfFormQuery(id, "send");
+                 if( dtf.getId()==0 || dtf.getId()==null){
+                        dtf.setDistrict(districtService.get(dtf.getDistrict().getId()));
+                        dtf.setFacility(facilityService.get(dtf.getFacility().getId()));  
+                        dtf.setProvince(provinceService.get(dtf.getProvince().getId()));
+                        dtf.setCreatedBy(userService.get(dtf.getCreatedBy().getId()));
+                        dtf.setModifiedBy(userService.get(dtf.getModifiedBy().getId()));
+                        defaulterTrackingFormService.save(dtf);
+                 }
+                 else{
+                     //update
+                      DefaulterTrackingForm dtfU = defaulterTrackingFormService.get(dtf.getId());
+                          
+                            dtfU.setFirstNameOfIndex(dtf.getFirstNameOfIndex());
+                            dtfU.setLastNameOfIndex(dtf.getLastNameOfIndex());
+                            dtfU.setPhysicalAddress(dtf.getPhysicalAddress());
+                            dtfU.setContactDetails(dtf.getContactDetails());
+                            dtfU.setoIARTNumber(dtf.getoIARTNumber());
+                            dtfU.setDateArtInitiation(dtf.getDateArtInitiation());
+                            dtfU.setReviewDate(dtf.getReviewDate());
+                            dtfU.setAppointmentDeemedDefaulter(dtf.getAppointmentDeemedDefaulter()); 
+                            dtfU.setDateOfCall1(dtf.getDateOfCall1());
+                            dtfU.setDateOfCall2(dtf.getDateOfCall2());
+                            dtfU.setDateOfCall3(dtf.getDateOfCall3());
+                            dtfU.setAppointmentDateIfLinkedToCare(dtf.getAppointmentDateIfLinkedToCare());
+                            dtfU.setAppointmentDateIfLinkedToCare1(dtf.getAppointmentDateIfLinkedToCare1());
+                            dtfU.setAppointmentDateIfLinkedToCare2(dtf.getAppointmentDateIfLinkedToCare2());
+                            dtfU.setAppointmentDateIfLinkedToCare3(dtf.getAppointmentDateIfLinkedToCare3());
+                            dtfU.setDateOfVisit(dtf.getDateOfVisit());
+                            dtfU.setDateClientVisitedFacility(dtf.getDateClientVisitedFacility());
+                            dtfU.setCall1Outcome(dtf.getCall1Outcome());
+                            dtfU.setCall2Outcome(dtf.getCall2Outcome());
+                            dtfU.setCall3Outcome(dtf.getCall3Outcome());
+                            dtfU.setVisitOutcome(dtf.getVisitOutcome());
+                            dtfU.setFinalOutcome(dtf.getFinalOutcome());
+                            dtfU.setDistrict(districtService.get(dtf.getDistrict().getId()));
+                            dtfU.setFacility(facilityService.get(dtf.getFacility().getId()));  
+                            dtfU.setProvince(provinceService.get(dtf.getProvince().getId()));
+                            defaulterTrackingFormService.save(dtfU);
+                 }
             }
             String query = "Delete From defaulter_tracking_form";
             if (handler.execAction(query)) {
@@ -394,21 +493,22 @@ public class HomeController implements Initializable {
            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
        } 
     } 
-    public void processSendDataTransction(String st){
-        Task<Void> taskProcess = new Task<Void>(){
-            @Override
-            protected Void call() throws Exception {
+    public void processSendDataTransction(String st) throws Exception{
+     //   Task<Void> taskProcess = new Task<Void>(){
+     //       @Override
+     //       protected Void call() throws Exception {
                 sendHtsForm(st);
                 sendDtfForm(st);
                 sendIctForm(st);
-                return null;
-            }
+      //          return null;
+      /*      }
         
          };
         taskProcess.setOnSucceeded((WorkerStateEvent e) -> {
             
         });
         taskProcess.setOnFailed((WorkerStateEvent e) -> {
+            
                   Alert alert = new Alert(Alert.AlertType.ERROR);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Error Encountered");
@@ -417,7 +517,7 @@ public class HomeController implements Initializable {
         });
         Thread thread = new Thread(taskProcess);
         thread.setDaemon(true);
-        thread.start();
+        thread.start();*/
     }
 
 }

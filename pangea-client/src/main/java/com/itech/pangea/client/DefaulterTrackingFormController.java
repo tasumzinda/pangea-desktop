@@ -391,11 +391,11 @@ public class DefaulterTrackingFormController implements Initializable {
               }
           }
           else{
-              String query = " Insert Into defaulter_tracking_form(active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
+              String query = " Insert Into defaulter_tracking_form(did, active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
                       + "appointment_date_if_linked_to_care1, appointment_deemed_defaulter, call1outcome, call2outcome, call3outcome, contact_details, "
                       + "date_art_initiation, date_client_visited_facility, date_of_call1, date_of_call2, date_of_call3, date_of_visit, date_visit_done, first_name_of_index,"
                       + "last_name_of_index, oiartnumber, physical_address, reason_for_tracking, review_date, visit_done_outcome, visit_outcome, created_by, modified_by, district, facility, province,"
-                      + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome)"
+                      + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome, stat)"
                       + " Values('', '','','0',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
@@ -415,7 +415,8 @@ public class DefaulterTrackingFormController implements Initializable {
                       + "'"+dtf.getLastNameOfIndex()+"',"
                       + "'"+dtf.getoIARTNumber()+"',"
                       + "'"+dtf.getPhysicalAddress()+"',"
-                      + "'','"+dtf.getReviewDate()+"',"
+                      + "'',"
+                      + "'"+dtf.getReviewDate()+"',"
                       + "'"+vist+"',"
                       + "'"+vist+"',"
                       + "'"+user.getId()+"',"
@@ -425,7 +426,7 @@ public class DefaulterTrackingFormController implements Initializable {
                       + "'"+provID+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
-                      + "'"+fo+"')";
+                      + "'"+fo+"', '0')";
               if(handle.execAction(query)){
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");

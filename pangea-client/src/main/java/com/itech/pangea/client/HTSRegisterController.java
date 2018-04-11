@@ -408,11 +408,11 @@ public class HTSRegisterController implements Initializable {
              }
             }
             else{
-               String query = "Insert Into htsregister_form(active, deleted, uuid, version, age, card_number,"
+               String query = "Insert Into htsregister_form(hid, active, deleted, uuid, version, age, card_number,"
                        + "date_of_initiation, entry_stream, final_result, first_name, gender, in_pre_art, initiated_on_art, last_name, m_date, m_time,"
                        + "oi_art_number, reason_forhivtest, registered_in_pre_art, test, created_by, modified_by, district, facility, province, date_client_registered_inart,"
-                       + "htsmodel, hiv_testing_referral_slip_number, hts_number, pregnant_or_lactating_woman, test_if_pregnant_or_lactating_woman)"
-                       + " Values('', '', '',"
+                       + "htsmodel, hiv_testing_referral_slip_number, hts_number, pregnant_or_lactating_woman, test_if_pregnant_or_lactating_woman, stat)"
+                       + " Values('','', '', '',"
                        + " '0',"
                        + " '"+Integer.parseInt(age.getText())+"',"
                        + " '"+hts.getHtsNumber()+"',"
@@ -440,7 +440,7 @@ public class HTSRegisterController implements Initializable {
                        + " '"+hts.getHivTestingReferralSlipNumber()+"',"
                        + " '"+hts.getHtsNumber()+"',"
                        + " '"+lw+"',"
-                       + " '')";
+                       + " '', '0')";
                if(handle.execAction(query)){
                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                    alert.setTitle("Notification");

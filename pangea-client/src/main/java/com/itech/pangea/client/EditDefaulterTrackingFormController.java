@@ -191,7 +191,7 @@ public class EditDefaulterTrackingFormController implements Initializable {
     }
       public void editOffline(Long id) throws SQLException, ParseException{
          SendData sd = new SendData();
-         dtfById = sd.dtfFormQuery(id);
+         dtfById = sd.dtfFormQuery(id, "edit");
       
         facility.getSelectionModel().select(dtfById.getFacility().toString());
         firstName.setText(dtfById.getFirstNameOfIndex());
@@ -475,7 +475,7 @@ public class EditDefaulterTrackingFormController implements Initializable {
                       + " province = '"+provID+"',"
                       + "appointment_date_if_linked_to_care2 = '"+dtf.getAppointmentDateIfLinkedToCare2()+"',"
                       + "appointment_date_if_linked_to_care3 = '"+dtf.getAppointmentDateIfLinkedToCare3()+"',"
-                      + "final_outcome = '"+fo+"' WHERE id = '"+id+"'";
+                      + "final_outcome = '"+fo+"', stat='0' WHERE id = '"+id+"'";
               if(handle.execAction(query)){
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");

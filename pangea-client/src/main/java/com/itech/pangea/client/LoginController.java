@@ -38,6 +38,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -261,10 +262,16 @@ public class LoginController implements Initializable {
                 ((Node) (event.getSource())).getScene().getWindow().hide();
             }
         });
-        task.setOnFailed((WorkerStateEvent e) -> {
-            progressBar.setVisible(false);
-            loginBtn.setDisable(false);
-            logInfo.setText("Connection Error");
+        task.setOnFailed(new EventHandler<WorkerStateEvent>() {
+            
+            @Override
+            public void handle(WorkerStateEvent e) {
+                progressBar.setVisible(false);
+                loginBtn.setDisable(false);
+                logInfo.setText("Connection Error");
+                Throwable throwable = task.getException();
+                throwable.printStackTrace();
+            }
         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
