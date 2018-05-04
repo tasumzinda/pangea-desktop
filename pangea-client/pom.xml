@@ -29,7 +29,7 @@
             <artifactId>jfoenix</artifactId>
             <version>8.0.1</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
             <version>8.15</version> 
@@ -39,17 +39,7 @@
             <artifactId>fontawesomefx-fontawesome</artifactId>
             <version>4.7.0-5</version>
         </dependency>
-        -->
-                <dependency>
-                    <groupId>de.jensd</groupId>
-                    <artifactId>fontawesomefx-commons</artifactId>
-                    <version>8.15</version>
-                </dependency>
-                <dependency>
-                    <groupId>de.jensd</groupId>
-                    <artifactId>fontawesomefx-fontawesome</artifactId>
-                    <version>4.7.0-9.1.2</version>
-                </dependency>
+        
         <dependency>
             <groupId>com.itech</groupId>
             <artifactId>pangea-business</artifactId>

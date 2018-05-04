@@ -19,7 +19,7 @@ package com.itech.pangea.business.service;
 import java.util.List;
 import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
-import com.itech.pangea.business.util.dto.SearchNationalDTO;
+import com.itech.pangea.business.domain.User;
 
 /**
  *
@@ -28,11 +28,6 @@ import com.itech.pangea.business.util.dto.SearchNationalDTO;
 public interface ContactService extends GenericService<Contact>{
     public List<Contact> getByIndex(IndexCaseTestingForm index);
     
-     public Integer countByHivStatusEntry(SearchNationalDTO dto);
     
-    public Integer countByHivStatusEntryAndInitiatedOnART(SearchNationalDTO dto);
-    
-    public Integer countByHivResult(SearchNationalDTO dto);
-    
-    public Integer getNewlyTestedContacts(SearchNationalDTO dto);
+    public List<Contact> findByUser(User createdBy);
 }

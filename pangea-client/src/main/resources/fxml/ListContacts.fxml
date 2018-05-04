@@ -35,7 +35,7 @@
             </AnchorPane>
             <TableView fx:id="tblContactList" onMouseClicked="#selectedContact" prefHeight="252.0" prefWidth="980.0">
               <columns>
-                  <TableColumn fx:id="cid" prefWidth="75.0" text="List" />
+                  <TableColumn fx:id="cid" prefWidth="75.0" text="List" visible="false" />
                 <TableColumn fx:id="nameOfContact" prefWidth="75.0" text="Name Of Contact" />
                   <TableColumn fx:id="facility" prefWidth="75.0" text="Facility" />
               </columns>

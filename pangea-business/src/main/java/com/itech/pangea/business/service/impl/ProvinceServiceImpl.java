@@ -11,7 +11,6 @@ import com.itech.pangea.business.domain.Province;
 import com.itech.pangea.business.repo.ProvinceRepo;
 import com.itech.pangea.business.service.ProvinceService;
 import com.itech.pangea.business.service.UserService;
-import com.itech.pangea.business.util.dto.NameIdDTO;
 
 /**
  *
@@ -92,13 +91,5 @@ public class ProvinceServiceImpl implements ProvinceService {
         }
         return false;
     }
-    
-    @Override
-    public List<NameIdDTO> getProvinces(){
-        ArrayList<NameIdDTO> list = new ArrayList<>();
-        for(Province p : getAll()){
-            list.add(new NameIdDTO(p.getName(), p.getId()));
-        }
-        return list;
-    }
+
 }

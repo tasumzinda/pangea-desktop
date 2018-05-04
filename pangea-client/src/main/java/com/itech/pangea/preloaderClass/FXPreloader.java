@@ -1,56 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- 
-package com.itech.pangea.preloaderClass;
 
-import javafx.application.Preloader;
-import javafx.application.Preloader.ProgressNotification;
-import javafx.application.Preloader.StateChangeNotification;
-import javafx.scene.Scene;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-
-/**
- * Simple Preloader Using the ProgressBar Control
- *
- * @author Admin
- 
-public class FXPreloader extends Preloader {
-    
-    ProgressBar bar;
-    Stage stage;
-    
-    private Scene createPreloaderScene() {
-        bar = new ProgressBar();
-        BorderPane p = new BorderPane();
-        p.setCenter(bar);
-        return new Scene(p, 300, 150);        
-    }
-    
-    @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-        stage.setScene(createPreloaderScene());        
-        stage.show();
-    }
-    
-    @Override
-    public void handleStateChangeNotification(StateChangeNotification scn) {
-        if (scn.getType() == StateChangeNotification.Type.BEFORE_START) {
-            stage.hide();
-        }
-    }
-    
-    @Override
-    public void handleProgressNotification(ProgressNotification pn) {
-        bar.setProgress(pn.getProgress());
-    }    
-    
-}
-*/
 package com.itech.pangea.preloaderClass;
 
 import com.itech.pangea.client.MainApp;
@@ -80,7 +28,6 @@ public class FXPreloader extends Preloader {
     private Label progress;
 
     public FXPreloader() {
-        // Constructor is called before everything.
         System.out.println(MainApp.STEP() + "MyPreloader constructor called, thread: " + Thread.currentThread().getName());
     }
 
@@ -104,28 +51,14 @@ public class FXPreloader extends Preloader {
             iv.setImage(im);
             VBox foote = new VBox(iv);
             foote.setAlignment(Pos.CENTER);
-            bar = new ProgressBar();
-           
+            bar = new ProgressBar();          
             BorderPane p = new BorderPane();
             p.setTop(root);
             p.setCenter(bar);
-            p.setBottom(foote);
-           
-            scene =  new Scene(p, 600, 500);   
-            
-            
-            
-          /*  Label title = new Label("Itech Esta Forms!\nLoading, please wait...");
-            title.setTextAlignment(TextAlignment.CENTER);
-            progress = new Label("0%");
-
-            VBox root = new VBox(title, progress);
-            root.setAlignment(Pos.CENTER);
-
-            scene = new Scene(root, WIDTH, HEIGHT);*/
+            p.setBottom(foote);          
+            scene =  new Scene(p, 600, 500);            
         });
     }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.out.println(MainApp.STEP() + "MyPreloader#start (showing preloader stage), thread: " + Thread.currentThread().getName());
@@ -141,11 +74,8 @@ public class FXPreloader extends Preloader {
 
     @Override
     public void handleApplicationNotification(PreloaderNotification info) {
-        // Handle application notification in this point (see MainApp#init).
         if (info instanceof ProgressNotification) {
-          //  progress.setText(((ProgressNotification) info).getProgress() + "%");
-          bar.setProgress(((ProgressNotification) info).getProgress());
-          
+          bar.setProgress(((ProgressNotification) info).getProgress());         
         }
     }
 

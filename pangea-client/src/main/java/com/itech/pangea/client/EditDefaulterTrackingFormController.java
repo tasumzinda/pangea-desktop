@@ -6,9 +6,6 @@
 package com.itech.pangea.client;
 
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
-import com.itech.pangea.business.domain.District;
-import com.itech.pangea.business.domain.Facility;
-import com.itech.pangea.business.domain.Province;
 import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.CallOutcome;
 import com.itech.pangea.business.service.DefaulterTrackingFormService;
@@ -25,13 +22,13 @@ import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.utils.DateFunctions;
 import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -61,6 +59,8 @@ public class EditDefaulterTrackingFormController implements Initializable {
     private JFXComboBox facility;
     @FXML
     private JFXButton cancelBtn;
+    @FXML
+    private JFXButton updateBtn;
     
     @FXML
     private JFXTextField firstName;
@@ -72,7 +72,8 @@ public class EditDefaulterTrackingFormController implements Initializable {
     private JFXTextField physicalAddress;
     @FXML
     private JFXTextField artNumber;
-    
+    @FXML
+    private JFXSpinner spinner;
     @FXML
     private JFXDatePicker dateArtInitiation;
     @FXML
@@ -151,16 +152,16 @@ public class EditDefaulterTrackingFormController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(EditDefaulterTrackingFormController.class.getName()).log(Level.SEVERE, null, ex);
         }
-            if(conStatus.equals("Online")){
+          /*  if(conStatus.equals("Online")){
                 editOnline();
             }
-            else{
+            else{*/
                 try {
                     editOffline(id);
                 } catch (SQLException | ParseException ex) {
                     Logger.getLogger(EditDefaulterTrackingFormController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+          //  }
     }
     public void editOnline(){
         dtfById  = defaulterTrackingFormService.get(id);
@@ -278,11 +279,11 @@ public class EditDefaulterTrackingFormController implements Initializable {
     DefaulterTrackingForm dtf;
     public void updateDft(Long id, String conStatus) throws SQLException{
         
-        if(conStatus.equals("Online")){
+      /*  if(conStatus.equals("Online")){
             dtf = defaulterTrackingFormService.get(id);
-        }else{
+        }else{*/
             dtf = new DefaulterTrackingForm();
-        }
+      //  }
         if(isInputValid()){
             
           dtf.setFirstNameOfIndex(firstName.getText());
@@ -435,18 +436,43 @@ public class EditDefaulterTrackingFormController implements Initializable {
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());        
-          if(conStatus.equals("Online")){
-                dtf.setFacility(facilityService.get(Long.valueOf(facID)));
-                dtf.setDistrict(districtService.get(disID));
-                dtf.setProvince(provinceService.get(provID));
-            defaulterTrackingFormService.save(dtf);
-           Alert alert = new Alert(Alert.AlertType.INFORMATION);
-           alert.setTitle("Notification");
-           alert.setHeaderText("Success");
-           alert.setContentText("Update was Successful!!!");
-           alert.showAndWait();
+     /*     if(conStatus.equals("Online")){
+               spinner.setVisible(true);
+                Task<Void> tUpdate = new Task<Void>(){
+                   @Override
+                   protected Void call() throws Exception {
+                        dtf.setFacility(facilityService.get(Long.valueOf(facID)));
+                        dtf.setDistrict(districtService.get(disID));
+                        dtf.setProvince(provinceService.get(provID));
+                        defaulterTrackingFormService.save(dtf);
+                        return null;
+                   }
+               };
+              tUpdate.setOnSucceeded((event) -> {
+                   spinner.setVisible(false);
+                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Success");
+                    alert.setContentText("Update was Successful!!!");
+                    alert.showAndWait();
+                    Stage stage = (Stage) updateBtn.getScene().getWindow();
+                    stage.close();
+              });
+             tUpdate.setOnFailed((event) -> {
+                   spinner.setVisible(false);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Update Failed");
+                    alert.setContentText("Check Internet Connection");
+                    alert.showAndWait();
+                    Stage stage = (Stage) updateBtn.getScene().getWindow();
+                    stage.close();
+             });
+               Thread thread = new Thread(tUpdate);
+               thread.setDaemon(true);
+               thread.start(); 
           }
-          else{
+          else{*/
               String query = "Update defaulter_tracking_form set "
                       + "appointment_date_if_linked_back_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "appointment_date_if_linked_to_care = '"+dtf.getAppointmentDateIfLinkedToCare()+"',"
@@ -482,8 +508,10 @@ public class EditDefaulterTrackingFormController implements Initializable {
                   alert.setHeaderText("Success");
                   alert.setContentText("Defaulter Tracking Form Updated Successfully");
                   alert.showAndWait();
+                  Stage stage = (Stage) updateBtn.getScene().getWindow();
+                  stage.close();
               }
-          }
+        //  }
         }
     }
      public Date convertDate(LocalDate localDate){

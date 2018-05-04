@@ -1,13 +1,11 @@
 package com.itech.pangea.client;
 
 import com.itech.pangea.preloaderClass.FXPreloader;
+import com.itech.pangea.utils.AnnotationConfigApplicationContextTask;
 import com.sun.javafx.application.LauncherImpl;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,8 +39,10 @@ public class MainApp extends Application {
         System.out.println(MainApp.STEP() + "MyApplication constructor called, thread: " + Thread.currentThread().getName());
     }
     public AnnotationConfigApplicationContext getCtx(){
-       
-         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+      //   Task anoTask = new AnnotationConfigApplicationContextTask();
+      //   AnnotationConfigApplicationContext ctx = (AnnotationConfigApplicationContext) anoTask.getValue(); 
+      //   new Thread(anoTask).start();
          return ctx;
     }
 
@@ -88,33 +88,29 @@ public class MainApp extends Application {
     }
     
     public void conStatus() {
-       try {
-           Class.forName("com.mysql.jdbc.Driver").newInstance();
-           String jdbcUrl = "jdbc:mysql://localhost:3306/itechdb";
-            String user = "root";
-            String pass ="";
-         // String user = "itechadmin";
-        // String pass = "itech2017";
-           Connection con = DriverManager.getConnection(jdbcUrl, user, pass);
-           if (con != null) {
-               
-               lOn = true;
-               lOff = false;
-               conStatus = "Online";
-               
-           } else if (con == null) {
-               lOn = false;
-               lOff = true;
-               conStatus = "Offline";
-               
-           }
-       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException ex) {
-               lOn = false;
-               lOff = true;
-               conStatus = "Offline";
-           Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-       } 
         
+        Task<Connection> tas = new ServerHandler();
+        
+        tas.setOnSucceeded((event) -> {
+            Connection con = tas.getValue();
+            
+                 if (con != null) {           
+                    lOn = true;
+                    lOff = false;
+                    conStatus = "Online";       
+                   }
+                 else{
+                    lOn = false;
+                    lOff = true;
+                    conStatus = "Offline";             
+                   }
+          });
+        tas.setOnFailed((event) -> {
+                     lOn = false;
+                    lOff = true;
+                    conStatus = "Offline";         
+        });   
+        new Thread(tas).start();
     } 
     
 

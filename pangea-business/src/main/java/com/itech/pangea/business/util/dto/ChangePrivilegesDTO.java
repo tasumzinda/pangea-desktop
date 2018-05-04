@@ -18,6 +18,8 @@ package com.itech.pangea.business.util.dto;
 import com.itech.pangea.business.domain.User;
 
 
+
+
 /**
  *
  * @author Edward Zengeni

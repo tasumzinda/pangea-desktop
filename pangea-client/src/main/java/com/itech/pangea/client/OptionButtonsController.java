@@ -120,7 +120,7 @@ public class OptionButtonsController implements Initializable {
          System.err.println(id);
           System.err.println("===========================");
          if(controllerType.equals("callHts")){
-            if(conStatus.equals("Online")){
+           /* if(conStatus.equals("Online")){
                 Alert al = new Alert(Alert.AlertType.CONFIRMATION);
                 al.setTitle("Delete Dialog");
                 al.setHeaderText("Delete HTS");
@@ -136,9 +136,9 @@ public class OptionButtonsController implements Initializable {
                         a.showAndWait();
                 }
             }
-            else{
+            else{*/
                 deleteHts();
-            }
+        //    }
         }
          else{
              if(conStatus.equals("Online")){

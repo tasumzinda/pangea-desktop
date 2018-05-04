@@ -51,8 +51,8 @@ public class IndexCaseTestingForm extends BaseEntity{
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date dateIndexTestedOrDiagnosed;
     private String sequentialNumberOfIndex;
-    //private Long indexContactNumber;
-    private String indexContactNumber;
+    private Long indexContactNumber;
+   // private String indexContactNumber;
 
     public Facility getFacility() {
         return facility;
@@ -149,21 +149,15 @@ public class IndexCaseTestingForm extends BaseEntity{
     public void setSequentialNumberOfIndex(String sequentialNumberOfIndex) {
         this.sequentialNumberOfIndex = sequentialNumberOfIndex;
     }
-/*
+
     public Long getIndexContactNumber() {
         return indexContactNumber;
     }
 
     public void setIndexContactNumber(Long indexContactNumber) {
         this.indexContactNumber = indexContactNumber;
-    }*/
-
-    public String getIndexContactNumber() {
-        return indexContactNumber;
     }
 
-    public void setIndexContactNumber(String indexContactNumber) {
-        this.indexContactNumber = indexContactNumber;
-    }
+   
     
 }

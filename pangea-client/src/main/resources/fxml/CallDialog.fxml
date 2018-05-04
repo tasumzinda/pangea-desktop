@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="343.0" prefWidth="647.0" stylesheets="@../styles/home.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="com.itech.pangea.client.CallVisitController">
+<AnchorPane id="AnchorPane" prefHeight="343.0" prefWidth="647.0" stylesheets="@../styles/home.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itech.pangea.client.CallVisitController">
    <children>
       <VBox alignment="CENTER" layoutX="56.0" layoutY="52.0" prefHeight="343.0" prefWidth="647.0" spacing="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -24,7 +23,7 @@
             <JFXComboBox fx:id="callOutcome" prefWidth="600.0" promptText="Call Outcome :" styleClass="callvisit" />
             <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="20.0">
                <children>
-                  <JFXButton buttonType="RAISED" defaultButton="true" onAction="#saveCallButton" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Save">
+                  <JFXButton fx:id="saveBtnCall" buttonType="RAISED" defaultButton="true" onAction="#saveCallButton" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Save">
                      <graphic>
                         <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
                      </graphic>

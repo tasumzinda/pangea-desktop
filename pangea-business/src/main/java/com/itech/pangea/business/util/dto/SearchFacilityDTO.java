@@ -16,13 +16,14 @@
 
 package com.itech.pangea.business.util.dto;
 
-import java.io.Serializable;
-import java.util.Date;
-import org.springframework.format.annotation.DateTimeFormat;
 import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.Period;
 import com.itech.pangea.business.domain.Province;
+import java.io.Serializable;
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 /**
  *

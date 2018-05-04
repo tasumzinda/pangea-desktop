@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -74,13 +76,10 @@ public class DefaulterListController implements Initializable {
     @Resource
     private DefaulterTrackingFormService defaulterTrackingFormService;
     
-    List<DefaulterTrackingForm> listD = new ArrayList<>();
+    
     
     @FXML
     private void searchTextEntered(KeyEvent event){
-        System.err.println("+++++++++++++++++++++++++");
-        System.err.println("Key Shifted");
-        System.err.println("+++++++++++++++++++++++++");
         
         search.textProperty().addListener((observableValue, ov, nv)->{
             filteredData.setPredicate((Predicate<? super DefaulterProperties>)htsp->{
@@ -112,17 +111,21 @@ public class DefaulterListController implements Initializable {
         this.user = user;
         this.acac = acac;
         this.conStatus = conStatus;
-        if(conStatus.equals("Online")){
+     /*   if(conStatus.equals("Online")){
             getListOnlineD();
         }
-        else{
+        else{*/
             try {
                 getListOfflineD();
             } catch (SQLException ex) {
                 Logger.getLogger(DefaulterListController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+           // }
         }
        
+    }
+    @FXML
+    private void refreshList(ActionEvent event) throws SQLException{
+        getListOfflineD();
     }
     @FXML
     private void selectedDefaulter(MouseEvent event){
@@ -159,31 +162,42 @@ public class DefaulterListController implements Initializable {
               loadingBar.setVisible(true);
                  Task<List> task = new Task<List>(){
                      @Override
-                     protected List call() throws Exception {
+                     protected List<DefaulterTrackingForm> call() throws Exception {
                           return defaulterTrackingFormService.findByUser(user); 
                      }                    
                  };
-         task.setOnSucceeded((WorkerStateEvent e) -> {
-        listD = task.getValue();
-        for(DefaulterTrackingForm dt : listD){     
-            if(dt.getActive()){
-                dataD.add(new DefaulterProperties(dt.getId(), dt.getFirstNameOfIndex(), dt.getLastNameOfIndex(), dt.getFacility()==null ? "" : dt.getFacility().toString()));
+        task.setOnSucceeded((WorkerStateEvent e) -> {
+            try {
+                List<DefaulterTrackingForm> listD;
+                listD = task.get();
+                for(DefaulterTrackingForm dt : listD){
+                    if(dt.getActive()){
+                        dataD.add(new DefaulterProperties(dt.getId(), dt.getFirstNameOfIndex(), dt.getLastNameOfIndex(), dt.getFacility()==null ? "" : dt.getFacility().toString()));
+                    }
+                }
+                Platform.runLater(() -> {
+                    defaulterListTable.setItems(dataD);
+                    colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
+                    colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
+                    colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+                    colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
+                    loadingBar.setVisible(false);
+                });
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(DefaulterListController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        Platform.runLater(() -> { 
-             defaulterListTable.setItems(dataD);
+        });
+         task.setOnFailed((event) -> {
+             Platform.runLater(() -> { 
              loadingBar.setVisible(false);
          });
-        });
+         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start(); 
          
-         
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
-        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());     
-        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
+        
+        
     }
     public void getListOfflineD() throws SQLException{
         dataD.clear();
@@ -198,7 +212,7 @@ public class DefaulterListController implements Initializable {
                     sd.getByIdFacility(rs.getLong("facility")).toString()
             ));
         }
-       defaulterListTable.setItems(dataD); 
+        defaulterListTable.setItems(dataD); 
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
         colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());        

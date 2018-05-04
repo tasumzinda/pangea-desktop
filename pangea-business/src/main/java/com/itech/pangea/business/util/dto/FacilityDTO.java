@@ -15,9 +15,6 @@
  */
 package com.itech.pangea.business.util.dto;
 
-import com.itech.pangea.business.util.dto.DistrictDTO;
-import com.itech.pangea.business.util.dto.NameIdDTO;
-
 /**
  *
  * @author Judge Muzinda

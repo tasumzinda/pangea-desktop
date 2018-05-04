@@ -67,7 +67,41 @@ public class SQLiteQueries {
         }
         return maxid;
     }
-   /* public Long getDistrictIdOfFacility(int fid){
-        String query = "Select did From District where did";
-    }*/
+                public Integer countHts() throws SQLException{
+                    int i = 0;
+                    String query = "Select count(stat) From htsregister_form where stat ='0'";
+                    ResultSet rs = handle.execQuery(query);
+                    while (rs.next()) {
+                       i = rs.getInt(1);        
+                    }
+                    return i;
+                }
+                public Integer countDe() throws SQLException{
+                    int i = 0;
+                    String query = "Select count(stat) From defaulter_tracking_form where stat ='0'";
+                    ResultSet rs = handle.execQuery(query);
+                    while (rs.next()) {
+                       i = rs.getInt(1);        
+                    }
+                    return i;
+                }
+                public Integer countIndex() throws SQLException{
+                    int i = 0;
+                    String query = "Select count(stat) From index_case_testing_form where stat ='0'";
+                    ResultSet rs = handle.execQuery(query);
+                    while (rs.next()) {
+                       i = rs.getInt(1);        
+                    }
+                    return i;
+                }
+                public Integer countContacts() throws SQLException{
+                    int i = 0;
+                    String query = "Select count(stat) From contact where stat ='0'";
+                    ResultSet rs = handle.execQuery(query);
+                    while (rs.next()) {
+                       i = rs.getInt(1);        
+                    }
+                    return i;
+                }
+               
 }

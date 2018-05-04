@@ -33,6 +33,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 import javax.annotation.Resource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -127,7 +128,7 @@ public class ContactListController implements Initializable {
      }
     @FXML
     private void onRelSel(ActionEvent e){
-       if(relationShipToIndex.getSelectionModel().getSelectedItem().equals(Relationship.OTHER)){
+       if(relationShipToIndex.getSelectionModel().isSelected(3)){
            relationshipOther.setDisable(false);
        }
        else{
@@ -136,7 +137,7 @@ public class ContactListController implements Initializable {
    }
    @FXML
     private void onHivStat(ActionEvent e){
-       if(!hivStatusEntry.getSelectionModel().getSelectedItem().equals(ReasonForIneligibilityForTesting.UNKNOWN)){
+       if(!hivStatusEntry.getSelectionModel().isSelected(2)){
            ifTestedDateContactTested.setDisable(false);
        }
        else{
@@ -145,7 +146,7 @@ public class ContactListController implements Initializable {
    }
     @FXML
     private void onEnrolled(ActionEvent e){
-       if(enrolledIntoCare.getSelectionModel().getSelectedItem().equals(YesNo.YES)){
+       if(enrolledIntoCare.getSelectionModel().isSelected(0)){
            artNumber.setDisable(false);
        }
        else{
@@ -154,7 +155,8 @@ public class ContactListController implements Initializable {
    }
     @FXML
     private void clearPressed(ActionEvent ev){
-        clearFields();
+       Stage stage = (Stage) appointmentDateForContact.getScene().getWindow();
+       stage.close();  
     }
     @FXML
     private void saveContactList(ActionEvent ev){
@@ -183,7 +185,7 @@ public class ContactListController implements Initializable {
            c.setIndexCaseTestingForm(indexCaseId);
            c.setCreatedBy(user);
            c.setModifiedBy(user);
-              if(conStatus.equals("Online")){
+          /*    if(conStatus.equals("Online")){
                     saveP.setVisible(true);
              Task<Void> tsave = new Task<Void>(){
                     @Override
@@ -218,7 +220,7 @@ public class ContactListController implements Initializable {
              });
                
               }
-              else{
+              else{*/
                  
                  int eic;
                  int gen;
@@ -277,16 +279,16 @@ public class ContactListController implements Initializable {
                  else{
                      rs = c.getReferralSlipReturned().getCode();
                  }
-                 String query = "Insert Into Contact(active, deleted, uuid, version, age, appointment_date_for_contact, art_number,"
+                 String query = "Insert Into Contact(cid, active, deleted, uuid, version, age, appointment_date_for_contact, art_number,"
                          + "call_outcome, contact_address, contact_tested_date, date_called, date_visited, enrolled_into_care, gender,"
                          + "hiv_result, hiv_status_entry, if_tested_date_contact_tested, location_of_test, name_of_contact, onart,"
                          + "preferred_place_for_contacts_to_be_tested, referral_slip_number, referral_slip_returned, relation_ship_to_index,"
                          + "second_appointment_date_for_contact, sequential_number_of_contacts, third_appointment_date_for_contact, visit_outcome,"
-                         + "created_by, modified_by, index_case_testing_form) Values('', '', '', '0',"
+                         + "created_by, modified_by, index_case_testing_form, stat) Values('0', '', '', '', '0',"
                          + "'"+c.getAge()+"',"
                          + "'"+c.getAppointmentDateForContact()+"',"
                          + "'"+c.getArtNumber()+"',"
-                         + "'"+c.getCallOutcome()+"',"
+                         + "'11',"
                          + "'"+c.getContactAddress()+"',"
                          + "'"+c.getContactTestedDate()+"',"
                          + "'"+c.getDateCalled()+"',"
@@ -306,20 +308,21 @@ public class ContactListController implements Initializable {
                          + "'"+c.getSecondAppointmentDateForContact()+"',"
                          + "'"+c.getSequentialNumberOfContacts()+"',"
                          + "'"+c.getThirdAppointmentDateForContact()+"',"
-                         + "'"+c.getVisitOutcome()+"',"
+                         + "'11',"
                          + "'"+user.getId()+"',"
                          + "'"+user.getId()+"',"
-                         + "'"+c.getIndexCaseTestingForm().getId()+"')"; 
+                         + "'"+c.getIndexCaseTestingForm().getId()+"','0')"; 
                  if(handle.execAction(query)){
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Success");
                   alert.setContentText("Contact Saved Successfully");
                   alert.showAndWait();
+                  clearFields();
                  }
               }
            
-       }
+     //  }
     }
     public void clearFields(){
        preferredPlaceForContactsToBeTested.getSelectionModel().clearSelection();
@@ -371,6 +374,10 @@ public class ContactListController implements Initializable {
            nameOfContact.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Invalid Name Of Contact!\nPlease Try [Xxxxxx Xxxxxx] format.\n";
        }
+        if(gender.getSelectionModel().isEmpty()){
+            gender.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+           errorMsg += "Gender Required.\n"; 
+        }
        
         if(!validate.validateNumber(sequentialNumberOfContacts.getText())){
             sequentialNumberOfContacts.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");

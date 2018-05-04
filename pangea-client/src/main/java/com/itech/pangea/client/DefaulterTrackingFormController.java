@@ -7,7 +7,6 @@ package com.itech.pangea.client;
 
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
 import com.itech.pangea.business.domain.District;
-import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.Province;
 import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.CallOutcome;
@@ -28,14 +27,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -351,7 +347,7 @@ public class DefaulterTrackingFormController implements Initializable {
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-          if(conStatus.equals("Online")){
+        /*  if(conStatus.equals("Online")){
               
               savePro.setVisible(true);
                 Task<Void> tsave = new Task<Void>(){
@@ -364,39 +360,41 @@ public class DefaulterTrackingFormController implements Initializable {
                  return null;
                     }
                 };
-                Thread thread = new Thread(tsave);
-                thread.setDaemon(true);
-                thread.start();   
+                 
                   tsave.setOnSucceeded((WorkerStateEvent ev) -> {
-                
+                    savePro.setVisible(false);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Notification");
                     alert.setHeaderText("Success");
                     alert.setContentText("Defaulter Tracking Form Saved Successfully");
                     alert.showAndWait();
                     clearFields();
-                    savePro.setVisible(false);
+                    
             });
               tsave.setOnFailed((WorkerStateEvent ev) -> {
+                   savePro.setVisible(false);
                    Alert alert = new Alert(Alert.AlertType.ERROR);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Error Encountered");
                   alert.setContentText("Connection Error: Try Again");
                   alert.showAndWait();
-                  savePro.setVisible(false);
+                 
 
              });
               if(tsave.isDone()){
                savePro.setVisible(false);
               }
-          }
-          else{
+               Thread thread = new Thread(tsave);
+               thread.setDaemon(true);
+                thread.start(); 
+          }*/
+        //  else{
               String query = " Insert Into defaulter_tracking_form(did, active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
                       + "appointment_date_if_linked_to_care1, appointment_deemed_defaulter, call1outcome, call2outcome, call3outcome, contact_details, "
                       + "date_art_initiation, date_client_visited_facility, date_of_call1, date_of_call2, date_of_call3, date_of_visit, date_visit_done, first_name_of_index,"
                       + "last_name_of_index, oiartnumber, physical_address, reason_for_tracking, review_date, visit_done_outcome, visit_outcome, created_by, modified_by, district, facility, province,"
                       + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome, stat)"
-                      + " Values('', '','','0',"
+                      + " Values('', '', '','','0',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare1()+"',"
@@ -404,7 +402,8 @@ public class DefaulterTrackingFormController implements Initializable {
                       + "'"+call1+"',"
                       + "'"+call2+"',"
                       + "'"+call3+"',"
-                      + "'"+dtf.getContactDetails()+"','"+dtf.getDateArtInitiation()+"',"
+                      + "'"+dtf.getContactDetails()+"',"
+                      + "'"+dtf.getDateArtInitiation()+"',"
                       + "'"+dtf.getDateClientVisitedFacility()+"',"
                       + "'"+dtf.getDateOfCall1()+"',"
                       + "'"+dtf.getDateOfCall2()+"',"
@@ -436,7 +435,7 @@ public class DefaulterTrackingFormController implements Initializable {
                   clearFields();
               }
           }
-        }
+       // }
     }
 
     public boolean isInputValid(){

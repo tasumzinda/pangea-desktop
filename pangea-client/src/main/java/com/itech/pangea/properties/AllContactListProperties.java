@@ -14,15 +14,17 @@ import javafx.beans.property.StringProperty;
  *
  * @author user
  */
-public class ContactListProperties {
-
+public class AllContactListProperties {
+    
     private final StringProperty nameOfContact;
     private final StringProperty facility;
-   private final LongProperty cid;
+    private final LongProperty cid;
+    private final StringProperty nameOfIndex;
     
 
-    public ContactListProperties(long cid, String nameOfContact, String facility) {
+    public AllContactListProperties(long cid, String nameOfIndex, String nameOfContact, String facility) {
         this.cid = new SimpleLongProperty(cid);
+        this.nameOfIndex = new SimpleStringProperty(nameOfIndex);
         this.nameOfContact   = new SimpleStringProperty(nameOfContact);
         this.facility = new SimpleStringProperty(facility);
         
@@ -39,6 +41,19 @@ public class ContactListProperties {
 
     public LongProperty cidProperty() {
         return cid;
+    }
+    
+
+    public String getNameOfIndex() {
+        return nameOfIndex.get();
+    }
+
+    public void setNameOfIndex(String value) {
+        nameOfIndex.set(value);
+    }
+
+    public StringProperty nameOfIndexProperty() {
+        return nameOfIndex;
     }
 
 

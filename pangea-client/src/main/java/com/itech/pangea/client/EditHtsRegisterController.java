@@ -5,10 +5,7 @@
  */
 package com.itech.pangea.client;
 
-import com.itech.pangea.business.domain.District;
-import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.HTSRegisterForm;
-import com.itech.pangea.business.domain.Province;
 import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.ClientServices;
 import com.itech.pangea.business.domain.util.Gender;
@@ -33,6 +30,7 @@ import com.itech.pangea.utils.DateFunctions;
 import com.itech.pangea.utils.StringUtilis;
 import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,16 +38,14 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -71,6 +67,8 @@ public class EditHtsRegisterController implements Initializable {
     SqliteDatabaseHandler sqlite;
    
     @FXML
+    private JFXButton updateBtn;
+    @FXML
     private JFXComboBox facility;
     @FXML
     private JFXButton cancelBtn;
@@ -86,7 +84,8 @@ public class EditHtsRegisterController implements Initializable {
     private JFXTextField hivTestingSlipNum;
     @FXML
     private JFXTextField htsNumber;
-
+    @FXML
+    private JFXSpinner spinner;
     @FXML
     private JFXTimePicker time;
     @FXML
@@ -171,16 +170,16 @@ public class EditHtsRegisterController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(EditHtsRegisterController.class.getName()).log(Level.SEVERE, null, ex);
         }
-            if(conStatus.equals("Online")){
+         /*   if(conStatus.equals("Online")){
                 editOnline(id);
             }
-            else{
+            else{*/
                 try {
                     editOffline(id);
                 } catch (SQLException | ParseException ex) {
                     Logger.getLogger(EditDefaulterTrackingFormController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+         //   }
         
     }
     public void  editOnline(Long id){
@@ -237,7 +236,15 @@ public class EditHtsRegisterController implements Initializable {
         
         
     }
-    
+    @FXML
+    private void onSelectedGender(ActionEvent event){
+        if(gender.getSelectionModel().isSelected(0)){
+            lactingWoman.setDisable(true);
+        }
+        else{
+            lactingWoman.setDisable(false);
+        }
+    }
     public void editOffline(Long id) throws SQLException, ParseException{
         SendData sd = new SendData();
         htsById = sd.htsFormQuery(id, "edit");
@@ -412,12 +419,12 @@ public class EditHtsRegisterController implements Initializable {
      HTSRegisterForm hts;
     public void updateHtsForm(Long id, String conStatus) throws SQLException{
        
-        if(conStatus.equals("Online")){
+      /*  if(conStatus.equals("Online")){
             hts = hTSRegisterFormService.get(id);
         }
-        else{
+        else{*/
             hts  = new HTSRegisterForm();
-        }
+       // }
         hts.setId(id);
          int hm = 11; //11 means null
          String ht;
@@ -556,18 +563,43 @@ public class EditHtsRegisterController implements Initializable {
                     long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                     long provID = placeID.getProvinceFromDistrict(disID);
                     int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
-           if(conStatus.equals("Online")){
-                hts.setFacility(facilityService.get(Long.valueOf(facID)));
-                hts.setDistrict(districtService.get(disID));
-                hts.setProvince(provinceService.get(provID));
-               hTSRegisterFormService.save(hts);
-              Alert alert = new Alert(Alert.AlertType.INFORMATION);
-              alert.setTitle("Notification");
-              alert.setHeaderText("Update Successfull");
-              alert.setContentText("HTS Register Form");
-              alert.showAndWait();
+       /*    if(conStatus.equals("Online")){
+                spinner.setVisible(true);
+                Task<Void> tUpdate = new Task<Void>(){
+                    @Override
+                    protected Void call() throws Exception {
+                            hts.setFacility(facilityService.get(Long.valueOf(facID)));
+                            hts.setDistrict(districtService.get(disID));
+                            hts.setProvince(provinceService.get(provID));
+                            hTSRegisterFormService.save(hts);
+                            return null;
+                    }
+                };
+               tUpdate.setOnSucceeded((event) -> {
+                    spinner.setVisible(false);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Update Successfull");
+                    alert.setContentText("HTS Register Form");
+                    alert.showAndWait();
+                    Stage stage = (Stage) updateBtn.getScene().getWindow();
+                    stage.close();
+               });
+               tUpdate.setOnFailed((event) -> {
+                    spinner.setVisible(false);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Update Failed");
+                    alert.setContentText("Check Internet Connection");
+                    alert.showAndWait();
+                    Stage stage = (Stage) updateBtn.getScene().getWindow();
+                    stage.close();
+               });
+               Thread thread = new Thread(tUpdate);
+               thread.setDaemon(true);
+               thread.start(); 
             }
-            else{
+            else{*/
                String query = "Update htsregister_form set "
                        + "age = '"+Integer.parseInt(age.getText())+"',"
                        + " card_number = '"+hts.getHtsNumber()+"',"
@@ -598,9 +630,11 @@ public class EditHtsRegisterController implements Initializable {
                    alert.setHeaderText("Success");
                    alert.setContentText("HTS Register Form Updated Successfully");
                    alert.showAndWait();
+                   Stage stage = (Stage) updateBtn.getScene().getWindow();
+                   stage.close();
                }
                 
             }
-        }
+      //  }
     }
 }

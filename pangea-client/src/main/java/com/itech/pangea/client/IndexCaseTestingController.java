@@ -22,6 +22,7 @@ import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
 import com.itech.pangea.validations.Validate;
+import com.jfoenix.controls.JFXSpinner;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -36,6 +37,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,10 +78,11 @@ public class IndexCaseTestingController implements Initializable {
     private JFXDatePicker dateDiagnosed; 
     @FXML
     private JFXTextField artNumber;
-     @FXML
+    @FXML
     private JFXTextField indexContactNum;
-    
-     @FXML
+    @FXML
+    private JFXSpinner saveP;
+    @FXML
     private JFXComboBox initiatedOnArt;
      @FXML
     private JFXTextField reasonForNotInitiated;
@@ -146,6 +150,7 @@ public class IndexCaseTestingController implements Initializable {
     public void clearFields(){
        // province.getSelectionModel().clearSelection();
        // district.getSelectionModel().clearSelection();
+        numOfIndex.clear();
         facility.getSelectionModel().clearSelection();
         firstName.clear();
         lastName.clear();
@@ -155,8 +160,7 @@ public class IndexCaseTestingController implements Initializable {
         initiatedOnArt.getSelectionModel().clearSelection();
         reasonForNotInitiated.clear();
         doesTheClientConsent.getSelectionModel().clearSelection();
-        
-        
+               
     }
     @FXML
     private void saveIndexCaseTesting(ActionEvent e) throws SQLException{
@@ -171,11 +175,8 @@ public class IndexCaseTestingController implements Initializable {
                 ictf.setSequentialNumberOfIndex(numOfIndex.getText());
                 ictf.setDateIndexTestedOrDiagnosed(dateDiagnosed.getValue()== null ? null : convertDate(dateDiagnosed.getValue()));                        
                 ictf.setIndexOIARTNumber(artNumber.getText());           
-                ictf.setIndexContactNumber(indexContactNum.getText());              
+                ictf.setIndexContactNumber(Long.parseLong(indexContactNum.getText()));              
                 ictf.setReasonForNotBeingInitiated(reasonForNotInitiated.getText()); 
-                System.err.println("#################################");
-                System.err.println(user.getDisplayName() + "#" + user.getId());
-                System.err.println("#################################");
                 ictf.setCreatedBy(user);
                 ictf.setModifiedBy(user);
                 int ioa = 11;
@@ -201,38 +202,58 @@ public class IndexCaseTestingController implements Initializable {
                   long provID = placeID.getProvinceFromDistrict(disID);
                    int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
                 
-               if(conStatus.equals("Online")){
-                ictf.setFacility(facilityService.get(Long.valueOf(facID)));
-                ictf.setDistrict(districtService.get(disID));
-                ictf.setProvince(provinceService.get(provID));
-               
-                IndexCaseTestingForm savedList = indexCaseTestingFormService.save(ictf);
-          
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Notification");
-                alert.setHeaderText("Success");
-                alert.setContentText("Index Case Testing Saved Successfully");
-                alert.showAndWait();
-                if(ictf.getConsentForListedContacts().equals(YesNo.YES)){
-                          clearFields(); 
-                          callContactList(e, savedList); 
-                       }
-                       else{
-                          clearFields(); 
-                       }
+           /*    if(conStatus.equals("Online")){
+                    saveP.setVisible(true);
+                    Task<IndexCaseTestingForm> tsave = new Task<IndexCaseTestingForm>(){
+                        @Override
+                        protected IndexCaseTestingForm call() throws Exception {
+                            ictf.setFacility(facilityService.get(Long.valueOf(facID)));
+                            ictf.setDistrict(districtService.get(disID));
+                            ictf.setProvince(provinceService.get(provID));              
+                            IndexCaseTestingForm savedList = indexCaseTestingFormService.save(ictf);
+                            return savedList;
+                        }
+                    };
+                   tsave.setOnSucceeded((WorkerStateEvent ev) -> {
+                       IndexCaseTestingForm savedList = tsave.getValue();
+                         saveP.setVisible(false);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Notification");
+                        alert.setHeaderText("Success");
+                        alert.setContentText("Index Case Testing Saved Successfully");
+                        alert.showAndWait();
+                        if(ictf.getConsentForListedContacts().equals(YesNo.YES)){
+                                  clearFields(); 
+                                  callContactList(e, savedList); 
+                               }
+                               else{
+                                  clearFields(); 
+                               }
+                           }); 
+                  tsave.setOnFailed((WorkerStateEvent ev) -> {
+                            saveP.setVisible(false);
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Notification");
+                            alert.setHeaderText("Error Encountered");
+                            alert.setContentText("Connection Error: Try Again");
+                            alert.showAndWait();
+                  
+             });
+                  Thread thread = new Thread(tsave);
+                   thread.start(); 
                }
-               else{
+               else{*/
                    SQLiteQueries qLiteQueries  = new SQLiteQueries();
                    ictf.setId(qLiteQueries.getMaxid());
-                   String query = "Insert Into index_case_testing_form(active, deleted, uuid, version, age, appointment_date_for_contact,"
+                   String query = "Insert Into index_case_testing_form(iid, active, deleted, uuid, version, age, appointment_date_for_contact,"
                            + "call_outcome, consent_for_listed_contacts, contact_address, contact_tested_date,date_called,"
                            + " date_visited, enrolled_into_care, first_name_of_index, gender, hiv_result,"
                            + "index_contact_number, indexoiartnumber, initiated_onart, last_name_of_index, location_of_test, name_of_contact,"
                            + "preferred_place_for_contacts_to_be_tested, reason_for_not_being_initiated, relation_ship_to_index, visit_outcome,"
                            + "created_by, modified_by, district, facility, province, art_number, date_index_tested_or_diagnosed, hiv_status_entry,"
                            + " if_tested_date_contact_tested, onart, referral_slip_number, referral_slip_returned,"
-                           + "second_appointment_date_for_contact,sequential_number_of_contacts, sequential_number_of_index, third_appointment_date_for_contact)"
-                           + " Values('',"
+                           + "second_appointment_date_for_contact,sequential_number_of_contacts, sequential_number_of_index, third_appointment_date_for_contact, stat)"
+                           + " Values('','',"
                            + " '',"
                            + "'',"
                            + " '',"
@@ -273,7 +294,7 @@ public class IndexCaseTestingController implements Initializable {
                            + " '',"
                            + " '',"
                            + " '"+ictf.getSequentialNumberOfIndex()+"',"
-                           + " '')";
+                           + " '', '0')";
                    if(handle.execAction(query)){
                        
                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -289,7 +310,7 @@ public class IndexCaseTestingController implements Initializable {
                           clearFields(); 
                        }
                        
-                   }
+                //   }
 
                }
         }
@@ -340,11 +361,11 @@ public class IndexCaseTestingController implements Initializable {
        if(!validate.validateNumber(artNumber.getText())){
            artNumber.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Invalid Index OI/Art Number!\n";
-       }
+       }*/
        if(!validate.validateNumber(indexContactNum.getText())){
            indexContactNum.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Invalid Index Contact Number!\n";
-       }*/
+       }
        if(lastName.getText() == null || lastName.getText().isEmpty()){
            lastName.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Last Name is required\n";

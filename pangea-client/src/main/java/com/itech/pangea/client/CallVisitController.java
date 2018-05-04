@@ -47,6 +47,10 @@ public class CallVisitController implements Initializable {
     private JFXComboBox callOutcome;
     @FXML
     private JFXButton cancelVisitBtn;
+     @FXML
+    private JFXButton saveBtnCall;
+     @FXML
+    private JFXButton saveBtnVisit;
     @FXML
     private JFXDatePicker dateVisited;
     @FXML
@@ -79,24 +83,26 @@ public class CallVisitController implements Initializable {
     @FXML
     private void  saveCallButton(ActionEvent event){
         if(isInputValidCall()){
-        if(conStatus.equals("Online")){
+       /* if(conStatus.equals("Online")){
             updateCall = contactService.get(contact.getId());
             updateCall.setDateCalled(dateCalled.getValue()==null ? null : DateFunctions.convertDate(dateCalled.getValue()));
             updateCall.setCallOutcome(callOutcome.getSelectionModel().isEmpty() ? null : (CallOutcome)callOutcome.getSelectionModel().getSelectedItem());
-            contactService.save(updateCon);
+            contactService.save(updateCall);
              Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Success");
                   alert.setContentText("Visit Created Successfully");
                   alert.showAndWait();
+                  Stage stage = (Stage)saveBtnCall.getScene().getWindow();
+                  stage.close();
         }
-        else{
+        else{*/
             try {
                 updateCallForm();
             } catch (SQLException ex) {
                 Logger.getLogger(CallVisitController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+      //  }
     }
     }
     @FXML
@@ -117,6 +123,8 @@ public class CallVisitController implements Initializable {
                   alert.setHeaderText("Success");
                   alert.setContentText("Visit Created Successfully");
                   alert.showAndWait();
+                  Stage stage = (Stage)saveBtnVisit.getScene().getWindow();
+                  stage.close();
         }
         else{
             try {
@@ -140,13 +148,15 @@ public class CallVisitController implements Initializable {
             i = cal.getCode();
         }
         String dat = DateFunctions.convertDate(dateCalled.getValue()).toString();
-        String query = "Update contact set call_outcome='"+i+"', date_called = '"+dat+"' where id = '"+contact.getId()+"'";
+        String query = "Update contact set call_outcome='"+i+"', date_called = '"+dat+"', stat='0' where id = '"+contact.getId()+"'";
         if(handler.execAction(query)){
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Success");
                   alert.setContentText("Call Created Successfully");
                   alert.showAndWait();
+                  Stage stage = (Stage)saveBtnCall.getScene().getWindow();
+                  stage.close();
         }
     }
     public void updateVisitForm() throws SQLException{
@@ -159,13 +169,15 @@ public class CallVisitController implements Initializable {
             i = cal.getCode();
         }
         String dat = DateFunctions.convertDate(dateVisited.getValue()).toString();
-        String query = "Update contact set date_visited = '"+dat+"', visit_outcome='"+i+"' where id = '"+contact.getId()+"'";
+        String query = "Update contact set date_visited = '"+dat+"', visit_outcome='"+i+"', stat='0' where id = '"+contact.getId()+"'";
         if(handler.execAction(query)){
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Success");
                   alert.setContentText("visit Created Successfully");
                   alert.showAndWait();
+                  Stage stage = (Stage)saveBtnVisit.getScene().getWindow();
+                  stage.close();
         }
     }
     

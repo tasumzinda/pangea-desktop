@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.itech.pangea.business.util.dto;
 
+import com.itech.pangea.business.domain.util.CallOutcome;
 import java.io.Serializable;
 import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.itech.pangea.business.domain.util.CallOutcome;
 
 /**
  *

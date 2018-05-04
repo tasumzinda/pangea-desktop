@@ -7,6 +7,7 @@ package com.itech.pangea.utils;
 
 import com.itech.pangea.business.domain.util.CallOutcome;
 import com.itech.pangea.business.domain.util.ClientServices;
+import com.itech.pangea.business.domain.util.Gender;
 import com.itech.pangea.business.domain.util.HIVResult;
 import com.itech.pangea.business.domain.util.HTSModel;
 import com.itech.pangea.business.domain.util.ReasonForHIVTest;
@@ -93,6 +94,15 @@ public class ConvertItems {
         }   
         
     }
+     public CallOutcome callOut(int val){
+        if(val==11){
+            return null;
+        }
+        else{
+            return CallOutcome.get(val);
+        }   
+        
+    }
      /*Contact*/
      public ReasonForIneligibilityForTesting reasonForIn(int val){
          if(val==11){
@@ -102,4 +112,13 @@ public class ConvertItems {
             return ReasonForIneligibilityForTesting.get(val);
         } 
      }
+     public Gender sex(int val){
+         if(val==11){
+            return null;
+        }
+        else{
+            return Gender.get(val);
+        } 
+     }
+     
 }

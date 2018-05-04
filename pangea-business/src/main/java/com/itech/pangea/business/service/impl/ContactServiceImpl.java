@@ -23,10 +23,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.repo.ContactRepo;
 import com.itech.pangea.business.service.ContactService;
 import com.itech.pangea.business.service.UserService;
-import com.itech.pangea.business.util.dto.SearchNationalDTO;
 
 /**
  *
@@ -98,51 +98,10 @@ public class ContactServiceImpl implements ContactService {
         return repo.findByIndexCaseTestingForm(index);
     }
     
-    @Override
-    public Integer countByHivStatusEntry(SearchNationalDTO dto) {
-        if(dto.getFacility() != null){
-            return repo.countByFacilityAndHivStatusEntry(dto.getFacility(), dto.getHivStatusEntry());
-        }else if(dto.getDistrict()!= null){
-            return repo.countByDistrictAndHivStatusEntry(dto.getDistrict(), dto.getHivStatusEntry());
-        }else if(dto.getProvince()!= null){
-            return repo.countByProvinceAndHivStatusEntry(dto.getProvince(), dto.getHivStatusEntry());
-        }
-        return repo.countByHivStatusEntry(dto.getHivStatusEntry());
-    }
+   
 
     @Override
-    public Integer countByHivStatusEntryAndInitiatedOnART(SearchNationalDTO dto) {
-        if(dto.getFacility() != null){
-            return repo.countByFacilityAndHivStatusEntryAndOnART(dto.getFacility(), dto.getHivStatusEntry(), dto.getInitiatedOnART());
-        }else if(dto.getDistrict()!= null){
-            return repo.countByDistrictAndHivStatusEntryAndOnART(dto.getDistrict(), dto.getHivStatusEntry(), dto.getInitiatedOnART());
-        }else if(dto.getProvince()!= null){
-            return repo.countByProvinceAndHivStatusEntryAndOnART(dto.getProvince(), dto.getHivStatusEntry(), dto.getInitiatedOnART());
-        }
-        return repo.countByHivStatusEntryAndOnART(dto.getHivStatusEntry(), dto.getInitiatedOnART());
-    }
-
-    @Override
-    public Integer countByHivResult(SearchNationalDTO dto) {
-        if(dto.getFacility() != null){
-            return repo.countByFacilityAndHivResult(dto.getFacility(), dto.getHivResult());
-        }else if(dto.getDistrict()!= null){
-            return repo.countByDistrictAndHivResult(dto.getDistrict(), dto.getHivResult());
-        }else if(dto.getProvince()!= null){
-            return repo.countByProvinceAndHivResult(dto.getProvince(), dto.getHivResult());
-        }
-        return repo.countByHivResult(dto.getHivResult());
-    }
-    
-    @Override
-    public Integer getNewlyTestedContacts(SearchNationalDTO dto){
-        if(dto.getFacility() != null){
-            return repo.countByFacilityAndContactTestedDateIsNotNull(dto.getFacility());
-        }else if(dto.getDistrict() != null){
-            return repo.countByDistrictAndContactTestedDateIsNotNull(dto.getDistrict());
-        }else if(dto.getProvince() != null){
-            return repo.countByProvinceAndContactTestedDateIsNotNull(dto.getProvince());
-        }
-        return repo.countByContactTestedDateIsNotNull();
+    public List<Contact> findByUser(User createdBy) {
+       return repo.findByCreatedBy(createdBy);
     }
 }

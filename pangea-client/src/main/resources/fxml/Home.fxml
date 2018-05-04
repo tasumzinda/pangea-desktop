@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
@@ -26,6 +27,17 @@
          <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="58.0" prefWidth="1360.0" spacing="30.0">
                <children>
+                  <HBox alignment="CENTER" prefHeight="48.0" prefWidth="373.0" spacing="5.0">
+                     <children>
+                        <Label fx:id="totalNewRecords" text="0" textFill="#128d1a">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font></Label>
+                        <Label text="record(s) ready for update." />
+                        <JFXButton fx:id="syncBtn" onAction="#syncAction" text="Sync" />
+                        <JFXSpinner fx:id="syncSpinner" radius="4.0" visible="false" />
+                     </children>
+                  </HBox>
                   <Label fx:id="notification" styleClass="esta-btn" text="Data Updated Successfully" textFill="#3f9024" visible="false">
                      <graphic>
                         <FontAwesomeIconView glyphName="EXCLAMATION_CIRCLE" size="20" styleClass="success-icon" />
@@ -50,11 +62,6 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <JFXButton onAction="#syncDatabase" text="Sync">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="REFRESH" />
-                     </graphic>
-                  </JFXButton>
                   <MenuButton fx:id="menuBtn" mnemonicParsing="false" style="-fx-background-color: #ccccff;" text="Roy Kanavheti">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#logout" text="Logout">
@@ -88,15 +95,15 @@
       </VBox>
    </top>
    <left>
-      <VBox prefHeight="671.0" prefWidth="208.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="acc" alignment="TOP_CENTER" onMouseEntered="#onMouseEnt" prefHeight="671.0" prefWidth="208.0" spacing="40.0" BorderPane.alignment="CENTER">
          <children>
-            <Accordion style="-fx-font-size: 15px; -fx-border-color: #ccccff;">
+            <Accordion prefHeight="284.0" prefWidth="208.0" style="-fx-font-size: 15px; -fx-border-color: #ccccff;">
               <panes>
                 <TitledPane animated="false" contentDisplay="RIGHT" text="Esta Forms : Create">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <VBox layoutX="13.0" layoutY="14.0" prefHeight="50.0" prefWidth="181.0" spacing="5.0">
+                              <VBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="14.0" prefHeight="219.0" prefWidth="204.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <HBox alignment="CENTER">
                                        <children>
@@ -138,7 +145,7 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <VBox alignment="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="168.0" prefWidth="188.0" spacing="5.0">
+                              <VBox alignment="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="219.0" prefWidth="204.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <HBox alignment="CENTER">
                                        <children>
@@ -168,6 +175,16 @@
                                              </graphic>
                                           </JFXButton>
                                           <FontAwesomeIconView fx:id="iconLict" glyphName="CARET_LEFT" size="25" visible="false" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" layoutX="10.0" layoutY="120.0">
+                                       <children>
+                                          <JFXButton contentDisplay="TOP" onAction="#viewContactList" prefHeight="39.0" prefWidth="121.0" ripplerFill="#266ea1" style="-fx-font-size: 11px;" styleClass="scBtns" text="Contact List" underline="true">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="LIST_UL" />
+                                             </graphic>
+                                          </JFXButton>
+                                          <FontAwesomeIconView fx:id="iconList" glyphName="CARET_LEFT" size="25" visible="false" />
                                        </children>
                                     </HBox>
                                  </children>

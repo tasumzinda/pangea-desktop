@@ -44,7 +44,7 @@
                         <JFXTextField fx:id="firstName" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="First Name" styleClass="htsform" />
                         <JFXTextField fx:id="lastName" labelFloat="true" promptText="Last Name" styleClass="htsform" />
                         <JFXTextField fx:id="age" labelFloat="true" layoutX="10.0" layoutY="163.0" promptText="Age" styleClass="htsform" />
-                        <JFXComboBox fx:id="gender" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Gender" styleClass="htsform" />
+                        <JFXComboBox fx:id="gender" labelFloat="true" onAction="#onSelectedGender" prefHeight="31.0" prefWidth="500.0" promptText="Gender" styleClass="htsform" />
                         <JFXTextField fx:id="hivTestingSlipNum" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="HIV Testing Referral Slip Number" styleClass="htsform" />
                         <JFXDatePicker fx:id="date" defaultColor="#276696" prefHeight="31.0" prefWidth="503.0" promptText="Date" styleClass="htsform" />
                         <JFXComboBox fx:id="reasonForHivTesting" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Reason For HIV Testing" styleClass="htsform" />

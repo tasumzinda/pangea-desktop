@@ -129,50 +129,9 @@ public class LoginController implements Initializable {
         Platform.exit();
     }
 
-    public void conStatus() {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/itechdb";
-        String user = "root";
-        String pass ="";
-      // String user = "itechadmin";
-      // String pass = "itech2017";
-      
-        Task<Connection> task = new Task<Connection>() {
-            @Override
-            protected Connection call() throws Exception {
-                return (Connection) DriverManager.getConnection(jdbcUrl, user, pass);
-            }
-        };
-        task.setOnSucceeded((WorkerStateEvent e) -> {
-            
-            Connection con = task.getValue();
-            if (con != null) {
-              
-                lblOnline.setVisible(true);
-                lblOffline.setVisible(false);
-                stat.setText("Online");
-
-            } else if (con == null) {
-                
-                lblOffline.setVisible(true);
-                lblOnline.setVisible(false);
-                stat.setText("Offline");
-            }
-        });
-        task.setOnFailed((WorkerStateEvent e) -> {
-      
-            lblOffline.setVisible(true);
-            lblOnline.setVisible(false);
-            stat.setText("Offline");
-        });
-
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
+   
     @FXML
     private void LoginPressed(ActionEvent event) {
-        //conn = SqliteConnect.sqlConnect();
         if (username.getText().isEmpty() || pwd.getText().isEmpty()) {
             logInfo.setText("Fill Required Fields!!!");
             return;
@@ -193,10 +152,12 @@ public class LoginController implements Initializable {
             @Override
             protected User call() throws Exception {
                User user = userService.findByUserName(username.getText());
-                String savedPassword = user.getPassword();
+               
+                String savedPassword =  user == null ? "" : user.getPassword();
                 String enteredPassword = pwd.getText();
                 if (encoder.matches(enteredPassword, savedPassword)) {
-                    return userService.findByUserName(username.getText());
+                 //   return userService.findByUserName(username.getText());
+                   return user;
                 }
                 return null;
             }
@@ -262,16 +223,12 @@ public class LoginController implements Initializable {
                 ((Node) (event.getSource())).getScene().getWindow().hide();
             }
         });
-        task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-            
-            @Override
-            public void handle(WorkerStateEvent e) {
-                progressBar.setVisible(false);
-                loginBtn.setDisable(false);
-                logInfo.setText("Connection Error");
-                Throwable throwable = task.getException();
-                throwable.printStackTrace();
-            }
+        task.setOnFailed((WorkerStateEvent e) -> {
+            progressBar.setVisible(false);
+            loginBtn.setDisable(false);
+            logInfo.setText("Incorrect Username/Password");
+            Throwable throwable = task.getException();
+            throwable.printStackTrace();
         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
@@ -294,6 +251,7 @@ public class LoginController implements Initializable {
                 String enteredPassword = pwd.getText();
                  if (encoder.matches(enteredPassword, savedPassword)) {
                     return handle.execQuery(query); 
+                  //return rrs;
                  }   
                 }
                return null;
@@ -320,17 +278,23 @@ public class LoginController implements Initializable {
                         user.setId(userid);
                         user.setFirstName(firstname);
                         user.setLastName(lastname);
-
-                        loadFxml("/fxml/Home.fxml", user, mentor);
+                        Platform.runLater(() -> {
+                            try {
+                                loadFxml("/fxml/Home.fxml", user, mentor);
+                            } catch (SQLException | ParseException ex) {
+                                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         progressBar.setVisible(false);
                         loginBtn.setDisable(false);
+                        });
+                        
                         flag = true;
                        ((Node) (event.getSource())).getScene().getWindow().hide();
                       
                     }
                 }
 
-            } catch (ParseException | SQLException ex) {
+            } catch (SQLException ex) {
                 Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (!flag) {

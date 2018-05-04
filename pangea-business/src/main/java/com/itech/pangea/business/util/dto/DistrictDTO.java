@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.itech.pangea.business.util.dto;
-
 /**
  *
  * @author tasu

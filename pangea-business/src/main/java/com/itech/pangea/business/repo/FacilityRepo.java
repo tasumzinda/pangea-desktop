@@ -15,12 +15,13 @@
  */
 package com.itech.pangea.business.repo;
 
-import java.util.List;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.Province;
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 
 /**
  *

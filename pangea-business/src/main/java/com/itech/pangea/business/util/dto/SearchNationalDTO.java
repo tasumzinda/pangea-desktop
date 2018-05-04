@@ -15,12 +15,6 @@
  */
 package com.itech.pangea.business.util.dto;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.format.annotation.DateTimeFormat;
 import com.itech.pangea.business.domain.ChallengeStatus;
 import com.itech.pangea.business.domain.Designation;
 import com.itech.pangea.business.domain.Mentor;
@@ -34,6 +28,14 @@ import com.itech.pangea.business.domain.util.ReasonForIneligibilityForTesting;
 import com.itech.pangea.business.domain.util.VisitStatus;
 import com.itech.pangea.business.domain.util.YesNo;
 import com.itech.pangea.business.util.DateUtil;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.springframework.format.annotation.DateTimeFormat;
+
+
 
 /**
  *

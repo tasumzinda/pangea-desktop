@@ -36,6 +36,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -80,34 +81,34 @@ public class IndexCasingListController implements Initializable {
     private JFXTextField search;
     //ObservableList <IndexCaseTestingForm> data2 = FXCollections.observableArrayList();
     ObservableList data = FXCollections.observableArrayList();
-    FilteredList<IndexCasingProperties> filteredData = new FilteredList<>(data, e ->true);
+    FilteredList<IndexCasingProperties> filteredDat = new FilteredList<>(data, e ->true);
     
     @Resource
     private IndexCaseTestingFormService indexCaseTestingFormService;
     
-    List<IndexCaseTestingForm> list = new ArrayList<>();
+    
     
     @FXML
     private void searchTextEntered(KeyEvent event){
         search.textProperty().addListener((observableValue, ov, nv)->{
-            filteredData.setPredicate((Predicate<? super IndexCasingProperties>)htsp->{
+            filteredDat.setPredicate((Predicate<? super IndexCasingProperties>)idx->{
                 if(nv == null || nv.isEmpty()){
                     return true;
                 }
                 String lowerCaseFilter = nv.toLowerCase();
-                if(htsp.getFirstName().contains(nv)){
+                if(idx.getFirstName().contains(nv)){
                     return true;
                 }
-                if(htsp.getFirstName().toLowerCase().contains(lowerCaseFilter)){
+                else if(idx.getFirstName().toLowerCase().contains(lowerCaseFilter)){
                     return true;
                 }
-                else if(htsp.getFacility().toLowerCase().contains(lowerCaseFilter)){
-                    return true;
-                }
+           /////     else if(idx.getFacility().toLowerCase().contains(lowerCaseFilter)){
+            //        return true;
+            //    }
                 return false;
-});
+               });
         });
-        SortedList<IndexCasingProperties> sortedData = new SortedList<>(filteredData);
+        SortedList<IndexCasingProperties> sortedData = new SortedList<>(filteredDat);
         sortedData.comparatorProperty().bind(indexCasingTable.comparatorProperty());
         indexCasingTable.setItems(sortedData);
     }
@@ -121,11 +122,7 @@ public class IndexCasingListController implements Initializable {
         this.conStatus = conStatus;
         if(conStatus.equals("Online")){
             getIctListOnline();
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
-        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
-        colContactlist.setCellValueFactory(cellData -> cellData.getValue().contactListProperty());
-        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
+        
         }
         else{
             getIctListOffLine();
@@ -146,7 +143,7 @@ public class IndexCasingListController implements Initializable {
             idx.setSequentialNumberOfIndex(rs.getString("sequential_number_of_index"));
             idx.setDateIndexTestedOrDiagnosed(sd.convertString(rs.getString("date_index_tested_or_diagnosed")));
             idx.setIndexOIARTNumber(rs.getString("indexoiartnumber"));
-            idx.setIndexContactNumber(rs.getString("index_contact_number"));
+            idx.setIndexContactNumber(rs.getLong("index_contact_number"));
             idx.setInitiatedOnART(ci.yesNo(rs.getInt("initiated_onart")));
             idx.setReasonForNotBeingInitiated(rs.getString("reason_for_not_being_initiated"));
             idx.setConsentForListedContacts(ci.yesNo(rs.getInt("consent_for_listed_contacts")));
@@ -159,6 +156,12 @@ public class IndexCasingListController implements Initializable {
             }
         return idx;
     }
+    
+    @FXML
+    private void refreshList(ActionEvent event) throws SQLException{
+        getIctListOffLine();
+    }
+    
      IndexCaseTestingForm dataIndex;
      @FXML
     private void selectedIct(MouseEvent event){
@@ -205,14 +208,15 @@ public class IndexCasingListController implements Initializable {
                loadingBar.setVisible(true);
                  Task<List> task = new Task<List>(){
                      @Override
-                     protected List call() throws Exception {
+                     protected List<IndexCaseTestingForm> call() throws Exception {
                          return indexCaseTestingFormService.findByUser(user);
            
                      }                    
                  };
          task.setOnSucceeded((WorkerStateEvent e) -> {
-            list = task.getValue();
-        for(IndexCaseTestingForm dt : list){  
+            List<IndexCaseTestingForm> list = task.getValue();
+           
+          for(IndexCaseTestingForm dt : list){  
             
                 data.add(new IndexCasingProperties(dt.getId(), dt.getFirstNameOfIndex(),
                         dt.getLastNameOfIndex(),
@@ -220,13 +224,24 @@ public class IndexCasingListController implements Initializable {
                         dt.getFacility()==null ? "" : dt.getFacility().toString()));  
         }
           Platform.runLater(() -> { 
-         indexCasingTable.setItems(data);  
+         indexCasingTable.setItems(data);
+         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
+         colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
+         colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+         colContactlist.setCellValueFactory(cellData -> cellData.getValue().contactListProperty());
+         colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
          loadingBar.setVisible(false);
           });
         });
+         task.setOnFailed((event) -> {
+             Platform.runLater(() -> { 
+             loadingBar.setVisible(false);
+         });
+         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start(); 
+        
     }
      public void getIctListOffLine(){  
          data.clear();

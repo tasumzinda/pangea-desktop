@@ -128,7 +128,7 @@ public class ListContactsController implements Initializable {
         IndexCaseTestingForm in = new IndexCaseTestingForm();
         try {
                
-                String query = "Select * From contact where id = '"+id+"'";
+                String query = "Select * From contact where id = '"+id+"' and active='true'";
                 ResultSet rs = handler.execQuery(query);
                 while(rs.next()){
                     myContact.setId(rs.getLong("id"));
@@ -156,7 +156,8 @@ public class ListContactsController implements Initializable {
     }
     public void getListOffline(String fac) throws SQLException{
         dataH.clear();
-       String query  = "Select * From contact where index_case_testing_form = '"+idx.getId()+"'";
+      String query  = "Select * From contact where active='true' and index_case_testing_form = '"+idx.getId()+"'";
+    // String query  = "Select * From contact where created_by = '"+user.getId()+"'";
        ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
            dataH.add(new ContactListProperties(

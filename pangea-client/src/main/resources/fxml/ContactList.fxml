@@ -116,9 +116,9 @@
                                     </HBox>
                                     <HBox alignment="CENTER">
                                        <children>
-                                          <JFXButton buttonType="RAISED" onAction="#clearPressed" styleClass="login-btn" text="Clear">
+                                          <JFXButton buttonType="RAISED" onAction="#clearPressed" styleClass="login-btn" text="Cancel">
                                              <ripplerFill>
-                                                <LinearGradient endX="1.0" endY="1.0">
+                                                <LinearGradient endY="0.033333333333333326" startX="1.0" startY="0.8333333333333334">
                                                    <stops>
                                                       <Stop color="#303e8d" />
                                                       <Stop color="WHITE" offset="1.0" />

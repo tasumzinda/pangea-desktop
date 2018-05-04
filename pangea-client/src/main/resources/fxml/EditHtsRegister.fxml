@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTimePicker?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
@@ -43,7 +44,7 @@
                         <JFXTextField fx:id="firstName" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="First Name" styleClass="htsform" />
                         <JFXTextField fx:id="lastName" labelFloat="true" promptText="Last Name" styleClass="htsform" />
                         <JFXTextField fx:id="age" labelFloat="true" layoutX="10.0" layoutY="163.0" promptText="Age" styleClass="htsform" />
-                        <JFXComboBox fx:id="gender" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Gender" styleClass="htsform" />
+                        <JFXComboBox fx:id="gender" labelFloat="true" onAction="#onSelectedGender" prefHeight="31.0" prefWidth="500.0" promptText="Gender" styleClass="htsform" />
                         <JFXTextField fx:id="hivTestingSlipNum" labelFloat="true" prefHeight="25.0" prefWidth="592.0" promptText="HIV Testing Referral Slip Number" styleClass="htsform" />
                         <JFXDatePicker fx:id="date" defaultColor="#276696" prefHeight="31.0" prefWidth="503.0" promptText="Date" styleClass="htsform" />
                         <JFXComboBox fx:id="reasonForHivTesting" labelFloat="true" prefHeight="31.0" prefWidth="500.0" promptText="Reason For HIV Testing" styleClass="htsform" />
@@ -68,18 +69,27 @@
                   </VBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="20.0">
+            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="1152.0" spacing="70.0">
                <children>
-                  <JFXButton buttonType="RAISED" defaultButton="true" onAction="#updateHts" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Update">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
-                     </graphic>
-                  </JFXButton>
-                  <JFXButton fx:id="cancelBtn" buttonType="RAISED" defaultButton="true" layoutX="633.0" layoutY="34.0" onAction="#closeScreen" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Cancel">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="CLOSE" size="15.0" styleClass="danger-icon" />
-                     </graphic>
-                  </JFXButton>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <JFXButton fx:id="updateBtn" buttonType="RAISED" defaultButton="true" onAction="#updateHts" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Update">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" size="15.0" />
+                           </graphic>
+                        </JFXButton>
+                        <JFXSpinner fx:id="spinner" radius="9.0" visible="false" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <JFXButton fx:id="cancelBtn" buttonType="RAISED" defaultButton="true" onAction="#closeScreen" prefHeight="35.0" prefWidth="114.0" styleClass="scBtns" text="Cancel">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CLOSE" size="15.0" styleClass="danger-icon" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
          </children>

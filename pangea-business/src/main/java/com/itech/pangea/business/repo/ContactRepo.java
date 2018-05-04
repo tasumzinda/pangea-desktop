@@ -24,6 +24,7 @@ import com.itech.pangea.business.domain.District;
 import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.IndexCaseTestingForm;
 import com.itech.pangea.business.domain.Province;
+import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.HIVResult;
 import com.itech.pangea.business.domain.util.ReasonForIneligibilityForTesting;
 import com.itech.pangea.business.domain.util.YesNo;
@@ -67,4 +68,5 @@ public interface ContactRepo extends AbstractRepo<Contact, Long>{
     @Query("select count(m) from Contact m where m.indexCaseTestingForm.facility=:facility and m.contactTestedDate is not null")
     public Integer countByFacilityAndContactTestedDateIsNotNull(@Param("facility") Facility facility);
     public Integer countByContactTestedDateIsNotNull();
+    public List<Contact> findByCreatedBy(User createdBy);
 }

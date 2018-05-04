@@ -5,8 +5,10 @@
  */
 package com.itech.pangea.sqliteConfig;
 
+import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.DefaulterTrackingForm;
 import com.itech.pangea.business.domain.HTSRegisterForm;
+import com.itech.pangea.business.domain.IndexCaseTestingForm;
 import com.itech.pangea.utils.DateFunctions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -121,6 +123,114 @@ public class ReceiveData {
             ps.executeUpdate();
     }
     
+    public void saveIndexCaseTest(IndexCaseTestingForm i) throws SQLException{
+         String query = "Insert Into index_case_testing_form(iid, active, date_created, date_modified, deleted, uuid, version, age, appointment_date_for_contact,"
+                           + "call_outcome, consent_for_listed_contacts, contact_address, contact_tested_date,date_called,"
+                           + " date_visited, enrolled_into_care, first_name_of_index, gender, hiv_result,"
+                           + "index_contact_number, indexoiartnumber, initiated_onart, last_name_of_index, location_of_test, name_of_contact,"
+                           + "preferred_place_for_contacts_to_be_tested, reason_for_not_being_initiated, relation_ship_to_index, visit_outcome,"
+                           + "created_by, modified_by, district, facility, province, art_number, date_index_tested_or_diagnosed, hiv_status_entry,"
+                           + " if_tested_date_contact_tested, onart, referral_slip_number, referral_slip_returned,"
+                           + "second_appointment_date_for_contact,sequential_number_of_contacts, sequential_number_of_index, third_appointment_date_for_contact, stat)"
+                           + " Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";//46
+           Connection connec = handler.connect();
+           PreparedStatement ps = connec.prepareStatement(query);
+            ps.setLong(1, i.getId());
+            ps.setString(2, i.getActive().toString());           
+            ps.setString(3, i.getDateCreated() == null ? null : changeDate(i.getDateCreated().toString()));
+            ps.setString(4, i.getDateModified() == null ? null : changeDate(i.getDateModified().toString()));
+            ps.setString(5, i.getDeleted() == null ? null : i.getDeleted().toString());
+            ps.setString(6, i.getUuid());
+            ps.setLong(7, i.getVersion()==null ? 0 : i.getVersion());
+            ps.setNull(8, java.sql.Types.INTEGER);
+            ps.setString(9, null);
+            ps.setString(10, null);
+            ps.setInt(11, i.getConsentForListedContacts() == null ? 11 : i.getConsentForListedContacts().getCode());
+            ps.setString(12, null);
+            ps.setString(13, null);
+            ps.setString(14, null);
+            ps.setString(15, null);
+            ps.setNull(16, java.sql.Types.INTEGER);
+            ps.setString(17, i.getFirstNameOfIndex());
+            ps.setString(18, null);
+            ps.setString(19, null);
+            ps.setString(20, i.getIndexContactNumber().toString());
+            ps.setString(21, i.getIndexOIARTNumber());
+            ps.setInt(22, i.getInitiatedOnART() == null ? 11 : i.getInitiatedOnART().getCode());
+            ps.setString(23, i.getLastNameOfIndex());
+            ps.setString(24, null);
+            ps.setString(25, null);
+            ps.setString(26, null);
+            ps.setString(27, i.getReasonForNotBeingInitiated());
+            ps.setString(28, null);
+            ps.setString(29, null);
+            ps.setLong(30, i.getCreatedBy().getId());
+            ps.setLong(31, i.getModifiedBy().getId());
+            ps.setLong(32, i.getDistrict() == null ? 0 : i.getDistrict().getId());
+            ps.setLong(33, i.getFacility() == null ? 0 : i.getFacility().getId());
+            ps.setLong(34, i.getProvince() == null ? 0 : i.getProvince().getId());
+            ps.setString(35, null);
+            ps.setString(36, i.getDateIndexTestedOrDiagnosed() == null ? "null" : changeDate(i.getDateIndexTestedOrDiagnosed().toString()));
+            ps.setString(37, null);
+            ps.setString(38, null);
+            ps.setString(39, null);
+            ps.setString(40, null);
+            ps.setString(41, null);
+            ps.setString(42, null);
+            ps.setString(43, null);
+            ps.setString(44, i.getSequentialNumberOfIndex());
+            ps.setString(45, null);
+            ps.setInt(46, 2);
+            ps.executeUpdate();
+   
+    }
+    public void saveContact(Contact c) throws SQLException{
+        
+        String query = "Insert Into Contact(cid, active, date_created, date_modified, deleted, uuid, version, age, appointment_date_for_contact, art_number,"
+                         + "call_outcome, contact_address, contact_tested_date, date_called, date_visited, enrolled_into_care, gender,"
+                         + "hiv_result, hiv_status_entry, if_tested_date_contact_tested, location_of_test, name_of_contact, onart,"
+                         + "preferred_place_for_contacts_to_be_tested, referral_slip_number, referral_slip_returned, relation_ship_to_index,"
+                         + "second_appointment_date_for_contact, sequential_number_of_contacts, third_appointment_date_for_contact, visit_outcome,"
+                         + "created_by, modified_by, index_case_testing_form, stat) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+           Connection connec = handler.connect();
+           PreparedStatement ps = connec.prepareStatement(query);
+            ps.setLong(1, c.getId());
+            ps.setString(2, c.getActive().toString());           
+            ps.setString(3, c.getDateCreated() == null ? null : changeDate(c.getDateCreated().toString()));
+            ps.setString(4, c.getDateModified() == null ? null : changeDate(c.getDateModified().toString()));
+            ps.setString(5, c.getDeleted() == null ? null : c.getDeleted().toString());
+            ps.setString(6, c.getUuid());
+            ps.setLong(7, c.getVersion()==null ? 0 : c.getVersion());
+            ps.setInt(8, c.getAge());
+            ps.setString(9, c.getAppointmentDateForContact() == null ? "null" : changeDate(c.getAppointmentDateForContact().toString()));
+            ps.setString(10, c.getArtNumber());
+            ps.setInt(11, c.getCallOutcome() == null ? 11 : c.getCallOutcome().getCode());
+            ps.setString(12, c.getContactAddress());
+            ps.setString(13, c.getContactTestedDate() == null ? "null" : changeDate(c.getContactTestedDate().toString()));
+            ps.setString(14, c.getDateCalled() == null ? "null" : changeDate(c.getDateCalled().toString()));
+            ps.setString(15, c.getDateVisited() == null ? "null" : changeDate(c.getDateVisited().toString()));
+            ps.setInt(16, c.getEnrolledIntoCare() == null ? 11 : c.getEnrolledIntoCare().getCode());
+            ps.setInt(17, c.getGender()== null ? 11 : c.getGender().getCode());
+            ps.setInt(18, c.getHivResult() == null ? 11 : c.getHivResult().getCode());
+            ps.setInt(19, c.getHivStatusEntry() == null ? 11 : c.getHivStatusEntry().getCode());
+            ps.setString(20, c.getIfTestedDateContactTested() == null ? "null" : changeDate( c.getIfTestedDateContactTested().toString()));
+            ps.setInt(21, c.getLocationOfTest() == null ? 11 : c.getLocationOfTest().getCode());
+            ps.setString(22, c.getNameOfContact());
+            ps.setInt(23, c.getOnART() == null ? 11 : c.getOnART().getCode());
+            ps.setInt(24, c.getPreferredPlaceForContactsToBeTested() == null ? 11 : c.getPreferredPlaceForContactsToBeTested().getCode());
+            ps.setString(25, c.getReferralSlipNumber());
+            ps.setInt(26, c.getReferralSlipReturned() == null ? 11 : c.getReferralSlipReturned().getCode());
+            ps.setString(27, c.getRelationShipToIndex());
+            ps.setString(28, c.getSecondAppointmentDateForContact()==null ? "null" : changeDate(c.getSecondAppointmentDateForContact().toString()));
+            ps.setInt(29, c.getSequentialNumberOfContacts() == null ? 0 : c.getSequentialNumberOfContacts());
+            ps.setString(30, c.getThirdAppointmentDateForContact() == null ? "null" : changeDate(c.getThirdAppointmentDateForContact().toString()));
+            ps.setInt(31, c.getVisitOutcome()==null ? 11 : c.getVisitOutcome().getCode());
+            ps.setLong(32, c.getCreatedBy().getId());
+            ps.setLong(33, c.getModifiedBy().getId());
+            ps.setLong(34, c.getIndexCaseTestingForm().getId());
+            ps.setInt(35, 2);
+            ps.executeUpdate();        
+    }
     
     public String changeDate(String date){
         LocalDate d  = LocalDate.parse(date);

@@ -17,18 +17,19 @@ import javafx.scene.control.Alert;
  * @author kanaz
  */
 public class SqliteDatabaseHandler {
-     private static SqliteDatabaseHandler handler = null;
+    private static SqliteDatabaseHandler handler = null;
     private static Connection conn = null;
     private static Statement stmt = null;
+    
     private SqliteDatabaseHandler(){
         createConnection();
+        
     }
     private void createConnection(){
          try{
-            Class.forName("org.sqlite.JDBC").newInstance();
-         
-      //  conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
-         conn = DriverManager.getConnection("jdbc:sqlite:trackerdb.db");
+            Class.forName("org.sqlite.JDBC").newInstance();        
+          conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
+         // conn = DriverManager.getConnection("jdbc:sqlite:trackerdb.db");
           if(conn!=null){
               System.err.println("********************************");
                System.err.println("Connection Successfull");
@@ -72,13 +73,11 @@ public class SqliteDatabaseHandler {
         }
         finally{}
     }
-    public ResultSet execQuery(String query){
-          
+    public ResultSet execQuery(String query){         
         ResultSet result;
         try{
             stmt = conn.createStatement();
             result = stmt.executeQuery(query);
-             // System.out.println(result);
         }
         catch(Exception ex){
            ex.printStackTrace(); 

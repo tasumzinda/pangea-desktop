@@ -15,8 +15,9 @@
  */
 package com.itech.pangea.business.util.dto;
 
-import java.io.Serializable;
 import com.itech.pangea.business.domain.Visit;
+import java.io.Serializable;
+
 
 /**
  *

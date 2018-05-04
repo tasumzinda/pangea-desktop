@@ -69,12 +69,12 @@
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <JFXTextField fx:id="username" focusColor="#276696" labelFloat="true" promptText="Username" text="shepherdsc@pzat.org" GridPane.columnIndex="1">
+                                    <JFXTextField fx:id="username" focusColor="#276696" labelFloat="true" promptText="Username" GridPane.columnIndex="1">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </JFXTextField>
-                                    <JFXPasswordField fx:id="pwd" focusColor="#276696" labelFloat="true" promptText="Password" text="shepherd" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <JFXPasswordField fx:id="pwd" focusColor="#276696" labelFloat="true" promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -104,7 +104,7 @@
                               </GridPane>
                               <HBox alignment="CENTER" prefHeight="44.0" prefWidth="349.0">
                                  <children>
-                                    <Label fx:id="stat" visible="false" />
+                                    <Label fx:id="stat" />
                                  </children>
                               </HBox>
                            </children>

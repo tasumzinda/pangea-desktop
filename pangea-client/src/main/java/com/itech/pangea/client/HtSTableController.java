@@ -11,7 +11,6 @@ import com.itech.pangea.business.domain.Mentor;
 import com.itech.pangea.business.domain.User;
 import com.itech.pangea.business.domain.util.Gender;
 import com.itech.pangea.business.service.HTSRegisterFormService;
-import com.itech.pangea.business.util.dto.SearchNationalDTO;
 import com.jfoenix.controls.JFXTextField;
 import com.itech.pangea.properties.HtsListProperties;
 import com.itech.pangea.sqliteConfig.SendData;
@@ -24,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +34,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -83,7 +84,7 @@ public class HtSTableController implements Initializable {
     @Resource
     private HTSRegisterFormService hTSRegisterFormService;
     
-    List<HTSRegisterForm> listH = new ArrayList<>();
+    
     AnnotationConfigApplicationContext acac;
     User user;
     Mentor mentor;
@@ -93,29 +94,19 @@ public class HtSTableController implements Initializable {
         this.acac = acac;
         this.conStatus = conStatus;
         this.mentor = mentor;
-        if(conStatus.equals("Online")){
+     /*   if(conStatus.equals("Online")){
         getHtsList();
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
-        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
-        colAge.setCellValueFactory(cellData->cellData.getValue().ageProperty());
-        colGender.setCellValueFactory(cellData -> cellData.getValue().genderProperty());
-        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
+        
         }
         else{
-            
+            */
             try {  
                 getListOffline();
             } catch (SQLException ex) {
                 Logger.getLogger(HtSTableController.class.getName()).log(Level.SEVERE, null, ex);
             }
-          colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
-        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
-        colAge.setCellValueFactory(cellData->cellData.getValue().ageProperty());
-        colGender.setCellValueFactory(cellData -> cellData.getValue().genderProperty());
-        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
-        }
+          
+      //  }
        
     }
     @FXML
@@ -166,7 +157,10 @@ public class HtSTableController implements Initializable {
         }
     }
    
-    
+     @FXML
+    private void refreshList(ActionEvent event) throws SQLException{
+       getListOffline();
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -179,23 +173,40 @@ public class HtSTableController implements Initializable {
                  loadingBar.setVisible(true);
                  Task<List> task = new Task<List>(){
                      @Override
-                     protected List call() throws Exception {
+                     protected List<HTSRegisterForm> call() throws Exception {
                          return hTSRegisterFormService.findByUser(user);
                      }                    
                  };
             
         task.setOnSucceeded((WorkerStateEvent e) -> {
-            listH = task.getValue();
-        for(HTSRegisterForm hts : listH){   
-                if(hts.getActive()){
-                dataH.add(new HtsListProperties(hts.getId(), hts.getFirstName(), hts.getLastName(), hts.getAge(), hts.getGender().toString(), hts.getFacility() == null ? "" : hts.getFacility().toString())); 
-                }
-        }  
-        Platform.runLater(() -> {
-        htsTable.setItems(dataH);
-        loadingBar.setVisible(false);
-        });
-        });
+                     try {
+                         List<HTSRegisterForm> listH = task.get();
+                         
+                         for(HTSRegisterForm hts : listH){
+                             if(hts.getActive()){
+                                 dataH.add(new HtsListProperties(hts.getId(), hts.getFirstName(), hts.getLastName(), hts.getAge(), hts.getGender().toString(), hts.getFacility() == null ? "" : hts.getFacility().toString()));
+                             }
+                         }
+                         Platform.runLater(() -> {
+                             htsTable.setItems(dataH);
+                             colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
+                             colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
+                             colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+                             colAge.setCellValueFactory(cellData->cellData.getValue().ageProperty());
+                             colGender.setCellValueFactory(cellData -> cellData.getValue().genderProperty());
+                             colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
+                             loadingBar.setVisible(false);
+                         });    
+                     }
+                     catch (InterruptedException | ExecutionException ex) {
+                         Logger.getLogger(HtSTableController.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+            });
+        task.setOnFailed((event) -> {
+             Platform.runLater(() -> { 
+             loadingBar.setVisible(false);
+         });
+         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
@@ -216,6 +227,12 @@ public class HtSTableController implements Initializable {
             ));
         }
         htsTable.setItems(dataH);
+        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty());
+        colFirstName.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
+        colLastName.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+        colAge.setCellValueFactory(cellData->cellData.getValue().ageProperty());
+        colGender.setCellValueFactory(cellData -> cellData.getValue().genderProperty());
+        colFacility.setCellValueFactory(cellData -> cellData.getValue().facilityProperty());
     }
    
 }

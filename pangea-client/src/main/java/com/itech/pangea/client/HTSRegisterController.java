@@ -6,7 +6,6 @@
 package com.itech.pangea.client;
 
 import com.itech.pangea.business.domain.District;
-import com.itech.pangea.business.domain.Facility;
 import com.itech.pangea.business.domain.HTSRegisterForm;
 import com.itech.pangea.business.domain.Province;
 import com.itech.pangea.business.domain.User;
@@ -34,9 +33,7 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -63,7 +60,7 @@ import org.springframework.stereotype.Component;
 public class HTSRegisterController implements Initializable {
 
     
-    
+  
     @FXML
     private JFXComboBox facility;
     
@@ -142,7 +139,7 @@ public class HTSRegisterController implements Initializable {
     public void setUserNCtx(User user,  AnnotationConfigApplicationContext acac, String conStatus){
         this.user = user;
             this.acac = acac;
-            this.conStatus = conStatus;
+           this.conStatus = conStatus;
         try {
             
             SQLiteQueries liteQueries = new SQLiteQueries();
@@ -170,6 +167,15 @@ public class HTSRegisterController implements Initializable {
        initiatedArt.setVisible(false);
        dateInitiatedArt.setVisible(false);
        artNumber.setVisible(false); 
+        }
+    }
+    @FXML
+    private void onSelectedGender(ActionEvent event){
+        if(gender.getSelectionModel().isSelected(0)){
+            lactingWoman.setDisable(true);
+        }
+        else{
+            lactingWoman.setDisable(false);
         }
     }
     @FXML
@@ -236,6 +242,8 @@ public class HTSRegisterController implements Initializable {
     }
     @FXML
     private void saveHts(ActionEvent e) throws SQLException{
+      //  controller.getLabel().setText("Love");
+        System.err.println("888888888888888888888888888");
          HTSRegisterForm hts = new HTSRegisterForm();
        
          int hm = 11; //11 means null
@@ -365,7 +373,7 @@ public class HTSRegisterController implements Initializable {
                     hts.setCreatedBy(user);
                     hts.setModifiedBy(user);
            
-           if(conStatus.equals("Online")){
+       /*    if(conStatus.equals("Online")){
            
                 
                 saveP.setVisible(true);
@@ -384,22 +392,23 @@ public class HTSRegisterController implements Initializable {
                 thread.start();  
                   tsave.setOnSucceeded((WorkerStateEvent ev) -> {
                       ev.consume();
+                      saveP.setVisible(false);
                   Alert alert = new Alert(Alert.AlertType.INFORMATION);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Success");
                   alert.setContentText("HTS Register Form Saved Successfully");
-                  alert.showAndWait();
-                  saveP.setVisible(false);
+                  alert.showAndWait();                 
                   clearFields();
               });
               tsave.setOnFailed((WorkerStateEvent ev) -> {
                   ev.consume();
-                   Alert alert = new Alert(Alert.AlertType.ERROR);
+                  saveP.setVisible(false);
+                  Alert alert = new Alert(Alert.AlertType.ERROR);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Error Encountered");
                   alert.setContentText("Connection Error: Try Again");
                   alert.showAndWait();
-                  saveP.setVisible(false);
+                  
 
              });
                
@@ -407,7 +416,9 @@ public class HTSRegisterController implements Initializable {
                 saveP.setVisible(false); 
              }
             }
-            else{
+            
+            else{*/
+             //  Date dat = new Date();
                String query = "Insert Into htsregister_form(hid, active, deleted, uuid, version, age, card_number,"
                        + "date_of_initiation, entry_stream, final_result, first_name, gender, in_pre_art, initiated_on_art, last_name, m_date, m_time,"
                        + "oi_art_number, reason_forhivtest, registered_in_pre_art, test, created_by, modified_by, district, facility, province, date_client_registered_inart,"
@@ -448,9 +459,11 @@ public class HTSRegisterController implements Initializable {
                    alert.setContentText("HTS Register Form Saved Successfully");
                    alert.showAndWait();
                    clearFields();
+             //   connector.updateLabel();
+               
                }
                 
-            }
+         //   }
            
            
         }
@@ -525,6 +538,6 @@ public class HTSRegisterController implements Initializable {
        initiatedArt.setItems(yesno);
        inPreArt.getSelectionModel().select(1);
        initiatedArt.getSelectionModel().select(1);
-       
+      
     }    
 }

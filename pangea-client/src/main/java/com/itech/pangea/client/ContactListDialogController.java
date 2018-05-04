@@ -8,8 +8,10 @@ package com.itech.pangea.client;
 
 import com.itech.pangea.business.domain.Contact;
 import com.itech.pangea.business.domain.User;
+import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +22,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,14 +37,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ContactListDialogController implements Initializable {
-
-    
-    
-    
-    
-    
-
-    
+    SqliteDatabaseHandler handler;
     AnnotationConfigApplicationContext acac;
     User user;
     String conStatus;
@@ -99,9 +96,32 @@ public class ContactListDialogController implements Initializable {
         }
         ((Node)(event.getSource())).getScene().getWindow().hide();
     }
+    @FXML
+    private void  deleteButton(ActionEvent event){
+       deleteContact();
+    }
+    public void deleteContact(){
+        String query = "Update Contact set active='false' where id = '"+contact.getId()+"'";
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Dialog");
+        alert.setHeaderText("Delete Contact");
+        alert.setContentText("Are You Sure?");
+        Optional<ButtonType> action = alert.showAndWait();
+        if(action.get() == ButtonType.OK){
+          if(handler.execAction(query)){
+               Alert a = new Alert(Alert.AlertType.INFORMATION);
+                  a.setTitle("Notification");
+                  a.setHeaderText("Success");
+                  a.setContentText("Delete Successfully");
+                  a.showAndWait();
+          }
+        }
+        
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-       
+       handler = SqliteDatabaseHandler.getInstance();
     }    
     
 }

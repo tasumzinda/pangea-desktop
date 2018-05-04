@@ -58,7 +58,7 @@ public class SendData {
      
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {           
-            hts.setId(rs.getLong("hid"));
+            hts.setId(rs.getLong("hid")== 0 ? null : rs.getLong("hid"));
             hts.setHivTestingReferralSlipNumber(rs.getString("hiv_testing_referral_slip_number"));
 
             //hts.setmDate(rs.getDate("m_date"));
@@ -69,7 +69,7 @@ public class SendData {
           //  hts.setClientServices(ClientServices.valueOf(rs.getString("entry_stream").equals("null") ? "OTHER" : rs.getString("entry_stream")));
             hts.setEntryStream(rs.getString("entry_stream"));
             hts.setOther1("");
-            hts.setHtsNumber(String.valueOf(rs.getInt("card_number")));
+            hts.setHtsNumber(rs.getString("hts_number"));
             hts.setmTime(rs.getString("m_time").equals("null") ? null : rs.getString("m_time"));
             hts.sethTSModel(ci.htVal(rs.getInt("htsmodel")));
             hts.setPregnantOrLactatingWoman(ci.yesNo(rs.getInt("pregnant_or_lactating_woman")));
@@ -78,7 +78,7 @@ public class SendData {
             hts.setRegisteredInPreArt(convertString(rs.getString("registered_in_pre_art")));
             hts.setInitiatedOnArt(ci.yesNo(rs.getInt("initiated_on_art")));
             hts.setDateOfInitiation(convertString(rs.getString("date_of_initiation")));
-            hts.setOiArtNumber(String.valueOf(rs.getInt("oi_art_number")));
+            hts.setOiArtNumber(rs.getString("oi_art_number"));
 
             Province prov = getByIdProvince(rs.getLong("province"));
             hts.setProvince(prov);
@@ -91,7 +91,7 @@ public class SendData {
             hts.setLastName(rs.getString("last_name"));
             hts.setAge(rs.getInt("age"));
             hts.setGender(Gender.get(rs.getInt("gender")));
-           hts.setCreatedBy(createdby(rs.getLong("created_by")));
+            hts.setCreatedBy(createdby(rs.getLong("created_by")));
             hts.setModifiedBy(modifiedby(rs.getLong("modified_by")));
            
         }
@@ -104,7 +104,7 @@ public class SendData {
         String query = callType.equals("edit") ? "Select * From defaulter_tracking_form where id='"+id+"'" : "Select * From defaulter_tracking_form where id='"+id+"' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
-            dtf.setId(rs.getLong("did"));
+            dtf.setId(rs.getLong("did") == 0 ? null : rs.getLong("did"));
             dtf.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             dtf.setLastNameOfIndex(rs.getString("last_name_of_index"));
             dtf.setPhysicalAddress(rs.getString("physical_address"));
@@ -144,20 +144,20 @@ public class SendData {
         return dtf;
     }
 
-    public IndexCaseTestingForm ictFormQuery(Long id) throws SQLException, ParseException {
+    public IndexCaseTestingForm ictFormQuery(Long id, String callType) throws SQLException, ParseException {
         ConvertItems ci = new ConvertItems();
         IndexCaseTestingForm ict = new IndexCaseTestingForm();
-        String query = "Select * From index_case_testing_form where id='" + id + "'";
+        String query = callType.equals("edit") ? "Select * From index_case_testing_form where id='" + id + "'" : "Select * From index_case_testing_form where id='" + id + "' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
-            
+            ict.setId(rs.getLong("iid")== 0 ? null : rs.getLong("iid"));
             ict.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             ict.setLastNameOfIndex(rs.getString("last_name_of_index"));
             ict.setSequentialNumberOfIndex(rs.getString("sequential_number_of_index"));
             ict.setDateIndexTestedOrDiagnosed(convertString(rs.getString("date_index_tested_or_diagnosed")));
             ict.setIndexOIARTNumber(rs.getString("indexoiartnumber"));
             //ict.setIndexOIARTNumber(null);
-            ict.setIndexContactNumber(rs.getString("index_contact_number"));
+            ict.setIndexContactNumber(rs.getLong("index_contact_number"));
             //  ict.setIndexContactNumber(null);
             ict.setInitiatedOnART(ci.yesNo(rs.getInt("initiated_onart")));
             ict.setReasonForNotBeingInitiated(rs.getString("reason_for_not_being_initiated"));
@@ -179,9 +179,10 @@ public class SendData {
         String query = "Select * From contact where id = '"+id+"' and index_case_testing_form = '"+idx+"'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
+           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
            c.setNameOfContact(rs.getString("name_of_contact"));
            c.setAge(rs.getInt("age"));
-           c.setGender(Gender.get(rs.getInt("gender")));
+           c.setGender(ci.sex(rs.getInt("gender")));
            c.setContactAddress(rs.getString("contact_address"));
            c.setRelationShipToIndex(rs.getString("relation_ship_to_index"));
            c.setRelationshipOther(null);
@@ -190,14 +191,91 @@ public class SendData {
            c.setIfTestedDateContactTested(convertString(rs.getString("if_tested_date_contact_tested")));
            c.setPreferredPlaceForContactsToBeTested(ci.htVal(rs.getInt("preferred_place_for_contacts_to_be_tested")));
            c.setAppointmentDateForContact(convertString(rs.getString("appointment_date_for_contact")));
+           c.setCallOutcome(ci.callOut(rs.getInt("call_outcome")));
            c.setSecondAppointmentDateForContact(convertString(rs.getString("second_appointment_date_for_contact")));
            c.setThirdAppointmentDateForContact(convertString(rs.getString("third_appointment_date_for_contact")));
+           c.setVisitOutcome(ci.callOut(rs.getInt("visit_outcome")));
            c.setSequentialNumberOfContacts(rs.getInt("sequential_number_of_contacts"));
            c.setContactTestedDate(convertString(rs.getString("contact_tested_date")));
            c.setLocationOfTest(ci.htVal(rs.getInt("location_of_test")));
            c.setHivResult(ci.finalVal(rs.getInt("hiv_result")));
            c.setEnrolledIntoCare(ci.yesNo(rs.getInt("enrolled_into_care")));
            c.setOnART(ci.yesNo(rs.getInt("onart")));
+           c.setArtNumber(rs.getString("art_number").equals("null") ? null : rs.getString("art_number"));
+           c.setReferralSlipReturned(ci.yesNo(rs.getInt("referral_slip_returned")));
+           
+           c.setCreatedBy(createdby(rs.getLong("created_by")));
+           c.setModifiedBy(modifiedby(rs.getLong("modified_by")));
+          // c.setIndexCaseTestingForm(in);
+        }
+        return c;
+    }
+    public Contact contactFormQueryNewContact(Long id, Long idx) throws SQLException, ParseException{
+        Contact c = new Contact();
+        ConvertItems ci = new ConvertItems();
+        String query = "Select * From contact where id = '"+id+"' and index_case_testing_form = '"+idx+"' and stat ='0'";
+        ResultSet rs = handler.execQuery(query);
+        while(rs.next()){
+           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
+           c.setNameOfContact(rs.getString("name_of_contact"));
+           c.setAge(rs.getInt("age"));
+           c.setGender(ci.sex(rs.getInt("gender")));
+           c.setContactAddress(rs.getString("contact_address"));
+           c.setRelationShipToIndex(rs.getString("relation_ship_to_index"));
+           c.setRelationshipOther(null);
+           c.setReferralSlipNumber(rs.getString("referral_slip_number"));
+           c.setHivStatusEntry(ci.reasonForIn(rs.getInt("hiv_status_entry")));
+           c.setIfTestedDateContactTested(convertString(rs.getString("if_tested_date_contact_tested")));
+           c.setPreferredPlaceForContactsToBeTested(ci.htVal(rs.getInt("preferred_place_for_contacts_to_be_tested")));
+           c.setAppointmentDateForContact(convertString(rs.getString("appointment_date_for_contact")));
+           c.setCallOutcome(ci.callOut(rs.getInt("call_outcome")));
+           c.setSecondAppointmentDateForContact(convertString(rs.getString("second_appointment_date_for_contact")));
+           c.setThirdAppointmentDateForContact(convertString(rs.getString("third_appointment_date_for_contact")));
+           c.setVisitOutcome(ci.callOut(rs.getInt("visit_outcome")));
+           c.setSequentialNumberOfContacts(rs.getInt("sequential_number_of_contacts"));
+           c.setContactTestedDate(convertString(rs.getString("contact_tested_date")));
+           c.setLocationOfTest(ci.htVal(rs.getInt("location_of_test")));
+           c.setHivResult(ci.finalVal(rs.getInt("hiv_result")));
+           c.setEnrolledIntoCare(ci.yesNo(rs.getInt("enrolled_into_care")));
+           c.setOnART(ci.yesNo(rs.getInt("onart")));
+           c.setArtNumber(rs.getString("art_number").equals("null") ? null : rs.getString("art_number"));
+           c.setReferralSlipReturned(ci.yesNo(rs.getInt("referral_slip_returned")));
+           
+        //   c.setCreatedBy(createdby(rs.getLong("created_by")));
+        //   c.setModifiedBy(modifiedby(rs.getLong("modified_by")));
+          // c.setIndexCaseTestingForm(in);
+        }
+        return c;
+    }
+    public Contact contactFormQueryUpdate(Long id) throws SQLException, ParseException{
+        Contact c = new Contact();
+        ConvertItems ci = new ConvertItems();
+        String query = "Select * From contact where id = '"+id+"'";
+        ResultSet rs = handler.execQuery(query);
+        while(rs.next()){
+           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
+           c.setNameOfContact(rs.getString("name_of_contact"));
+           c.setAge(rs.getInt("age"));
+           c.setGender(ci.sex(rs.getInt("gender")));
+           c.setContactAddress(rs.getString("contact_address"));
+           c.setRelationShipToIndex(rs.getString("relation_ship_to_index"));
+           c.setRelationshipOther(null);
+           c.setReferralSlipNumber(rs.getString("referral_slip_number"));
+           c.setHivStatusEntry(ci.reasonForIn(rs.getInt("hiv_status_entry")));
+           c.setIfTestedDateContactTested(convertString(rs.getString("if_tested_date_contact_tested")));
+           c.setPreferredPlaceForContactsToBeTested(ci.htVal(rs.getInt("preferred_place_for_contacts_to_be_tested")));
+           c.setAppointmentDateForContact(convertString(rs.getString("appointment_date_for_contact")));
+           c.setCallOutcome(ci.callOut(rs.getInt("call_outcome")));
+           c.setSecondAppointmentDateForContact(convertString(rs.getString("second_appointment_date_for_contact")));
+           c.setThirdAppointmentDateForContact(convertString(rs.getString("third_appointment_date_for_contact")));
+           c.setVisitOutcome(ci.callOut(rs.getInt("visit_outcome")));
+           c.setSequentialNumberOfContacts(rs.getInt("sequential_number_of_contacts"));
+           c.setContactTestedDate(convertString(rs.getString("contact_tested_date")));
+           c.setLocationOfTest(ci.htVal(rs.getInt("location_of_test")));
+           c.setHivResult(ci.finalVal(rs.getInt("hiv_result")));
+           c.setEnrolledIntoCare(ci.yesNo(rs.getInt("enrolled_into_care")));
+           c.setOnART(ci.yesNo(rs.getInt("onart")));
+           c.setArtNumber(rs.getString("art_number").equals("null") ? null : rs.getString("art_number"));
            c.setReferralSlipReturned(ci.yesNo(rs.getInt("referral_slip_returned")));
            
         //   c.setCreatedBy(createdby(rs.getLong("created_by")));
@@ -222,7 +300,7 @@ public class SendData {
 
     public List<Long> dtfIds() throws SQLException {
         List<Long> listd = new ArrayList<>();
-        String query = "Select id From defaulter_tracking_form";
+        String query = "Select id From defaulter_tracking_form where stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
             Long idz = rs.getLong(1);
@@ -235,7 +313,7 @@ public class SendData {
 
     public List<Long> ictIds() throws SQLException {
         List<Long> listIct = new ArrayList<>();
-        String query = "Select id From index_case_testing_form";
+        String query = "Select id From index_case_testing_form where stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
             Long idz = rs.getLong(1);
@@ -247,7 +325,7 @@ public class SendData {
     }
     public List<Long> allContactsOfThisIndex(Long id) throws SQLException{
         List<Long> listContacts = new ArrayList<>(); 
-        String query = "Select id From contact where index_case_testing_form = '"+id+"'";
+        String query = "Select id From contact where index_case_testing_form = '"+id+"' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
            Long ids = rs.getLong(1);
@@ -255,6 +333,27 @@ public class SendData {
         }
         return listContacts;
     }
+    public List<Long> allContactsNewWithExistingindex() throws SQLException{
+        List<Long> listContactsNew = new ArrayList<>(); 
+        String query = "Select id From contact where cid='0' and stat='0'";
+        ResultSet rs = handler.execQuery(query);
+        while (rs.next()) {
+           Long ids = rs.getLong(1);
+           listContactsNew.add(ids);
+        }
+        return listContactsNew;
+    }
+    public List<Long> allContactsForUpdate() throws SQLException{//
+        List<Long> listContactsForU = new ArrayList<>(); 
+        String query = "Select id From contact where cid<>'0' and stat='0'";
+        ResultSet rs = handler.execQuery(query);
+        while (rs.next()) {
+           Long ids = rs.getLong(1);
+           listContactsForU.add(ids);
+        }
+        return listContactsForU;
+    }
+    
    /* public Long countNumberOfContacts(Long id){
         long total = 0L;
         String query  = 

@@ -18,7 +18,6 @@ package com.itech.pangea.business.service;
 
 import java.util.List;
 import com.itech.pangea.business.domain.Province;
-import com.itech.pangea.business.util.dto.NameIdDTO;
 
 
 /**
@@ -29,5 +28,5 @@ public interface ProvinceService extends GenericService<Province> {
     
     public Province getByName(String name);
     
-    public List<NameIdDTO> getProvinces();
+    
 }
