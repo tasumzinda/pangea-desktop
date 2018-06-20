@@ -41,23 +41,23 @@ public class ContactLogic {
     }
     public Long getIndexid(long id) throws SQLException{
         long indexId = 0L;
-        String query = "Select index_case_testing_form From contact where id = '"+id+"'";
+        String query = "Select index_case_testing_form From contact where id = '"+id+"' and cid='0' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
             indexId = rs.getLong(1);
         }
         return indexId;
     }
-    public long getRealIndexId(long indexId) throws SQLException{
+  /*  public long getRealIndexId(long indexId) throws SQLException{
         long iid = 0L;
-        String query = "Select iid From index_case_testing_form where id = '"+indexId+"' and iid<>'0'";
+        String query = "Select iid From index_case_testing_form where iid = '"+indexId+"' and iid<>'0'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
             iid = rs.getLong(1);
         }
         return iid;
         
-    } 
+    } */
      public User createdby(long id){
         User user = new User();
         user.setId(id);

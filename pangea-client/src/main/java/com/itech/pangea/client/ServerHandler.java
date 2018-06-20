@@ -22,11 +22,12 @@ public class ServerHandler extends Task<Connection>{
            
             
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String jdbcUrl = "jdbc:mysql://192.168.1.203:3306/itechdb?useSSL=false";
+            String jdbcUrl = "jdbc:mysql://192.168.100.61:3306/itechdb?useSSL=false";
              String user = "itechadmin";
              String pass = "itech2017";
-         //  String user = "root";
-         //  String pass = "";                  
+         //  String jdbcUrl = "jdbc:mysql://localhost:3306/itechdb?useSSL=false"; 
+          // String user = "root";
+          // String pass = "P@ng3414";                  
            co = DriverManager.getConnection(jdbcUrl, user, pass);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
             System.err.println(":::::::::::::::Error Connection::::::::::::::");

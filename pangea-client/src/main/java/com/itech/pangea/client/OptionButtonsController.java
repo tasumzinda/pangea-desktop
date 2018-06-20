@@ -50,13 +50,13 @@ public class OptionButtonsController implements Initializable {
     Long id;
     User user;
     String controllerType;
-    String conStatus;
+    String conStatus = "Offline";
     public void setUserNCtx(User user,  AnnotationConfigApplicationContext acac, Long id, String controllerType, String conStatus) {
         this.user = user;
         this.acac = acac;
         this.id = id;
         this.controllerType = controllerType;
-        this.conStatus = conStatus;
+      //  this.conStatus = conStatus;
        
     }
     @FXML

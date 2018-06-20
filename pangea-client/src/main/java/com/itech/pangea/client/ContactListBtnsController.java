@@ -98,7 +98,7 @@ public class ContactListBtnsController implements Initializable {
             Parent root = loader.load();
             
             ContactListController cl = ( ContactListController)loader.getController();
-            cl.setUserNCtx(user, acac, conStatus, idx);
+            cl.setUserNCtx(user, acac, id,  conStatus, idx);
             Scene scene = new Scene(root); 
             stage.setTitle("Contact list");
             stage.initModality(Modality.APPLICATION_MODAL);

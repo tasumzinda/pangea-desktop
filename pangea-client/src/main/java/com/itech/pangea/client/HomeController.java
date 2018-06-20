@@ -205,7 +205,7 @@ public class HomeController implements Initializable {
                   alert.setContentText("Network Unavailable");
                   alert.showAndWait(); 
                }
-                else if(Integer.parseInt(totalNewRecords.getText())>=0){
+                else if(Integer.parseInt(totalNewRecords.getText())<=0){
                   Alert alert = new Alert(Alert.AlertType.ERROR);
                   alert.setTitle("Notification");
                   alert.setHeaderText("Error Encountered");
@@ -344,7 +344,6 @@ public class HomeController implements Initializable {
 
             LoginController loginController = (LoginController) loader.getController();
             loginController.setAcac(acac, lOn, lOff, conStatus);
-           // loginController.setAcac(acac);
             Scene scene = new Scene(root);
             stage.setTitle("ITECH");
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/Images/download.jpg")));
@@ -469,9 +468,7 @@ public class HomeController implements Initializable {
                     acc.setDisable(false);
         });   
         new Thread(tas).start();
-        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.err.println(conStatus);
-        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+       
     } 
     public void checkConnectionOnline(){
         acc.setDisable(true);
@@ -480,9 +477,10 @@ public class HomeController implements Initializable {
         tas.setOnSucceeded((event) -> {           
         Connection con = tas.getValue();
         if(con!=null){
-                    lOn = false;
-                    lOff = true;
-                  //  conStatus = "Online";    
+                   // lOn = false;
+                    lOn = true;
+                    lOff = false;
+                    conStatus = "Online";    
                     onLine.setVisible(true); 
                     offLine.setVisible(false);
                 /* if(Integer.parseInt(totalNewRecords.getText())>0){
@@ -503,13 +501,18 @@ public class HomeController implements Initializable {
       }  
         }*/
         }
+        else{
+                    lOn = false;
+                    lOff = true;
+                    conStatus = "Offline";      
+                    offLine.setVisible(true);
+                    onLine.setVisible(false); 
+        }
         acc.setDisable(false);
         });
         
         new Thread(tas).start();
-        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.err.println(conStatus);
-        System.err.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+       
     }
 
 }

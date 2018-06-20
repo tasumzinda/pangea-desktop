@@ -85,7 +85,7 @@ public class SQLiteQueries {
                     }
                     return i;
                 }
-                public Integer countIndex() throws SQLException{
+                public Integer countIndex() throws SQLException, SQLException{
                     int i = 0;
                     String query = "Select count(stat) From index_case_testing_form where stat ='0'";
                     ResultSet rs = handle.execQuery(query);
@@ -102,6 +102,35 @@ public class SQLiteQueries {
                        i = rs.getInt(1);        
                     }
                     return i;
+                }
+                public Integer findLastInsertByUserAndFacility(Integer userId, Integer facilityId) throws SQLException{
+                    String query = "Select max(id) from index_case_testing_form where created_by='"+ userId + "' and facility='" + facilityId +"'";
+                    ResultSet rs  = handle.execQuery(query);
+                    int id = 0;
+                    while(rs.next()){
+                        id = rs.getInt(1);
+                    }
+                    return id;
+                }
+                
+                public String getSequentialNumber(Integer formId) throws SQLException{
+                    String query = "Select sequential_number from index_case_testing_form where id='"+ formId +"'";
+                    ResultSet rs  = handle.execQuery(query);
+                    String number = "";
+                    while(rs.next()){
+                        number = rs.getString(1);
+                    }
+                    return number;
+                }
+                
+                public String getDateCreated(Integer formId) throws SQLException{
+                    String query = "Select date_created from index_case_testing_form where id='"+ formId +"'";
+                    ResultSet rs  = handle.execQuery(query);
+                    String number = "";
+                    while(rs.next()){
+                        number = rs.getString(1);
+                    }
+                    return number;
                 }
                
 }

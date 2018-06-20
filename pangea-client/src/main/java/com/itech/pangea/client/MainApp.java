@@ -26,7 +26,7 @@ public class MainApp extends Application {
     private static final double HEIGHT = 600;
 
     // Just a counter to create some delay while showing preloader.
-    private static final int COUNT_LIMIT = 50000;
+    private static final int COUNT_LIMIT = 20000;
 
     private static int stepCount = 1;
     private static String conStatus;

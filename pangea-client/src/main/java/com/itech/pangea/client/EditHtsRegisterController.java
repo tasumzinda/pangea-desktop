@@ -444,8 +444,7 @@ public class EditHtsRegisterController implements Initializable {
             else{
              ClientServices fcs = (ClientServices)testingEntryStream.getSelectionModel().getSelectedItem();
              hts.setClientServices(fcs);
-             hts.setEntryStream(testingEntryStream.getSelectionModel().getSelectedItem().toString());
-            
+             hts.setEntryStream(testingEntryStream.getSelectionModel().getSelectedItem().toString());           
             }
             if(htsModel.getSelectionModel().isEmpty()){
                hts.sethTSModel(null);               

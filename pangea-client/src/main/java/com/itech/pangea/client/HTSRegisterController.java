@@ -20,6 +20,9 @@ import com.itech.pangea.business.service.DistrictService;
 import com.itech.pangea.business.service.FacilityService;
 import com.itech.pangea.business.service.HTSRegisterFormService;
 import com.itech.pangea.business.service.ProvinceService;
+import com.itech.pangea.business.util.DateUtil;
+import com.itech.pangea.business.util.UUIDGen;
+import com.itech.pangea.repo.HtsRegisterRepo;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
@@ -27,11 +30,13 @@ import com.jfoenix.controls.JFXTimePicker;
 import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
+import com.itech.pangea.utils.DateFunctions;
 import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -240,8 +245,41 @@ public class HTSRegisterController implements Initializable {
         dateInitiatedArt.setValue(null);
         artNumber.clear();
     }
+    
+    public String sequentialNumber(Integer facilityId) throws SQLException, ParseException {
+       HtsRegisterRepo htsRegisterRepo = new HtsRegisterRepo();
+        Integer lastInserId = htsRegisterRepo.findLastInsertByUserAndFacility(user.getId().intValue(), facilityId);
+        String sequentialNumber = "";
+        if (lastInserId == 0) {
+            sequentialNumber = "001";
+        } else {
+            Date da = DateFunctions.convertToLocalDate(htsRegisterRepo.getDateCreated(lastInserId));
+            Date today = new Date();
+            String stringToday = DateUtil.fmt.format(today);
+            String stringCreated = DateUtil.fmt.format(da);
+           
+            if (stringToday.equals(stringCreated)) {
+                String lastSequentialNumber = htsRegisterRepo.getSequentialNumber(lastInserId);
+                int lastIndex = lastSequentialNumber.lastIndexOf("0");
+                String firstPart = lastSequentialNumber.substring(0, lastIndex + 1);
+                String lastPart = lastSequentialNumber.substring(lastIndex + 1, lastSequentialNumber.length());
+                Integer numSequentialNumber = Integer.valueOf(lastPart);
+                numSequentialNumber++;
+                sequentialNumber = firstPart + String.valueOf(numSequentialNumber);
+            } else {
+                sequentialNumber = "001";
+            }
+        }
+        return sequentialNumber;
+    }
+    
+    public String generateUUID(Integer facility, Date date, User user, String seqNumber) {
+        return facility + UUIDGen.getDate(date) + user.getId() + seqNumber;
+    }
+    
+    
     @FXML
-    private void saveHts(ActionEvent e) throws SQLException{
+    private void saveHts(ActionEvent e) throws SQLException, ParseException{
       //  controller.getLabel().setText("Love");
         System.err.println("888888888888888888888888888");
          HTSRegisterForm hts = new HTSRegisterForm();
@@ -365,10 +403,15 @@ public class HTSRegisterController implements Initializable {
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
+                  
+                    String seqNumber = sequentialNumber(facID);
+                    hts.setSequentialNumber(seqNumber);
+                    hts.setUuid(generateUUID(facID, new Date(), user, seqNumber));
+                    hts.setDateCreated(new Date());
                     hts.setOiArtNumber(artNumber.getText()); 
                     hts.setFirstName(firstName.getText());
                     hts.setLastName(lastName.getText());
-                    hts.setAge(Integer.parseInt(age.getText()));
+                    hts.setAge(age.getText().isEmpty()?null:Integer.parseInt(age.getText()));
                     hts.setGender(fGender);
                     hts.setCreatedBy(user);
                     hts.setModifiedBy(user);
@@ -419,13 +462,14 @@ public class HTSRegisterController implements Initializable {
             
             else{*/
              //  Date dat = new Date();
-               String query = "Insert Into htsregister_form(hid, active, deleted, uuid, version, age, card_number,"
+               String query = "Insert Into htsregister_form(hid, active, date_created, deleted, uuid, version, sequential_number, age, card_number,"
                        + "date_of_initiation, entry_stream, final_result, first_name, gender, in_pre_art, initiated_on_art, last_name, m_date, m_time,"
                        + "oi_art_number, reason_forhivtest, registered_in_pre_art, test, created_by, modified_by, district, facility, province, date_client_registered_inart,"
                        + "htsmodel, hiv_testing_referral_slip_number, hts_number, pregnant_or_lactating_woman, test_if_pregnant_or_lactating_woman, stat)"
-                       + " Values('','', '', '',"
+                       + " Values('0','','"+hts.getDateCreated()+"', '', '"+hts.getUuid()+"',"
                        + " '0',"
-                       + " '"+Integer.parseInt(age.getText())+"',"
+                       + " '"+hts.getSequentialNumber()+"',"
+                       + " '"+hts.getAge()+"',"
                        + " '"+hts.getHtsNumber()+"',"
                        + " '"+hts.getDateOfInitiation()+"',"
                        + " '"+hts.getEntryStream()+"',"

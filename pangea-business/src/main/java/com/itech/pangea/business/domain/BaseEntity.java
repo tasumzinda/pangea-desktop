@@ -47,6 +47,7 @@ abstract public class BaseEntity implements Serializable {
     @JsonIgnore
     private User modifiedBy;
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date dateCreated;
     @Temporal(TemporalType.DATE)
     private Date dateModified;

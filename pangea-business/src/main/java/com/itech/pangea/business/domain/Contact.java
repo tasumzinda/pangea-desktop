@@ -52,6 +52,7 @@ public class Contact extends BaseEntity{
     @Transient
     private Relationship relationship;
     private String relationShipToIndex;
+    private Long sequentialNumber;
     @Transient
     private String relationshipOther;
     private Integer age;
@@ -314,6 +315,14 @@ public class Contact extends BaseEntity{
 
     public void setIndex(Long index) {
         this.index = index;
+    }
+
+    public Long getSequentialNumber() {
+        return sequentialNumber;
+    }
+
+    public void setSequentialNumber(Long sequentialNumber) {
+        this.sequentialNumber = sequentialNumber;
     }
     
 }

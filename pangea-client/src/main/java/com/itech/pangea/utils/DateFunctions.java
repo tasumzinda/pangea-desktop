@@ -5,9 +5,13 @@
  */
 package com.itech.pangea.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  *
@@ -25,6 +29,18 @@ public class DateFunctions {
         else{
           return  date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
+    }
+    
+     public static Date convertToLocalDate(String curDate) throws ParseException {
+        if (curDate.equals("null") || curDate.isEmpty()) {
+            return null;
+        } else {
+            DateFormat dateFormat = new SimpleDateFormat(
+                    "EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+            Date date = dateFormat.parse(curDate);
+            return date;
+        }
+
     }
    
 }

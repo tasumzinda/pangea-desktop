@@ -31,7 +31,7 @@ import javax.persistence.CascadeType;
  * @author Tasu Muzinda
  */
 @Entity
-public class DefaulterTrackingForm extends BaseEntity{
+public class DefaulterTrackingForm extends BaseEstaForm{
     private String firstNameOfIndex;
     private String lastNameOfIndex;
     private String physicalAddress;

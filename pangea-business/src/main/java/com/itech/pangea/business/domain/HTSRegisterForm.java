@@ -38,7 +38,7 @@ import javax.persistence.CascadeType;
  * @author Tasu Muzinda
  */
 @Entity
-public class HTSRegisterForm extends BaseEntity{
+public class HTSRegisterForm extends BaseEstaForm{
     
     private String firstName;
     private String lastName;

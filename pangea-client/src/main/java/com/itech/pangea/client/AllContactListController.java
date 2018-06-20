@@ -218,12 +218,12 @@ public class AllContactListController implements Initializable {
       String query  = "Select * From contact where active='true'";
        ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
-           
+           Long stat = rs.getLong("stat");
            dataH.add(new AllContactListProperties(
                    rs.getLong("id"),
-                   getNameOfIndexFromIndexCasingFormOffline(rs.getLong("index_case_testing_form")),
+                   getNameOfIndexFromIndexCasingFormOffline(rs.getLong("index_case_testing_form"), stat),
                    rs.getString("name_of_contact"),
-                   getFacilityOffline(rs.getLong("index_case_testing_form")))
+                   getFacilityOffline(rs.getLong("index_case_testing_form"), stat))
                 );           
            }
         tblContactList.setItems(dataH);
@@ -244,22 +244,60 @@ public class AllContactListController implements Initializable {
         String nameOfIndexX = idex.getFirstNameOfIndex() + " " + idex.getLastNameOfIndex();
         return nameOfIndexX;
     }
-    public String getNameOfIndexFromIndexCasingFormOffline(Long id) throws SQLException, ParseException{
+    public String getNameOfIndexFromIndexCasingFormOffline(Long id, Long stat) throws SQLException, ParseException{
         SendData sd = new SendData();
+          if(stat==0){
         IndexCaseTestingForm idx = sd.ictFormQuery(id, "edit");       
         String nameOfIndexX = idx.getFirstNameOfIndex() + " " + idx.getLastNameOfIndex();
         return nameOfIndexX;
+          }
+          else{
+              return getFullByIndexRealId(id);
+          }
     }
     public String getFacilityOnline(Long id){
         IndexCaseTestingForm idex = indexCaseTestingFormService.get(id);
         String facilityId = idex.getFacility().getName();
         return facilityId;
     }
-     public String getFacilityOffline(Long id) throws SQLException, ParseException{
+     public String getFacilityOffline(Long id, Long stat) throws SQLException, ParseException{
         SendData sd = new SendData();
-        IndexCaseTestingForm idx = sd.ictFormQuery(id, "edit");   
+        if(stat==0){
+        IndexCaseTestingForm idx = sd.ictFormQuery(id, "edit");  
+        if(idx.getFacility()==null){
+            return "";
+        }
+        else{
         String fac = idx.getFacility().getName();
         return fac;
+        }
+        }
+        else{
+           return getFacilityByIndexRealId(id);
+        }
     }
-    
+    public String getFacilityByIndexRealId(Long realId) throws SQLException{
+        SendData sd = new SendData();
+         String query  = "Select facility From index_case_testing_form where iid='"+realId+"'";
+         ResultSet rs = handler.execQuery(query);
+         String facilityName = "";
+         while (rs.next()) {
+            Integer facilityId = rs.getInt(1);
+            Facility facil = sd.getByIdFacility(facilityId.longValue());
+            facilityName = facil.getName();
+        }
+         return facilityName;
+    }
+     public String getFullByIndexRealId(Long realId) throws SQLException{
+     
+         String query  = "Select * From index_case_testing_form where iid='"+realId+"'";
+         ResultSet rs = handler.execQuery(query);
+         String firstName = "";
+         String lastName = "";
+         while (rs.next()) {
+            firstName = rs.getString("first_name_of_index");
+            lastName = rs.getString("last_name_of_index");
+        }
+         return firstName + " "+ lastName;
+    }
 }

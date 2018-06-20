@@ -58,16 +58,14 @@ public class SendData {
      
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {           
-            hts.setId(rs.getLong("hid")== 0 ? null : rs.getLong("hid"));
+            hts.setId(rs.getLong("hid")== 0 ? 0 : rs.getLong("hid"));
             hts.setHivTestingReferralSlipNumber(rs.getString("hiv_testing_referral_slip_number"));
-
-            //hts.setmDate(rs.getDate("m_date"));
             hts.setmDate(convertString(rs.getString("m_date")));
             hts.setReasonForHIVTest(ci.valDb(rs.getInt("reason_forhivtest")));
             hts.setTest(ci.testVal(rs.getString("test")));
-
-          //  hts.setClientServices(ClientServices.valueOf(rs.getString("entry_stream").equals("null") ? "OTHER" : rs.getString("entry_stream")));
-            hts.setEntryStream(rs.getString("entry_stream"));
+            hts.setUuid(rs.getString("uuid"));
+            hts.setSequentialNumber(rs.getString("sequential_number"));
+            hts.setEntryStream(rs.getString("entry_stream").equals("null") ? null : rs.getString("entry_stream"));
             hts.setOther1("");
             hts.setHtsNumber(rs.getString("hts_number"));
             hts.setmTime(rs.getString("m_time").equals("null") ? null : rs.getString("m_time"));
@@ -104,7 +102,9 @@ public class SendData {
         String query = callType.equals("edit") ? "Select * From defaulter_tracking_form where id='"+id+"'" : "Select * From defaulter_tracking_form where id='"+id+"' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
-            dtf.setId(rs.getLong("did") == 0 ? null : rs.getLong("did"));
+            dtf.setId(rs.getLong("did") == 0 ? 0 : rs.getLong("did"));
+            dtf.setUuid(rs.getString("uuid"));
+            dtf.setSequentialNumber(rs.getString("sequential_number"));
             dtf.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             dtf.setLastNameOfIndex(rs.getString("last_name_of_index"));
             dtf.setPhysicalAddress(rs.getString("physical_address"));
@@ -150,7 +150,9 @@ public class SendData {
         String query = callType.equals("edit") ? "Select * From index_case_testing_form where id='" + id + "'" : "Select * From index_case_testing_form where id='" + id + "' and stat='0'";
         ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
-            ict.setId(rs.getLong("iid")== 0 ? null : rs.getLong("iid"));
+            ict.setId(rs.getLong("iid")== 0 ? 0 : rs.getLong("iid"));
+            ict.setUuid(rs.getString("uuid"));
+            ict.setSequentialNumber(rs.getString("sequential_number"));
             ict.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             ict.setLastNameOfIndex(rs.getString("last_name_of_index"));
             ict.setSequentialNumberOfIndex(rs.getString("sequential_number_of_index"));
@@ -179,7 +181,11 @@ public class SendData {
         String query = "Select * From contact where id = '"+id+"' and index_case_testing_form = '"+idx+"'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
-           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
+           c.setId(rs.getLong("cid") == 0 ? 0 : rs.getLong("cid"));
+           c.setUuid(rs.getString("uuid"));
+           c.setSequentialNumber(rs.getLong("sequential_number"));
+            c.setDateCalled(convertString(rs.getString("date_called")));
+             c.setDateVisited(convertString(rs.getString("date_visited")));
            c.setNameOfContact(rs.getString("name_of_contact"));
            c.setAge(rs.getInt("age"));
            c.setGender(ci.sex(rs.getInt("gender")));
@@ -216,7 +222,12 @@ public class SendData {
         String query = "Select * From contact where id = '"+id+"' and index_case_testing_form = '"+idx+"' and stat ='0'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
-           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
+           c.setId(rs.getLong("cid") == 0 ? 0 : rs.getLong("cid"));
+           c.setUuid(rs.getString("uuid"));
+           c.setSequentialNumber(rs.getLong("sequential_number"));
+           
+           c.setDateCalled(convertString(rs.getString("date_called")));
+             c.setDateVisited(convertString(rs.getString("date_visited")));
            c.setNameOfContact(rs.getString("name_of_contact"));
            c.setAge(rs.getInt("age"));
            c.setGender(ci.sex(rs.getInt("gender")));
@@ -253,7 +264,12 @@ public class SendData {
         String query = "Select * From contact where id = '"+id+"'";
         ResultSet rs = handler.execQuery(query);
         while(rs.next()){
-           c.setId(rs.getLong("cid") == 0 ? null : rs.getLong("cid"));
+           c.setId(rs.getLong("cid") == 0 ? 0 : rs.getLong("cid"));
+           c.setUuid(rs.getString("uuid"));
+           c.setSequentialNumber(rs.getLong("sequential_number"));
+           
+           c.setDateCalled(convertString(rs.getString("date_called")));
+             c.setDateVisited(convertString(rs.getString("date_visited")));
            c.setNameOfContact(rs.getString("name_of_contact"));
            c.setAge(rs.getInt("age"));
            c.setGender(ci.sex(rs.getInt("gender")));

@@ -28,7 +28,7 @@ public class SqliteDatabaseHandler {
     private void createConnection(){
          try{
             Class.forName("org.sqlite.JDBC").newInstance();        
-          conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
+         conn = DriverManager.getConnection("jdbc:sqlite::resource:trackerdb.db");
          // conn = DriverManager.getConnection("jdbc:sqlite:trackerdb.db");
           if(conn!=null){
               System.err.println("********************************");

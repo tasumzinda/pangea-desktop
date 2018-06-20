@@ -14,17 +14,23 @@ import com.itech.pangea.business.service.DefaulterTrackingFormService;
 import com.itech.pangea.business.service.DistrictService;
 import com.itech.pangea.business.service.FacilityService;
 import com.itech.pangea.business.service.ProvinceService;
+import com.itech.pangea.business.util.DateUtil;
+import com.itech.pangea.business.util.UUIDGen;
+import com.itech.pangea.repo.DefaulterTrackingRepo;
+import com.itech.pangea.repo.HtsRegisterRepo;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.itech.pangea.sqliteConfig.PlaceID;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.sqliteConnections.SQLiteQueries;
+import com.itech.pangea.utils.DateFunctions;
 import com.itech.pangea.validations.Validate;
 import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -176,6 +182,37 @@ public class DefaulterTrackingFormController implements Initializable {
         
         artNumber.clear();
     }
+     public String sequentialNumber(Integer facilityId) throws SQLException, ParseException {
+        //SQLiteQueries queries = new SQLiteQueries();
+        DefaulterTrackingRepo defaulterTrackingRepo = new DefaulterTrackingRepo();
+        Integer lastInserId = defaulterTrackingRepo.findLastInsertByUserAndFacility(user.getId().intValue(), facilityId);
+        String sequentialNumber = "";
+        if (lastInserId == 0) {
+            sequentialNumber = "001";
+        } else {
+            Date date = DateFunctions.convertToLocalDate(defaulterTrackingRepo.getDateCreated(lastInserId));
+            Date today = new Date();
+            String stringToday = DateUtil.fmt.format(today);
+            String stringCreated = DateUtil.fmt.format(date);
+           
+            if (stringToday.equals(stringCreated)) {
+                String lastSequentialNumber = defaulterTrackingRepo.getSequentialNumber(lastInserId);
+                int lastIndex = lastSequentialNumber.lastIndexOf("0");
+                String firstPart = lastSequentialNumber.substring(0, lastIndex + 1);
+                String lastPart = lastSequentialNumber.substring(lastIndex + 1, lastSequentialNumber.length());
+                Integer numSequentialNumber = Integer.valueOf(lastPart);
+                numSequentialNumber++;
+                sequentialNumber = firstPart + String.valueOf(numSequentialNumber);
+            } else {
+                sequentialNumber = "001";
+            }
+        }
+        return sequentialNumber;
+    }
+    
+    public String generateUUID(Integer facility, Date date, User user, String seqNumber) {
+        return facility + UUIDGen.getDate(date) + user.getId() + seqNumber;
+    }
      
     @FXML
     private void clearD(ActionEvent e){
@@ -187,7 +224,7 @@ public class DefaulterTrackingFormController implements Initializable {
         return dateCon;
     }
     @FXML
-    private void saveDefaulterTrackingForm(ActionEvent e) throws SQLException{
+    private void saveDefaulterTrackingForm(ActionEvent e) throws SQLException, ParseException{
          
          DefaulterTrackingForm dtf = new DefaulterTrackingForm();
          if(isInputValid()){
@@ -347,6 +384,11 @@ public class DefaulterTrackingFormController implements Initializable {
                   long disID = placeID.getDistrictIdFromFacility((String)facility.getSelectionModel().getSelectedItem());
                   long provID = placeID.getProvinceFromDistrict(disID);
                   int facID = placeID.getFacilityId((String)facility.getSelectionModel().getSelectedItem());
+                  
+                    String seqNumber = sequentialNumber(facID);
+                    dtf.setSequentialNumber(seqNumber);
+                    dtf.setUuid(generateUUID(facID, new Date(), user, seqNumber));
+                    dtf.setDateCreated(new Date());
         /*  if(conStatus.equals("Online")){
               
               savePro.setVisible(true);
@@ -389,12 +431,13 @@ public class DefaulterTrackingFormController implements Initializable {
                 thread.start(); 
           }*/
         //  else{
-              String query = " Insert Into defaulter_tracking_form(did, active, deleted, uuid, version, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
+              String query = " Insert Into defaulter_tracking_form(did, active, date_created, deleted, uuid, version, sequential_number, appointment_date_if_linked_back_to_care, appointment_date_if_linked_to_care,"
                       + "appointment_date_if_linked_to_care1, appointment_deemed_defaulter, call1outcome, call2outcome, call3outcome, contact_details, "
                       + "date_art_initiation, date_client_visited_facility, date_of_call1, date_of_call2, date_of_call3, date_of_visit, date_visit_done, first_name_of_index,"
                       + "last_name_of_index, oiartnumber, physical_address, reason_for_tracking, review_date, visit_done_outcome, visit_outcome, created_by, modified_by, district, facility, province,"
                       + "appointment_date_if_linked_to_care2, appointment_date_if_linked_to_care3, final_outcome, stat)"
-                      + " Values('', '', '','','0',"
+                      + " Values('0', '', '"+dtf.getDateCreated()+"', '','"+dtf.getUuid()+"','0',"
+                      + " '"+dtf.getSequentialNumber()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare()+"',"
                       + "'"+dtf.getAppointmentDateIfLinkedToCare1()+"',"

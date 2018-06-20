@@ -137,7 +137,12 @@ public class IndexCasingListController implements Initializable {
             ResultSet rs = handler.execQuery(query);
       
             while(rs.next()){
+                if(rs.getLong("iid")!=0){
+                    idx.setId(rs.getLong("iid"));
+                }
+                else{
                 idx.setId(i);
+                }
                  idx.setFirstNameOfIndex(rs.getString("first_name_of_index"));
             idx.setLastNameOfIndex(rs.getString("last_name_of_index"));
             idx.setSequentialNumberOfIndex(rs.getString("sequential_number_of_index"));
@@ -166,16 +171,16 @@ public class IndexCasingListController implements Initializable {
      @FXML
     private void selectedIct(MouseEvent event){
         IndexCasingProperties ictS = (IndexCasingProperties)indexCasingTable.getSelectionModel().getSelectedItem();
-        if(conStatus.equals("Online")){
-            dataIndex = indexCaseTestingFormService.get(ictS.getId());
-        }
-        else{
+      //  if(conStatus.equals("Online")){
+       //     dataIndex = indexCaseTestingFormService.get(ictS.getId());
+      //  }
+    //    else{
             try {
                 dataIndex = getById(ictS.getId());
             } catch (SQLException | ParseException ex) {
                 Logger.getLogger(IndexCasingListController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+      //  }
         Stage stage = new Stage();
        // String callIct = "callIct";
         try {
@@ -183,7 +188,7 @@ public class IndexCasingListController implements Initializable {
             Parent root = loader.load();
             
             ContactListBtnsController contactListBtnsController = (ContactListBtnsController)loader.getController();
-            contactListBtnsController.setUserNCtx(user, acac, ictS.getId(), ictS.getContactList(),dataIndex, conStatus);
+            contactListBtnsController.setUserNCtx(user, acac, ictS.getId(), ictS.getContactList()==null? "No" : ictS.getContactList(),dataIndex, conStatus);
             Scene scene = new Scene(root); 
             stage.setTitle("ID::"+ ictS.getId() +" | Edit/Delete/Add Contact/Contact List | " + ictS.getFirstName());
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -250,10 +255,12 @@ public class IndexCasingListController implements Initializable {
          ResultSet rs = handler.execQuery(query);
         try {
             while(rs.next()){
+                int co = rs.getInt("consent_for_listed_contacts");
                 data.add(new IndexCasingProperties(rs.getLong("id"),
                         rs.getString("first_name_of_index"),
                         rs.getString("last_name_of_index"),
-                        YesNo.get(rs.getInt("consent_for_listed_contacts")).getName(),
+                        
+                        co==11? null : YesNo.get(rs.getInt("consent_for_listed_contacts")).getName(),
                         sd.getByIdFacility(rs.getLong("facility")).toString()));
             }
         } catch (SQLException ex) {

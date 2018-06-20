@@ -30,8 +30,7 @@ import javax.persistence.CascadeType;
  * @author Tasu Muzinda
  */
 @Entity
-public class IndexCaseTestingForm extends BaseEntity{
-   // (cascade = {CascadeType.ALL})
+public class IndexCaseTestingForm extends BaseEstaForm{
    @ManyToOne
     private Facility facility;
    @ManyToOne

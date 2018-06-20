@@ -156,8 +156,9 @@ public class ListContactsController implements Initializable {
     }
     public void getListOffline(String fac) throws SQLException{
         dataH.clear();
+        
       String query  = "Select * From contact where active='true' and index_case_testing_form = '"+idx.getId()+"'";
-    // String query  = "Select * From contact where created_by = '"+user.getId()+"'";
+   
        ResultSet rs = handler.execQuery(query);
         while (rs.next()) {
            dataH.add(new ContactListProperties(

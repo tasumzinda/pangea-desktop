@@ -16,6 +16,7 @@ import com.itech.pangea.business.domain.util.ReasonForIneligibilityForTesting;
 import com.itech.pangea.business.domain.util.Relationship;
 import com.itech.pangea.business.domain.util.YesNo;
 import com.itech.pangea.business.service.ContactService;
+import com.itech.pangea.repo.ContactRepo;
 import com.itech.pangea.sqliteConfig.SqliteDatabaseHandler;
 import com.itech.pangea.utils.DateFunctions;
 import com.itech.pangea.validations.Validate;
@@ -24,6 +25,7 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -117,14 +119,16 @@ public class ContactListController implements Initializable {
     @Resource
     private ContactService contactService;
     AnnotationConfigApplicationContext acac;
+    Long indexId;
     User user;
     String conStatus;
     IndexCaseTestingForm indexCaseId;
-     public void setUserNCtx(User user,  AnnotationConfigApplicationContext acac, String conStatus, IndexCaseTestingForm indexCaseId){
+     public void setUserNCtx(User user,  AnnotationConfigApplicationContext acac, Long indexId, String conStatus, IndexCaseTestingForm indexCaseId){
         this.user = user;
         this.acac = acac;
         this.conStatus = conStatus;
         this.indexCaseId = indexCaseId;
+        this.indexId = indexId;
      }
     @FXML
     private void onRelSel(ActionEvent e){
@@ -159,7 +163,7 @@ public class ContactListController implements Initializable {
        stage.close();  
     }
     @FXML
-    private void saveContactList(ActionEvent ev){
+    private void saveContactList(ActionEvent ev) throws SQLException{
        Contact c = new Contact();
        if(isInputValid()){
            c.setNameOfContact(nameOfContact.getText());
@@ -259,7 +263,7 @@ public class ContactListController implements Initializable {
                      lot = 11;
                  }
                  else{
-                     lot = c.getHivResult().getCode();
+                     lot = c.getHivResult()==null? 11 : c.getHivResult().getCode();
                  }
                  if(onART.getSelectionModel().isEmpty()){
                      oa = 11;
@@ -279,12 +283,39 @@ public class ContactListController implements Initializable {
                  else{
                      rs = c.getReferralSlipReturned().getCode();
                  }
-                 String query = "Insert Into Contact(cid, active, deleted, uuid, version, age, appointment_date_for_contact, art_number,"
+                 ContactRepo contactRepo = new  ContactRepo();
+                 int id = contactRepo.getLastInsertIdByIndex(c.getIndexCaseTestingForm().getId().intValue());
+                 
+                 Long indexID;
+                     if(indexId!=0){
+                        indexID = indexId; 
+                     }
+                     else{
+                         indexID = c.getIndexCaseTestingForm().getId();
+                     }
+                 
+                 if(id!=0){
+                     
+                     Integer seqNum = contactRepo.sequentialNumber(id);
+                     c.setSequentialNumber(seqNum.longValue());
+                     
+                     c.setUuid(contactRepo.getUuidofIndex(indexID.intValue())+""+c.getSequentialNumber());
+                 }
+                 else{
+                    
+                     Integer sequentialNumber = 1;
+                     c.setSequentialNumber(sequentialNumber.longValue());
+                     c.setUuid(contactRepo.getUuidofIndex(indexID.intValue())+""+c.getSequentialNumber());
+                     
+                 }
+                 
+                 
+                 String query = "Insert Into Contact(cid, active, deleted, uuid, version, sequential_number, age, appointment_date_for_contact, art_number,"
                          + "call_outcome, contact_address, contact_tested_date, date_called, date_visited, enrolled_into_care, gender,"
                          + "hiv_result, hiv_status_entry, if_tested_date_contact_tested, location_of_test, name_of_contact, onart,"
                          + "preferred_place_for_contacts_to_be_tested, referral_slip_number, referral_slip_returned, relation_ship_to_index,"
                          + "second_appointment_date_for_contact, sequential_number_of_contacts, third_appointment_date_for_contact, visit_outcome,"
-                         + "created_by, modified_by, index_case_testing_form, stat) Values('0', '', '', '', '0',"
+                         + "created_by, modified_by, index_case_testing_form, stat) Values('0', 'true', '', '"+c.getUuid()+"', '0', '"+c.getSequentialNumber()+"',"
                          + "'"+c.getAge()+"',"
                          + "'"+c.getAppointmentDateForContact()+"',"
                          + "'"+c.getArtNumber()+"',"
@@ -373,6 +404,10 @@ public class ContactListController implements Initializable {
         if(!validate.validateFullname(nameOfContact.getText())){
            nameOfContact.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
            errorMsg += "Invalid Name Of Contact!\nPlease Try [Xxxxxx Xxxxxx] format.\n";
+       }
+        if(!age.getText().isEmpty() && !validate.validateNumber(age.getText())){
+            age.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
+            errorMsg += "Age is Invalid!!!\n";
        }
         if(gender.getSelectionModel().isEmpty()){
             gender.setStyle("-jfx-focus-color: #FF6347; -jfx-unfocus-color: #FF6347");
